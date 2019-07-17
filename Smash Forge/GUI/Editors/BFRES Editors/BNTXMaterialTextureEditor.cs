@@ -1,31 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SmashForge.Rendering;
 using SFGraphics.GLObjects.Textures;
 
 namespace SmashForge
 {
-    public partial class BNTXMaterialTextureEditor : Form
+    public partial class BntxMaterialTextureEditor : Form
     {
         //This editor will allow UV viewing while
         //also being able to edit tiling, filtering and some other things.
 
 
-        public Texture Texture = null;
-        public bool _loaded;
+        public Texture texture = null;
+        public bool loaded;
         public Matrix4 mvpMatrix = Matrix4.Identity;
         public BFRES.Mesh mesh = null;
         public BFRES.MaterialData mat = null;
-        public BFRES.MatTexture Mattex = null;
+        public BFRES.MatTexture mattex = null;
 
         public Vector3 position = new Vector3(0, 0, 0);
         public float mouseSLast = 0;
@@ -33,7 +27,7 @@ namespace SmashForge
         public float mouseXLast = 0;
         public float mouseTranslateSpeed = 0.0005f;
 
-        public BNTXMaterialTextureEditor()
+        public BntxMaterialTextureEditor()
         {
             InitializeComponent();
             comboBox1.Items.Add("Repeat");
@@ -47,7 +41,7 @@ namespace SmashForge
             comboBox2.Items.Add("Clamp");
             comboBox2.Items.Add("Repeat Mirror");
         }
-        public void LoadTexture(BFRES.Mesh m, Texture texture, string TexName)
+        public void LoadTexture(BFRES.Mesh m, Texture texture, string texName)
         {
             //Todo go back and redo this editor
           //  RenderTexture(m, texture, TexName);
@@ -55,19 +49,19 @@ namespace SmashForge
 
         float zoom = -1f;
 
-        private void RenderTexture(BFRES.Mesh m, Texture texture, string TexName)
+        private void RenderTexture(BFRES.Mesh m, Texture texture, string texName)
         {
-            Texture = texture;
+            this.texture = texture;
             mesh = m;
             mat = mesh.material;
 
             foreach (BFRES.MatTexture te in mat.textures)
             {
-                if (Texture != null)
+                if (this.texture != null)
                 {
-                    if (te.Name == TexName)
+                    if (te.Name == texName)
                     {
-                        Mattex = te;
+                        mattex = te;
                         comboBox1.SelectedIndex = te.wrapModeS;
                         comboBox2.SelectedIndex = te.wrapModeT;
                     }
@@ -114,9 +108,9 @@ namespace SmashForge
             public Vector3 pos;
             public Vector2 texcoord;
 
-            public static int Size = 4 * (3 + 2);
+            public static int size = 4 * (3 + 2);
         }
-        private void SetupCursorXYZ()
+        private void SetupCursorXyz()
         {
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
@@ -146,7 +140,7 @@ namespace SmashForge
 
         private void glControl1_Load(object sender, EventArgs e)
         {
-            _loaded = true;
+            loaded = true;
             GL.ClearColor(Color.SkyBlue); 
 
           //  Setup2DRendering();
@@ -154,7 +148,7 @@ namespace SmashForge
 
         private void glControl1_Resize(object sender, EventArgs e)
         {
-            if (!_loaded)
+            if (!loaded)
                 return;
 
             base.OnResize(e);
@@ -168,7 +162,7 @@ namespace SmashForge
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
-            if (!_loaded || glControl1 == null)
+            if (!loaded || glControl1 == null)
                 return;
 
             glControl1.MakeCurrent();
@@ -211,7 +205,7 @@ namespace SmashForge
 
         public void DrawTex2()
         {
-            if (Texture == null && Mattex == null)
+            if (this.texture == null && mattex == null)
             {
                 glControl1.SwapBuffers();
                 return;
@@ -227,42 +221,42 @@ namespace SmashForge
             // Single texture uniform.
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[Mattex.wrapModeS]);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[Mattex.wrapModeT]);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[mattex.wrapModeS]);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[mattex.wrapModeT]);
 
-            float ScaleX = 16f;
-            float ScaleY = 16f;
+            float scaleX = 16f;
+            float scaleY = 16f;
             float posX = 1f;
             float posY = 0.5f;
-            float UVposX = 1f;
-            float UVposY = 0.5f;
-            float TileX = 32;
-            float TileY = 32;
+            float uVposX = 1f;
+            float uVposY = 0.5f;
+            float tileX = 32;
+            float tileY = 32;
 
             if (width > height)
             {
                 float scale = width / height;
              //   TileX = TileX * scale;
-                ScaleX = ScaleX * scale;
-                UVposX = UVposX * scale;
+                scaleX = scaleX * scale;
+                uVposX = uVposX * scale;
             }
             if (height > width)
             {
                 float scale = height / width;
              //   TileY = TileY * scale;
-                ScaleY = ScaleY * scale;
-                UVposY = UVposY * scale;
+                scaleY = scaleY * scale;
+                uVposY = uVposY * scale;
             }
 
             GL.Begin(PrimitiveType.Quads);
-            GL.TexCoord2(1 * TileX + UVposX, 1 * TileY + UVposY);
-            GL.Vertex2(1 * ScaleX + posX, -1 * ScaleY + posY);
-            GL.TexCoord2(0 * TileX + UVposX, 1 * TileY + UVposY);
-            GL.Vertex2(-1 * ScaleX + posX, -1 * ScaleY + posY);
-            GL.TexCoord2(0 * TileX + UVposX, 0 * TileY + UVposY);
-            GL.Vertex2(-1 * ScaleX + posX, 1 * ScaleY + posY);
-            GL.TexCoord2(1 * TileX + UVposX, 0 * TileY + UVposY);
-            GL.Vertex2(1 * ScaleX + posX, 1 * ScaleY + posY);
+            GL.TexCoord2(1 * tileX + uVposX, 1 * tileY + uVposY);
+            GL.Vertex2(1 * scaleX + posX, -1 * scaleY + posY);
+            GL.TexCoord2(0 * tileX + uVposX, 1 * tileY + uVposY);
+            GL.Vertex2(-1 * scaleX + posX, -1 * scaleY + posY);
+            GL.TexCoord2(0 * tileX + uVposX, 0 * tileY + uVposY);
+            GL.Vertex2(-1 * scaleX + posX, 1 * scaleY + posY);
+            GL.TexCoord2(1 * tileX + uVposX, 0 * tileY + uVposY);
+            GL.Vertex2(1 * scaleX + posX, 1 * scaleY + posY);
             GL.End();
 
         }
@@ -278,22 +272,22 @@ namespace SmashForge
             List<int> f = p.lodMeshes[p.DisplayLODIndex].getDisplayFace();
             GL.Disable(EnableCap.Texture2D);
 
-            float ScaleX = 1;
-            float ScaleY = 1;
+            float scaleX = 1;
+            float scaleY = 1;
 
             if (width > height)
             {
-                ScaleX = width / height;
+                scaleX = width / height;
             }
             if (height > width)
             {
-                ScaleY = height / width;
+                scaleY = height / width;
             }
 
 
-            GL.Scale(ScaleX, ScaleY, 1);
-            int divisionsX = (int)ScaleY * 4;
-            int divisionsY = (int)ScaleX * 4;
+            GL.Scale(scaleX, scaleY, 1);
+            int divisionsX = (int)scaleY * 4;
+            int divisionsY = (int)scaleX * 4;
 
             for (int i = 0; i < p.lodMeshes[p.DisplayLODIndex].displayFaceSize; i += 3)
             {
@@ -301,11 +295,11 @@ namespace SmashForge
                 BFRES.Vertex v2 = p.vertices[f[i + 1]];
                 BFRES.Vertex v3 = p.vertices[f[i + 2]];
 
-                if (Runtime.uvChannel == Runtime.UVChannel.Channel1)
+                if (Runtime.uvChannel == Runtime.UvChannel.Channel1)
                     BFRES_DrawUVTriangleAndGrid(v1.uv0, v2.uv0, v3.uv0, divisionsX, divisionsY, Color.Red, 1, Color.White, p.material);
-                else if (Runtime.uvChannel == Runtime.UVChannel.Channel2)
+                else if (Runtime.uvChannel == Runtime.UvChannel.Channel2)
                     BFRES_DrawUVTriangleAndGrid(v1.uv1, v2.uv1, v3.uv1, divisionsX, divisionsY, Color.Red, 1, Color.White, p.material);
-                else if (Runtime.uvChannel == Runtime.UVChannel.Channel3)
+                else if (Runtime.uvChannel == Runtime.UvChannel.Channel3)
                     BFRES_DrawUVTriangleAndGrid(v1.uv2, v2.uv2, v3.uv2, divisionsX, divisionsY, Color.Red, 1, Color.White, p.material);
             }
         }
@@ -318,7 +312,7 @@ namespace SmashForge
             Vector2 scaleUv = new Vector2(1, 1);
             Vector2 transUv = new Vector2(0, 0);
 
-            if (Runtime.uvChannel == Runtime.UVChannel.Channel2)
+            if (Runtime.uvChannel == Runtime.UvChannel.Channel2)
             {
                 if (mat.matparam.ContainsKey("gsys_bake_st0"))
                 {
@@ -398,18 +392,18 @@ namespace SmashForge
         {
 
             GL.PushMatrix();
-            int GrdiSize = 50;
-            int GridGap = 2;
+            int grdiSize = 50;
+            int gridGap = 2;
             GL.Rotate(90f, 1, 0, 0);
             GL.LineWidth(1f);
             GL.Color3(Color.LightGray);
             GL.Begin(PrimitiveType.Lines);
-            for (var i = -GrdiSize; i <= GrdiSize; i++)
+            for (var i = -grdiSize; i <= grdiSize; i++)
             {
-                GL.Vertex3(new Vector3(-GrdiSize * GridGap, 0f, i * GridGap));
-                GL.Vertex3(new Vector3(GrdiSize * GridGap, 0f, i * GridGap));
-                GL.Vertex3(new Vector3(i * GridGap, 0f, -GrdiSize * GridGap));
-                GL.Vertex3(new Vector3(i * GridGap, 0f, GrdiSize * GridGap));
+                GL.Vertex3(new Vector3(-grdiSize * gridGap, 0f, i * gridGap));
+                GL.Vertex3(new Vector3(grdiSize * gridGap, 0f, i * gridGap));
+                GL.Vertex3(new Vector3(i * gridGap, 0f, -grdiSize * gridGap));
+                GL.Vertex3(new Vector3(i * gridGap, 0f, grdiSize * gridGap));
             }
             GL.End();
             GL.Color3(Color.Transparent);
@@ -426,7 +420,7 @@ namespace SmashForge
                 position.X += mouseTranslateSpeed * (e.X - mouseXLast);
             }
 
-            SetupCursorXYZ();
+            SetupCursorXyz();
             glControl1.Invalidate();
         }
 
@@ -435,7 +429,7 @@ namespace SmashForge
         {
             if (comboBox2.SelectedItem != null)
             {
-                Mattex.wrapModeT = comboBox2.SelectedIndex;
+                mattex.wrapModeT = comboBox2.SelectedIndex;
             }
             glControl1.Invalidate();
         }
@@ -445,7 +439,7 @@ namespace SmashForge
         {
             if (comboBox1.SelectedItem != null)
             {
-                Mattex.wrapModeS = comboBox1.SelectedIndex;
+                mattex.wrapModeS = comboBox1.SelectedIndex;
             }
             glControl1.Invalidate();
         }

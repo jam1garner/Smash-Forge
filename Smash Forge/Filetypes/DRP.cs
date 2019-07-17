@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-using System.Security.Cryptography;
 
 namespace SmashForge
 {
@@ -16,33 +11,33 @@ namespace SmashForge
         {
             Text = Path.GetFileNameWithoutExtension(fname);
             var o = new FileOutput();
-            o.writeBytes(Decrypt(new FileData(fname)));
-            o.save(fname + "_dec");
+            o.WriteBytes(Decrypt(new FileData(fname)));
+            o.Save(fname + "_dec");
             Read(new FileData(Decrypt(new FileData(fname))));
         }
 
         public void Read(FileData d)
         {
-            d.Endian = Endianness.Big;
+            d.endian = Endianness.Big;
 
-            d.seek(0x16);
-            int count = d.readUShort();
+            d.Seek(0x16);
+            int count = d.ReadUShort();
 
-            d.seek(0x60);
+            d.Seek(0x60);
 
             for(int i = 0; i < count; i++)
             {
-                string name = d.readString(d.pos(), -1);
-                d.skip(0x40);
-                int unk = d.readInt();
-                int nextFile = d.readInt();
-                int c2 = d.readUShort();
-                int c1 = d.readUShort();
-                d.skip(4); // padding?
+                string name = d.ReadString(d.Pos(), -1);
+                d.Skip(0x40);
+                int unk = d.ReadInt();
+                int nextFile = d.ReadInt();
+                int c2 = d.ReadUShort();
+                int c1 = d.ReadUShort();
+                d.Skip(4); // padding?
 
                 int[] partsizes = new int[4];
                 for (int j = 0; j < 4; j++)
-                    partsizes[j] = d.readInt();
+                    partsizes[j] = d.ReadInt();
 
                 TreeNode part = new TreeNode();
                 part.Text = name;
@@ -53,15 +48,15 @@ namespace SmashForge
                 {
                     TreeNode t = new TreeNode();
                     part.Nodes.Add(t);
-                    int decompressedSize = d.readInt();
-                    byte[] dat = FileData.InflateZLIB(d.getSection(d.pos(), partsizes[j] - 4 - off));
-                    d.skip(partsizes[j] - 4);
+                    int decompressedSize = d.ReadInt();
+                    byte[] dat = FileData.InflateZlib(d.GetSection(d.Pos(), partsizes[j] - 4 - off));
+                    d.Skip(partsizes[j] - 4);
                     off += partsizes[j];
                     string mag = new FileData(dat).Magic();
                     t.Text = name + "." + mag;
 
                     if(mag.Equals("NTWD"))
-                        Runtime.TextureContainers.Add(new NUT(new FileData(dat)));
+                        Runtime.textureContainers.Add(new NUT(new FileData(dat)));
 
                     if (mag.Equals("OMO "))
                     {
@@ -76,16 +71,16 @@ namespace SmashForge
         private byte[] Decrypt(FileData d)
         {
             int[] filedata = null;
-            filedata = new int[d.size() / 4];
-            int size = (int)d.size();
+            filedata = new int[d.Size() / 4];
+            int size = (int)d.Size();
             int words = size >> 2;
             int xorval = 0;
-            d.seek(0x1C);
-            d.Endian = Endianness.Big;
-            int SEED = d.readInt();
+            d.Seek(0x1C);
+            d.endian = Endianness.Big;
+            int SEED = d.ReadInt();
             RandomXS _rand = new RandomXS(SEED);
-            d.Endian = Endianness.Big;
-            d.seek(0);
+            d.endian = Endianness.Big;
+            d.Seek(0);
             if (size % 8 == 0) goto Dword_loop;
             else if (size == 0) return null;
             else if (size / 8 <= 0) goto BYTE_loop;
@@ -103,7 +98,7 @@ namespace SmashForge
                     for (int x = 0; x < 8; x++)
                     {
                         var randInt = _rand.GetInt();
-                        var XOR = d.readInt() ^ randInt;
+                        var XOR = d.ReadInt() ^ randInt;
                         var val = XOR ^ xorval;
                         xorval = (randInt << 13) & unchecked((int)0x80000000);
                         filedata[x + (i * 8)] = val.Reverse();
@@ -115,12 +110,12 @@ namespace SmashForge
             if ((words & 7) <= 0)
                 goto loops_end;
             int offset = (size >> 2 >> 3 << 3 << 2);
-            d.seek(offset);
+            d.Seek(offset);
 
             for (int i = 0; i < (words & 7); i++)
             {
                 var randInt = _rand.GetInt();
-                var XOR = d.readInt() ^ randInt;
+                var XOR = d.ReadInt() ^ randInt;
                 var val = XOR ^ xorval;
                 xorval = (randInt << 13) & unchecked((int)0x80000000);
                 filedata[offset / 4 + i] = val.Reverse();
@@ -131,11 +126,11 @@ namespace SmashForge
         BYTE_loop:
             if ((size & 7) == 0)
                 goto func_end;
-            d.seek(4);
+            d.Seek(4);
             for (int i = 4; i < (size & 7); i++)
             {
                 byte[] data = BitConverter.GetBytes(filedata[i.RoundDown(4)]);
-                var b = d.readByte();
+                var b = d.ReadByte();
                 var shifted = (b >> 3) | (b << 32 - 3);
                 var val = b ^ shifted;
                 data[i] = (byte)val;

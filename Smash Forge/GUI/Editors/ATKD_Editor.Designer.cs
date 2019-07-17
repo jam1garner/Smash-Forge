@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class ATKD_Editor
+    partial class AtkdEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -114,7 +114,7 @@
             this.Controls.Add(this.dataGridView);
             this.Controls.Add(this.groupBox1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "ATKD_Editor";
+            this.Name = "AtkdEditor";
             this.Text = "ATKD Editor";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ATKD_Editor_FormClosed);
             this.Load += new System.EventHandler(this.ATKD_Editor_Load);

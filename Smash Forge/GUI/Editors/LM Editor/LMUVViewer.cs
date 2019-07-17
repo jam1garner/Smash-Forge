@@ -10,7 +10,7 @@ using SmashForge.Rendering.Meshes;
 
 namespace SmashForge.Gui.Menus
 {
-    public partial class LMUVViewer : Form
+    public partial class LmuvViewer : Form
     {
         public Lumen lumen;
         public NUT nut;
@@ -19,12 +19,12 @@ namespace SmashForge.Gui.Menus
         public Framebuffer pngExportFramebuffer;
         Mesh3D screenTriangle;
 
-        public LMUVViewer(Lumen Lm, NUT Nut, int ShapeIndex, int GraphicIndex)
+        public LmuvViewer(Lumen lm, NUT nut, int shapeIndex, int graphicIndex)
         {
-            lumen = Lm;
-            nut = Nut;
-            shapeIndex = ShapeIndex;
-            graphicIndex = GraphicIndex;
+            lumen = lm;
+            this.nut = nut;
+            this.shapeIndex = shapeIndex;
+            this.graphicIndex = graphicIndex;
             
             InitializeComponent();
         }
@@ -77,7 +77,7 @@ namespace SmashForge.Gui.Menus
 
         private void DrawPolygonUvs()
         {
-            Shader shader = OpenTKSharedResources.shaders["UV"];
+            Shader shader = OpenTkSharedResources.shaders["UV"];
             shader.UseProgram();
             Matrix4 matrix = Matrix4.CreateOrthographicOffCenter(0, 1, 1, 0, -1, 1);
             shader.SetMatrix4x4("mvpMatrix", ref matrix);
@@ -91,8 +91,8 @@ namespace SmashForge.Gui.Menus
 
         private void glControl1_Load(object sender, System.EventArgs e)
         {
-            OpenTKSharedResources.InitializeSharedResources();
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            OpenTkSharedResources.InitializeSharedResources();
+            if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Initialized)
             {
                 nut.RefreshGlTexturesByHashId();
                 pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);

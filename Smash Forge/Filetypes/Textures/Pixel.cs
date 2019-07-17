@@ -19,7 +19,7 @@ namespace SmashForge
 
             for (int i = 0; i < pixels.Length; i++)
             {
-                pixels[i] = (d.readByte()) | (d.readByte() << 8) | (d.readByte()<<16) | (d.readByte() << 24);
+                pixels[i] = (d.ReadByte()) | (d.ReadByte() << 8) | (d.ReadByte()<<16) | (d.ReadByte() << 24);
             }
 
             Marshal.Copy(pixels, 0, bmpData.Scan0, pixels.Length);
@@ -38,7 +38,7 @@ namespace SmashForge
 
             for (int i = 0; i < pixels.Length; i++)
             {
-                pixels[i] = (d.readByte()<<16) | (d.readByte() << 8) | (d.readByte() << 0) | (d.readByte() << 24);
+                pixels[i] = (d.ReadByte()<<16) | (d.ReadByte() << 8) | (d.ReadByte() << 0) | (d.ReadByte() << 24);
             }
 
             Marshal.Copy(pixels, 0, bmpData.Scan0, pixels.Length);
@@ -57,7 +57,7 @@ namespace SmashForge
 
             for (int i = 0; i < pixels.Length; i++)
             {
-                pixels[i] = (d.readByte() << 24) | (d.readByte()) | (d.readByte() << 8) | (d.readByte() << 16);
+                pixels[i] = (d.ReadByte() << 24) | (d.ReadByte()) | (d.ReadByte() << 8) | (d.ReadByte() << 16);
             }
 
             Marshal.Copy(pixels, 0, bmpData.Scan0, pixels.Length);
@@ -495,7 +495,7 @@ namespace SmashForge
             int i, j;
 
             FileOutput o = new FileOutput();
-            o.Endian = System.IO.Endianness.Little;
+            o.endian = System.IO.Endianness.Little;
 
             for (i = 0; i < height; i += 8)
             {
@@ -510,8 +510,8 @@ namespace SmashForge
                             temp[pi++] = b.GetPixel(y, x);
 
                     ulong g = GenETC1(temp);
-                    o.writeInt((int)(g & 0xFFFFFFFF));
-                    o.writeInt((int)((g>>32)&0xFFFFFFFF));
+                    o.WriteInt((int)(g & 0xFFFFFFFF));
+                    o.WriteInt((int)((g>>32)&0xFFFFFFFF));
 
 
                     temp = new Color[16];
@@ -521,8 +521,8 @@ namespace SmashForge
                             temp[pi++] = b.GetPixel(y, x);
 
                     g = GenETC1(temp);
-                    o.writeInt((int)(g & 0xFFFFFFFF));
-                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+                    o.WriteInt((int)(g & 0xFFFFFFFF));
+                    o.WriteInt((int)((g >> 32) & 0xFFFFFFFF));
 
 
                     temp = new Color[16];
@@ -532,8 +532,8 @@ namespace SmashForge
                             temp[pi++] = b.GetPixel(y, x);
 
                     g = GenETC1(temp);
-                    o.writeInt((int)(g & 0xFFFFFFFF));
-                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+                    o.WriteInt((int)(g & 0xFFFFFFFF));
+                    o.WriteInt((int)((g >> 32) & 0xFFFFFFFF));
 
 
                     temp = new Color[16];
@@ -543,8 +543,8 @@ namespace SmashForge
                             temp[pi++] = b.GetPixel(y, x);
 
                     g = GenETC1(temp);
-                    o.writeInt((int)(g & 0xFFFFFFFF));
-                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+                    o.WriteInt((int)(g & 0xFFFFFFFF));
+                    o.WriteInt((int)((g >> 32) & 0xFFFFFFFF));
                 }
             }
             
@@ -561,7 +561,7 @@ namespace SmashForge
             int i, j;
 
             FileOutput o = new FileOutput();
-            o.Endian = System.IO.Endianness.Little;
+            o.endian = System.IO.Endianness.Little;
 
             for (i = 0; i < height; i += 8)
             {
@@ -581,12 +581,12 @@ namespace SmashForge
                             int a = (temp[ax + ay * 4].A >> 4);
                             ay++;
                             a |= (temp[ax + ay * 4].A >> 4) << 4;
-                            o.writeByte(a);
+                            o.WriteByte(a);
                         }
 
                     ulong g = GenETC1(temp);
-                    o.writeInt((int)(g & 0xFFFFFFFF));
-                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+                    o.WriteInt((int)(g & 0xFFFFFFFF));
+                    o.WriteInt((int)((g >> 32) & 0xFFFFFFFF));
 
 
                     temp = new Color[16];
@@ -601,12 +601,12 @@ namespace SmashForge
                             int a = (temp[ax + ay * 4].A >> 4);
                             ay++;
                             a |= (temp[ax + ay * 4].A >> 4) << 4;
-                            o.writeByte(a);
+                            o.WriteByte(a);
                         }
 
                     g = GenETC1(temp);
-                    o.writeInt((int)(g & 0xFFFFFFFF));
-                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+                    o.WriteInt((int)(g & 0xFFFFFFFF));
+                    o.WriteInt((int)((g >> 32) & 0xFFFFFFFF));
 
 
                     temp = new Color[16];
@@ -621,12 +621,12 @@ namespace SmashForge
                             int a = (temp[ax + ay * 4].A >> 4);
                             ay++;
                             a |= (temp[ax + ay * 4].A >> 4) << 4;
-                            o.writeByte(a);
+                            o.WriteByte(a);
                         }
 
                     g = GenETC1(temp);
-                    o.writeInt((int)(g & 0xFFFFFFFF));
-                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+                    o.WriteInt((int)(g & 0xFFFFFFFF));
+                    o.WriteInt((int)((g >> 32) & 0xFFFFFFFF));
 
 
                     temp = new Color[16];
@@ -641,12 +641,12 @@ namespace SmashForge
                             int a = (temp[ax + ay * 4].A >> 4);
                             ay++;
                             a |= (temp[ax + ay * 4].A >> 4) << 4;
-                            o.writeByte(a);
+                            o.WriteByte(a);
                         }
 
                     g = GenETC1(temp);
-                    o.writeInt((int)(g & 0xFFFFFFFF));
-                    o.writeInt((int)((g >> 32) & 0xFFFFFFFF));
+                    o.WriteInt((int)(g & 0xFFFFFFFF));
+                    o.WriteInt((int)((g >> 32) & 0xFFFFFFFF));
                 }
             }
 

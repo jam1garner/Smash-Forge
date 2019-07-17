@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
-using SALT.PARAMS;
-using SALT.Graphics;
-using System.Diagnostics;
-using System.Globalization;
+﻿using OpenTK;
 
 namespace SmashForge.Rendering.Lights
 {
@@ -36,26 +27,14 @@ namespace SmashForge.Rendering.Lights
         // How should "non directional" area lights work?
         public bool nonDirectional = false;
 
-        public AreaLight(string areaLightID)
+        public AreaLight(string areaLightId)
         {
-            id = areaLightID;
+            id = areaLightId;
         }
 
-        public AreaLight(string areaLightID, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, Vector3 direction)
+        public AreaLight(string areaLightId, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, float rotX, float rotY, float rotZ)
         {
-            id = areaLightID;
-            groundR = groundColor.X;
-            groundG = groundColor.Y;
-            groundB = groundColor.Z;
-
-            skyR = skyColor.X;
-            skyG = skyColor.Y;
-            skyB = skyColor.Z;
-        }
-
-        public AreaLight(string areaLightID, Vector3 groundColor, Vector3 skyColor, Vector3 position, Vector3 scale, float rotX, float rotY, float rotZ)
-        {
-            id = areaLightID;
+            id = areaLightId;
 
             positionX = position.X;
             positionY = position.Y;

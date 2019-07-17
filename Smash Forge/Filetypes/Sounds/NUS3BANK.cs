@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmashForge
 {
@@ -45,27 +42,27 @@ namespace SmashForge
         public override void Read(string filename)
         {
             FileData d = new FileData(filename);
-            d.Endian = Endianness.Little;
+            d.endian = Endianness.Little;
 
             if (d.Magic().Equals("3SUN"))
                 throw new Exception("Not a valid nus3bank");
 
-            d.seek(4);
-            int filesize = d.readInt();
+            d.Seek(4);
+            int filesize = d.ReadInt();
 
-            d.skip(8); // BANKTOC 
-            int headerSize = 0x14 + d.readInt();
-            int secCount = d.readInt();
+            d.Skip(8); // BANKTOC 
+            int headerSize = 0x14 + d.ReadInt();
+            int secCount = d.ReadInt();
 
             for (int i = 0; i < secCount; i++)
             {
-                string magic = d.readString(d.pos(), 4);
-                d.skip(4);
-                int size = d.readInt();
+                string magic = d.ReadString(d.Pos(), 4);
+                d.Skip(4);
+                int size = d.ReadInt();
 
-                int temp = d.pos();
-                d.seek(headerSize);
-                Console.WriteLine(magic + " " + d.pos().ToString("x"));
+                int temp = d.Pos();
+                d.Seek(headerSize);
+                Console.WriteLine(magic + " " + d.Pos().ToString("x"));
                 if (magic.Equals("PROP"))
                     prop.Read(d);
                 if (magic.Equals("BINF"))
@@ -79,7 +76,7 @@ namespace SmashForge
                 if (magic.Equals("PACK"))
                     tone.ReadPACK(d);
                 headerSize += size + 8;
-                d.seek(temp);
+                d.Seek(temp);
             }
 
         }
@@ -87,46 +84,46 @@ namespace SmashForge
         public override byte[] Rebuild()
         {
             FileOutput o = new FileOutput();
-            o.Endian = Endianness.Little;
+            o.endian = Endianness.Little;
 
             FileOutput d = new FileOutput();
-            d.Endian = Endianness.Little;
+            d.endian = Endianness.Little;
 
             o.WriteString("NUS3");
-            o.writeInt(0);
+            o.WriteInt(0);
 
             o.WriteString("BANKTOC ");
-            o.writeInt(0x3C);
-            o.writeInt(0x07);
+            o.WriteInt(0x3C);
+            o.WriteInt(0x07);
 
             // write each section
             o.WriteString("PROP");
-            o.writeInt(prop.Rebuild(d));
+            o.WriteInt(prop.Rebuild(d));
 
             o.WriteString("BINF");
-            o.writeInt(binf.Rebuild(d));
+            o.WriteInt(binf.Rebuild(d));
 
             o.WriteString("GRP ");
-            o.writeInt(grp.Rebuild(d));
+            o.WriteInt(grp.Rebuild(d));
 
             o.WriteString("DTON");
-            o.writeInt(dton.Rebuild(d));
+            o.WriteInt(dton.Rebuild(d));
 
             o.WriteString("TONE");
-            o.writeInt(tone.Rebuild(d));
+            o.WriteInt(tone.Rebuild(d));
 
             o.WriteString("JUNK");
-            o.writeInt(4);
+            o.WriteInt(4);
             //d.writeString("JUNK");
-            d.writeInt(4);
-            d.writeInt(0);
+            d.WriteInt(4);
+            d.WriteInt(0);
 
             o.WriteString("PACK");
-            o.writeInt(0);
+            o.WriteInt(0);
 
             o.WriteOutput(d);
 
-            o.writeIntAt(o.Size(), 4);
+            o.WriteIntAt(o.Size(), 4);
 
             // something extra with bgm??
 
@@ -145,56 +142,56 @@ namespace SmashForge
 
             public void Read(FileData d)
             {
-                d.skip(8);// magic and section size
-                d.skip(4); // 0 padding?
-                unk1 = d.readInt();
-                d.skip(2); //0
-                unk2 = d.readUShort();
+                d.Skip(8);// magic and section size
+                d.Skip(4); // 0 padding?
+                unk1 = d.ReadInt();
+                d.Skip(2); //0
+                unk2 = d.ReadUShort();
 
-                int ssize = d.readByte();
-                project = d.readString(d.pos(), ssize - 1);
-                d.skip(ssize - 1);
-                d.skip(6);
-                unk3 = d.readUShort();
-                d.align(4);
-                ssize = d.readByte();
-                timestamp = d.readString(d.pos(), ssize - 1);
-                d.skip(ssize - 1);
-                d.skip(4);
+                int ssize = d.ReadByte();
+                project = d.ReadString(d.Pos(), ssize - 1);
+                d.Skip(ssize - 1);
+                d.Skip(6);
+                unk3 = d.ReadUShort();
+                d.Align(4);
+                ssize = d.ReadByte();
+                timestamp = d.ReadString(d.Pos(), ssize - 1);
+                d.Skip(ssize - 1);
+                d.Skip(4);
             }
 
             public int Rebuild(FileOutput o)
             {
                 o.WriteString("PROP");
                 int sizeoff = o.Size();
-                o.writeInt(0);
+                o.WriteInt(0);
                 int size = o.Size();
-                o.writeInt(0);
-                o.writeInt(unk1);
-                o.writeShort(0);
-                o.writeShort(unk2);
+                o.WriteInt(0);
+                o.WriteInt(unk1);
+                o.WriteShort(0);
+                o.WriteShort(unk2);
 
-                o.writeByte(project.Length + 1);
+                o.WriteByte(project.Length + 1);
                 o.WriteString(project);
-                o.writeByte(0);
-                o.writeByte(0);
-                o.writeByte(0);
-                o.writeByte(0);
-                o.align(4);
-                o.writeShort(unk3);
-                o.align(4);
+                o.WriteByte(0);
+                o.WriteByte(0);
+                o.WriteByte(0);
+                o.WriteByte(0);
+                o.Align(4);
+                o.WriteShort(unk3);
+                o.Align(4);
 
 
-                o.writeByte(timestamp.Length + 1);
+                o.WriteByte(timestamp.Length + 1);
                 o.WriteString(timestamp);
-                o.writeByte(0);
-                o.writeByte(0);
-                o.writeByte(0);
-                o.writeByte(0);
-                o.align(4);
+                o.WriteByte(0);
+                o.WriteByte(0);
+                o.WriteByte(0);
+                o.WriteByte(0);
+                o.Align(4);
 
                 size = o.Size() - size;
-                o.writeIntAt(size, sizeoff);
+                o.WriteIntAt(size, sizeoff);
                 return size;
             }
         }
@@ -207,34 +204,34 @@ namespace SmashForge
 
             public void Read(FileData d)
             {
-                d.skip(12);
-                unk1 = d.readInt();
+                d.Skip(12);
+                unk1 = d.ReadInt();
 
-                int s = d.readByte();
-                name = d.readString(d.pos(), s - 1);
-                d.skip(s);
-                d.align(4);
-                flag = d.readInt();
+                int s = d.ReadByte();
+                name = d.ReadString(d.Pos(), s - 1);
+                d.Skip(s);
+                d.Align(4);
+                flag = d.ReadInt();
             }
 
             public int Rebuild(FileOutput o)
             {
                 o.WriteString("BINF");
                 int sizeoff = o.Size();
-                o.writeInt(0);
+                o.WriteInt(0);
                 int size = o.Size();
 
-                o.writeInt(0);
-                o.writeInt(unk1);
+                o.WriteInt(0);
+                o.WriteInt(unk1);
 
-                o.writeByte(name.Length + 1);
+                o.WriteByte(name.Length + 1);
                 o.WriteString(name);
-                o.writeByte(0);
-                o.align(4);
-                o.writeInt(flag);
+                o.WriteByte(0);
+                o.Align(4);
+                o.WriteInt(flag);
 
                 size = o.Size() - size;
-                o.writeIntAt(size, sizeoff);
+                o.WriteIntAt(size, sizeoff);
                 return size;
 
             }
@@ -252,26 +249,26 @@ namespace SmashForge
             public void Read(FileData d)
             {
                 names.Clear();
-                d.skip(8);// magic and section size
-                int c1 = d.readInt();
+                d.Skip(8);// magic and section size
+                int c1 = d.ReadInt();
 
-                int start = d.pos();
+                int start = d.Pos();
                 for (int i = 0; i < c1; i++)
                 {
-                    int offset = d.readInt();
-                    int size = d.readInt();
+                    int offset = d.ReadInt();
+                    int size = d.ReadInt();
 
-                    int temp = d.pos();
-                    d.seek(start + offset);
+                    int temp = d.Pos();
+                    d.Seek(start + offset);
 
-                    d.readInt();
-                    int s = (sbyte)d.readByte();
-                    names.Add(d.readString(d.pos(), -1));
-                    d.skip(s);
-                    d.align(4);
+                    d.ReadInt();
+                    int s = (sbyte)d.ReadByte();
+                    names.Add(d.ReadString(d.Pos(), -1));
+                    d.Skip(s);
+                    d.Align(4);
 
 
-                    d.seek(temp);
+                    d.Seek(temp);
                 }
             }
 
@@ -279,39 +276,39 @@ namespace SmashForge
             {
                 o.WriteString("GRP ");
                 int sizeoff = o.Size();
-                o.writeInt(0);
+                o.WriteInt(0);
                 int size = o.Size();
 
-                o.writeInt(names.Count);
+                o.WriteInt(names.Count);
 
                 int start = names.Count * 8 + 4;
                 FileOutput name = new FileOutput();
-                name.Endian = Endianness.Little;
+                name.endian = Endianness.Little;
 
                 int c = 0;
                 foreach (string na in names)
                 {
-                    o.writeInt(start + name.Size());
+                    o.WriteInt(start + name.Size());
 
-                    int ns = name.pos();
-                    name.writeInt(1);
-                    name.writeByte(na.Length == 0 ? 0xFF : na.Length + 1);
+                    int ns = name.Pos();
+                    name.WriteInt(1);
+                    name.WriteByte(na.Length == 0 ? 0xFF : na.Length + 1);
                     name.WriteString(na);
-                    name.writeByte(0);
-                    name.align(4);
+                    name.WriteByte(0);
+                    name.Align(4);
                     if (c != names.Count - 1)
-                        name.writeInt(0); // padding
+                        name.WriteInt(0); // padding
                     else
                         ns -= 4;
                     c++;
 
-                    o.writeInt(name.pos() - ns);
+                    o.WriteInt(name.Pos() - ns);
                 }
-                o.writeInt(0);
+                o.WriteInt(0);
                 o.WriteOutput(name);
 
                 size = o.Size() - size;
-                o.writeIntAt(size, sizeoff);
+                o.WriteIntAt(size, sizeoff);
                 return size;
             }
         }
@@ -329,33 +326,33 @@ namespace SmashForge
 
                 public void Read(FileData d)
                 {
-                    hash = d.readInt();
-                    unk1 = d.readInt();
+                    hash = d.ReadInt();
+                    unk1 = d.ReadInt();
 
-                    int s = d.readByte();
-                    name = d.readString(d.pos(), s - 1);
-                    d.skip(s);
-                    d.align(4);
+                    int s = d.ReadByte();
+                    name = d.ReadString(d.Pos(), s - 1);
+                    d.Skip(s);
+                    d.Align(4);
                     data = new float[0x2c];
                     for (int i = 0; i < 0x2c; i++)
                     {
-                        data[i] = d.readFloat();
+                        data[i] = d.ReadFloat();
                     }
                 }
 
                 public int Rebuild(FileOutput o)
                 {
                     int size = o.Size();
-                    o.writeInt(hash);
-                    o.writeInt(unk1);
-                    o.writeByte(name.Length + 1);
+                    o.WriteInt(hash);
+                    o.WriteInt(unk1);
+                    o.WriteByte(name.Length + 1);
                     o.WriteString(name);
-                    o.writeByte(0);
-                    o.align(4);
+                    o.WriteByte(0);
+                    o.Align(4);
 
                     // write data
                     foreach (float f in data)
-                        o.writeFloat(f);
+                        o.WriteFloat(f);
 
                     return o.Size() - size;
                 }
@@ -371,22 +368,22 @@ namespace SmashForge
             public void Read(FileData d)
             {
                 destone.Clear();
-                d.skip(8);// magic and section size
-                int count = d.readInt();
-                int start = d.pos();
+                d.Skip(8);// magic and section size
+                int count = d.ReadInt();
+                int start = d.Pos();
 
                 for (int i = 0; i < count; i++)
                 {
-                    int offset = d.readInt();
-                    int size = d.readInt();
+                    int offset = d.ReadInt();
+                    int size = d.ReadInt();
 
-                    int temp = d.pos();
-                    d.seek(start + offset);
+                    int temp = d.Pos();
+                    d.Seek(start + offset);
                     ToneDes des = new ToneDes();
                     des.Read(d);
                     destone.Add(des);
 
-                    d.seek(temp);
+                    d.Seek(temp);
                 }
             }
 
@@ -394,30 +391,30 @@ namespace SmashForge
             {
                 o.WriteString("DTON");
                 int sizeoff = o.Size();
-                o.writeInt(0);
+                o.WriteInt(0);
                 int size = o.Size();
 
-                o.writeInt(destone.Count);
+                o.WriteInt(destone.Count);
 
                 FileOutput dat = new FileOutput();
-                dat.Endian = Endianness.Little;
+                dat.endian = Endianness.Little;
 
                 int start = destone.Count * 8 + 4;
 
                 for (int i = 0; i < destone.Count; i++)
                 {
-                    o.writeInt(start + dat.Size());
-                    o.writeInt(destone[i].Rebuild(dat) + 4);
+                    o.WriteInt(start + dat.Size());
+                    o.WriteInt(destone[i].Rebuild(dat) + 4);
 
                     if (i != destone.Count - 1)
-                        dat.writeInt(0);
+                        dat.WriteInt(0);
                 }
 
-                o.writeInt(0);
+                o.WriteInt(0);
                 o.WriteOutput(dat);
 
                 size = o.Size() - size;
-                o.writeIntAt(size, sizeoff);
+                o.WriteIntAt(size, sizeoff);
                 return size;
             }
         }
@@ -477,10 +474,10 @@ namespace SmashForge
                     Console.WriteLine("here");
 
                     FileOutput o = new FileOutput();
-                    o.Endian = Endianness.Little;
+                    o.endian = Endianness.Little;
                     for (int i = 0; i < buffer.Length / 2; i++)
-                        o.writeShort(buffer[i]);
-                    o.save("test.wav");
+                        o.WriteShort(buffer[i]);
+                    o.Save("test.wav");
                     Console.WriteLine("here");
                     WAVE.Play(o.GetBytes(), VGMStreamNative.GetVGMStreamChannelCount(vgm), VGMStreamNative.GetVGMStreamSamplesPerFrame(vgm), VGMStreamNative.GetVGMStreamSampleRate(vgm));
 
@@ -490,37 +487,37 @@ namespace SmashForge
 
                 public void Read(FileData d)
                 {
-                    hash = d.readInt();
-                    unk1 = d.readInt();
+                    hash = d.ReadInt();
+                    unk1 = d.ReadInt();
 
-                    int s = d.readByte();
-                    name = d.readString(d.pos(), -1);
-                    d.skip(s);
-                    d.align(4);
+                    int s = d.ReadByte();
+                    name = d.ReadString(d.Pos(), -1);
+                    d.Skip(s);
+                    d.Align(4);
 
-                    d.skip(8);
+                    d.Skip(8);
 
-                    offset = d.readInt();
-                    size = d.readInt();
+                    offset = d.ReadInt();
+                    size = d.ReadInt();
 
                     for (int i = 0; i < param.Length; i++)
-                        param[i] = d.readFloat();
+                        param[i] = d.ReadFloat();
 
-                    offsets = new int[d.readInt()];
+                    offsets = new int[d.ReadInt()];
                     for (int i = 0; i < offsets.Length; i++)
-                        offsets[i] = d.readInt();
+                        offsets[i] = d.ReadInt();
 
-                    unkvalues = new float[d.readInt()];
+                    unkvalues = new float[d.ReadInt()];
                     for (int i = 0; i < unkvalues.Length; i++)
                     {
-                        unkvalues[d.readInt()] = d.readFloat();
+                        unkvalues[d.ReadInt()] = d.ReadFloat();
                     }
 
                     List<int> une = new List<int>();
 
                     while (true)
                     {
-                        int i = d.readInt();
+                        int i = d.ReadInt();
                         une.Add(i);
                         if (i == -1)
                             break;
@@ -530,7 +527,7 @@ namespace SmashForge
                     end = new int[3 + (int)Math.Ceiling((double)((unk1 >> 8) & 0xFF) / 4)];
 
                     for (int i = 0; i < end.Length; i++)
-                        end[i] = d.readInt();
+                        end[i] = d.ReadInt();
 
                     //Console.WriteLine(id + " " + name + " " + offset.ToString("x"));
 
@@ -540,41 +537,41 @@ namespace SmashForge
                 {
                     int size = o.Size();
 
-                    o.writeInt(hash);
-                    o.writeInt(unk1);
+                    o.WriteInt(hash);
+                    o.WriteInt(unk1);
 
-                    o.writeByte(name.Length + 1);
+                    o.WriteByte(name.Length + 1);
                     o.WriteString(name);
-                    o.writeByte(0);
-                    o.align(4);
+                    o.WriteByte(0);
+                    o.Align(4);
 
-                    o.writeInt(0);
-                    o.writeInt(8);
+                    o.WriteInt(0);
+                    o.WriteInt(8);
 
-                    o.writeInt(offset);
-                    o.writeInt(this.size);
+                    o.WriteInt(offset);
+                    o.WriteInt(this.size);
 
                     // write data
                     foreach (float f in param)
-                        o.writeFloat(f);
+                        o.WriteFloat(f);
 
-                    o.writeInt(offsets.Length);
+                    o.WriteInt(offsets.Length);
                     foreach (int f in offsets)
-                        o.writeInt(f);
+                        o.WriteInt(f);
 
-                    o.writeInt(unkvalues.Length);
+                    o.WriteInt(unkvalues.Length);
                     int v = 0;
                     foreach (float f in unkvalues)
                     {
-                        o.writeInt(v++);
-                        o.writeFloat(f);
+                        o.WriteInt(v++);
+                        o.WriteFloat(f);
                     }
 
                     foreach (int f in unkending)
-                        o.writeInt(f);
+                        o.WriteInt(f);
 
                     foreach (int f in end)
-                        o.writeInt(f);
+                        o.WriteInt(f);
 
                     return o.Size() - size;
                 }
@@ -584,23 +581,23 @@ namespace SmashForge
 
             public void Read(FileData d)
             {
-                d.skip(8);// magic and section size
-                int count = d.readInt();
+                d.Skip(8);// magic and section size
+                int count = d.ReadInt();
 
-                int start = d.pos();
+                int start = d.Pos();
                 for (int i = 0; i < count; i++)
                 {
-                    int offset = d.readInt();
-                    int size = d.readInt();
+                    int offset = d.ReadInt();
+                    int size = d.ReadInt();
 
-                    int temp = d.pos();
-                    d.seek(offset + start);
+                    int temp = d.Pos();
+                    d.Seek(offset + start);
 
                     ToneMeta meta = new ToneMeta();
                     meta.Read(d);
                     tones.Add(meta);
 
-                    d.seek(temp);
+                    d.Seek(temp);
                 }
             }
 
@@ -608,38 +605,38 @@ namespace SmashForge
             {
                 o.WriteString("TONE");
                 int sizeoff = o.Size();
-                o.writeInt(0);
+                o.WriteInt(0);
                 int size = o.Size();
 
-                o.writeInt(tones.Count);
+                o.WriteInt(tones.Count);
 
                 FileOutput dat = new FileOutput();
-                dat.Endian = Endianness.Little;
+                dat.endian = Endianness.Little;
 
                 int start = tones.Count * 8 + 4;
 
                 for (int i = 0; i < tones.Count; i++)
                 {
-                    o.writeInt(start + dat.Size());
-                    o.writeInt(tones[i].Rebuild(dat));
+                    o.WriteInt(start + dat.Size());
+                    o.WriteInt(tones[i].Rebuild(dat));
                 }
 
-                o.writeInt(0);
+                o.WriteInt(0);
                 o.WriteOutput(dat);
 
                 size = o.Size() - size - 4;
-                o.writeIntAt(size, sizeoff);
+                o.WriteIntAt(size, sizeoff);
                 return size;
             }
 
 
             public void ReadPACK(FileData d)
             {
-                int start = d.pos();
+                int start = d.Pos();
 
                 foreach (ToneMeta meta in tones)
                 {
-                    meta.idsp = d.getSection(start + meta.offset + 8, meta.size);
+                    meta.idsp = d.GetSection(start + meta.offset + 8, meta.size);
                 }
             }
 

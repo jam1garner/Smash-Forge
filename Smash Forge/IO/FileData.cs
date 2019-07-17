@@ -8,7 +8,7 @@ namespace SmashForge
     {
         private byte[] b;
         private int p = 0;
-        public Endianness Endian;
+        public Endianness endian;
 
         public FileData(String f)
         {
@@ -18,7 +18,7 @@ namespace SmashForge
             if (b.Length > 2)
             {
                 if (b[0] == 0x78 && b[1] == 0x9C)
-                    b = InflateZLIB(b);
+                    b = InflateZlib(b);
             }
         }
 
@@ -27,12 +27,12 @@ namespace SmashForge
             this.b = b;
         }
 
-        public int eof()
+        public int Eof()
         {
             return b.Length;
         }
 
-        public byte[] read(int length)
+        public byte[] Read(int length)
         {
             if (length + p > b.Length)
                 throw new IndexOutOfRangeException();
@@ -45,60 +45,60 @@ namespace SmashForge
             return data;
         }
 
-        public int readInt()
+        public int ReadInt()
         {
-            if (Endian == Endianness.Little)
+            if (endian == Endianness.Little)
                 return (int)((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24));
             else
                 return (int)(((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
         }
 
-        public uint readUInt()
+        public uint ReadUInt()
         {
-            if (Endian == Endianness.Little)
+            if (endian == Endianness.Little)
                 return (uint)((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24));
             else
                 return (uint)(((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
         }
 
-        public int readThree()
+        public int ReadThree()
         {
-            if (Endian == Endianness.Little)
+            if (endian == Endianness.Little)
                 return (b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16);
             else
                 return ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF);
         }
 
-        public short readShort()
+        public short ReadShort()
         {
-            if (Endian == Endianness.Little)
+            if (endian == Endianness.Little)
                 return (short)((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8));
             else
                 return (short)(((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
         }
 
-        public ushort readUShort()
+        public ushort ReadUShort()
         {
-            if (Endian == Endianness.Little)
+            if (endian == Endianness.Little)
                 return (ushort)((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8));
             else
                 return (ushort)(((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
         }
 
-        public byte readByte()
+        public byte ReadByte()
         {
             return (byte)(b[p++] & 0xFF);
         }
 
-        public sbyte readSByte()
+        public sbyte ReadSByte()
         {
             return (sbyte)(b[p++] & 0xFF);
         }
 
-        public float readFloat()
+        public float ReadFloat()
         {
             byte[] by = new byte[4];
-            if (Endian == Endianness.Little)
+            if (endian == Endianness.Little)
                 by = new byte[4] { b[p], b[p + 1], b[p + 2], b[p + 3] };
             else
                 by = new byte[4] { b[p + 3], b[p + 2], b[p + 1], b[p] };
@@ -106,12 +106,12 @@ namespace SmashForge
             return BitConverter.ToSingle(by, 0);
         }
 
-        public float readHalfFloat()
+        public float ReadHalfFloat()
         {
-            return toFloat(readShort());
+            return ToFloat(ReadShort());
         }
 
-        public static float toFloat(int hbits)
+        public static float ToFloat(int hbits)
         {
             int mant = hbits & 0x03ff;            // 10 bits mantissa
             int exp = hbits & 0x7c00;            // 5 bits exponent
@@ -139,7 +139,7 @@ namespace SmashForge
                 | (exp | mant) << 13), 0);         // value << ( 23 - 10 )
         }
 
-        public static int fromFloat(float fval)
+        public static int FromFloat(float fval)
         {
             int fbits = FileOutput.SingleToInt32Bits(fval);
             int sign = fbits >> 16 & 0x8000;          // sign only
@@ -166,7 +166,7 @@ namespace SmashForge
                 >> 126 - val);   // div by 2^(1-(exp-127+15)) and >> 13 | exp=0
         }
 
-        public static int sign12Bit(int i)
+        public static int Sign12Bit(int i)
         {
             //        System.out.println(Integer.toBinaryString(i));
             if (((i >> 11) & 0x1) == 1)
@@ -184,26 +184,26 @@ namespace SmashForge
         }
 
 
-        public void skip(int i)
+        public void Skip(int i)
         {
             p += i;
         }
-        public void seek(int i)
+        public void Seek(int i)
         {
             p = i;
         }
 
-        public int pos()
+        public int Pos()
         {
             return p;
         }
 
-        public int size()
+        public int Size()
         {
             return b.Length;
         }
 
-        public string readString()
+        public string ReadString()
         {
             string s = "";
             while (b[p] != 0x00)
@@ -214,7 +214,7 @@ namespace SmashForge
             return s;
         }
 
-        public byte[] getSection(int offset, int size)
+        public byte[] GetSection(int offset, int size)
         {
             byte[] by = new byte[size];
 
@@ -223,7 +223,7 @@ namespace SmashForge
             return by;
         }
 
-        public string readString(int p, int size)
+        public string ReadString(int p, int size)
         {
             if (size == -1)
             {
@@ -249,17 +249,17 @@ namespace SmashForge
             return str2;
         }
 
-        public void align(int i)
+        public void Align(int i)
         {
             while (p % i != 0)
                 p++;
         }
 
-        public void writeInt(int value)
+        public void WriteInt(int value)
         {
             byte[] v = BitConverter.GetBytes(value);
 
-            if (Endian == Endianness.Little)
+            if (endian == Endianness.Little)
             {
                 b[p++] = v[0]; b[p++] = v[1]; b[p++] = v[2]; b[p++] = v[3];
             }
@@ -269,7 +269,7 @@ namespace SmashForge
             }
         }
 
-        public void writeBytesAt(int p, byte[] bytes)
+        public void WriteBytesAt(int p, byte[] bytes)
         {
             if(p + bytes.Length > b.Length)
             {
@@ -283,11 +283,11 @@ namespace SmashForge
             }
         }
 
-        public void writeInt(int pos, int value)
+        public void WriteInt(int pos, int value)
         {
             byte[] v = BitConverter.GetBytes(value);
 
-            if (Endian == Endianness.Little)
+            if (endian == Endianness.Little)
             {
                 b[pos++] = v[0]; b[pos++] = v[1]; b[pos++] = v[2]; b[pos++] = v[3];
             }
@@ -299,7 +299,7 @@ namespace SmashForge
 
         public String Magic()
         {
-            if (size() < 4)
+            if (Size() < 4)
                 return "";
             else
             {
@@ -313,7 +313,7 @@ namespace SmashForge
             }
         }
 
-        public static byte[] DeflateZLIB(byte[] i)
+        public static byte[] DeflateZlib(byte[] i)
         {
             MemoryStream output = new MemoryStream();
             output.WriteByte(0x78);
@@ -325,9 +325,9 @@ namespace SmashForge
             return output.ToArray();
         }
 
-        public long readInt64()
+        public long ReadInt64()
         {
-            if (Endian == Endianness.Little)
+            if (endian == Endianness.Little)
             {
                 return (b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 32) | ((b[p++] & 0xFF) << 40) | ((b[p++] & 0xFF) << 48) | ((b[p++] & 0xFF) << 56);
             }
@@ -335,7 +335,7 @@ namespace SmashForge
                 return ((b[p++] & 0xFF) << 56) | ((b[p++] & 0xFF) << 48) | ((b[p++] & 0xFF) << 40) | ((b[p++] & 0xFF) << 32) | ((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF);
         }
 
-        public static byte[] InflateZLIB(byte[] i)
+        public static byte[] InflateZlib(byte[] i)
         {
             var stream = new MemoryStream();
             var ms = new MemoryStream(i);
@@ -357,21 +357,21 @@ namespace SmashForge
 
         public class Decompress
         {
-            public static FileData YAZ0(FileData i)
+            public static FileData Yaz0(FileData i)
             {
-                return new FileData(YAZ0(i.b));
+                return new FileData(Yaz0(i.b));
             }
 
-            private static byte[] YAZ0(byte[] data)
+            private static byte[] Yaz0(byte[] data)
             {
                 FileData f = new FileData(data);
 
-                f.Endian = Endianness.Big;
-                f.seek(4);
-                int uncompressedSize = f.readInt();
-                f.seek(0x10);
+                f.endian = Endianness.Big;
+                f.Seek(4);
+                int uncompressedSize = f.ReadInt();
+                f.Seek(0x10);
 
-                byte[] src = f.read(data.Length - 0x10);
+                byte[] src = f.Read(data.Length - 0x10);
                 byte[] dst = new byte[uncompressedSize];
 
                 int srcPlace = 0, dstPlace = 0; //current read/write positions

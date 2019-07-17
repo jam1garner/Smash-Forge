@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using Syroot.NintenTools.Bfres;
-using System.IO;
-using Syroot.NintenTools.Yaz0;
 using ResNSW = Syroot.NintenTools.NSW.Bfres;
 
 
@@ -108,7 +102,7 @@ namespace SmashForge
                         Animation a = new Animation(ska.Name);
                         SkeletonAnimations.Add(a);
 
-                        a.FrameCount = ska.FrameCount;
+                        a.frameCount = ska.FrameCount;
 
                         if (i >= 0 && i < 100)
                             SkeletonAnimation.Nodes[0].Nodes.Add(a);
@@ -139,11 +133,11 @@ namespace SmashForge
                                 FSKANode bonean = new FSKANode(bn);
 
                                 Animation.KeyNode bone = new Animation.KeyNode("");
-                                a.Bones.Add(bone);
+                                a.bones.Add(bone);
                                 if (ska.FlagsRotate == ResNSW.SkeletalAnimFlagsRotate.EulerXYZ)
-                                    bone.RotType = Animation.RotationType.EULER;
+                                    bone.rotType = Animation.RotationType.Euler;
                                 else
-                                    bone.RotType = Animation.RotationType.QUATERNION;
+                                    bone.rotType = Animation.RotationType.Quaternion;
 
                                 bone.Text = bonean.Text;
 
@@ -156,28 +150,28 @@ namespace SmashForge
                                     {
                                         if (bn.FlagsBase.HasFlag(ResNSW.BoneAnimFlagsBase.Scale))
                                         {
-                                            bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
-                                            bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
-                                            bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
+                                            bone.xsca.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
+                                            bone.ysca.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
+                                            bone.zsca.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
                                         }
                                         if (bn.FlagsBase.HasFlag(ResNSW.BoneAnimFlagsBase.Rotate))
                                         {
-                                            bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
-                                            bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
-                                            bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
-                                            bone.WROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.W });
+                                            bone.xrot.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
+                                            bone.yrot.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
+                                            bone.zrot.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
+                                            bone.wrot.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.W });
                                         }
                                         if (bn.FlagsBase.HasFlag(ResNSW.BoneAnimFlagsBase.Translate))
                                         {
-                                            bone.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
-                                            bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
-                                            bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
+                                            bone.xpos.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
+                                            bone.ypos.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
+                                            bone.zpos.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
                                         }
                                     }
                                     foreach (FSKATrack track in bonean.tracks)
                                     {
                                         Animation.KeyFrame frame = new Animation.KeyFrame();
-                                        frame.InterType = Animation.InterpolationType.HERMITE;
+                                        frame.interType = Animation.InterpolationType.Hermite;
                                         frame.Frame = Frame;
 
                                         FSKAKey left = track.GetLeft(Frame);
@@ -191,15 +185,15 @@ namespace SmashForge
                                         // interpolate the value and apply
                                         switch (track.flag)
                                         {
-                                            case (int)TrackType.XPOS: frame.Value = value; bone.XPOS.Keys.Add(frame); break;
-                                            case (int)TrackType.YPOS: frame.Value = value; bone.YPOS.Keys.Add(frame); break;
-                                            case (int)TrackType.ZPOS: frame.Value = value; bone.ZPOS.Keys.Add(frame); break;
-                                            case (int)TrackType.XROT: frame.Value = value; bone.XROT.Keys.Add(frame); break;
-                                            case (int)TrackType.YROT: frame.Value = value; bone.YROT.Keys.Add(frame); break;
-                                            case (int)TrackType.ZROT: frame.Value = value; bone.ZROT.Keys.Add(frame); break;
-                                            case (int)TrackType.XSCA: frame.Value = value; bone.XSCA.Keys.Add(frame); break;
-                                            case (int)TrackType.YSCA: frame.Value = value; bone.YSCA.Keys.Add(frame); break;
-                                            case (int)TrackType.ZSCA: frame.Value = value; bone.ZSCA.Keys.Add(frame); break;
+                                            case (int)TrackType.XPOS: frame.Value = value; bone.xpos.keys.Add(frame); break;
+                                            case (int)TrackType.YPOS: frame.Value = value; bone.ypos.keys.Add(frame); break;
+                                            case (int)TrackType.ZPOS: frame.Value = value; bone.zpos.keys.Add(frame); break;
+                                            case (int)TrackType.XROT: frame.Value = value; bone.xrot.keys.Add(frame); break;
+                                            case (int)TrackType.YROT: frame.Value = value; bone.yrot.keys.Add(frame); break;
+                                            case (int)TrackType.ZROT: frame.Value = value; bone.zrot.keys.Add(frame); break;
+                                            case (int)TrackType.XSCA: frame.Value = value; bone.xsca.keys.Add(frame); break;
+                                            case (int)TrackType.YSCA: frame.Value = value; bone.ysca.keys.Add(frame); break;
+                                            case (int)TrackType.ZSCA: frame.Value = value; bone.zsca.keys.Add(frame); break;
                                         }
                                     }
                                 }
@@ -303,7 +297,7 @@ namespace SmashForge
                             SkeletonAnimation.Nodes[9].Nodes.Add(a);
 
 
-                        a.FrameCount = ska.FrameCount;
+                        a.frameCount = ska.FrameCount;
                         i++;
                         try
                         {
@@ -312,11 +306,11 @@ namespace SmashForge
                                 FSKANodeWiiU bonean = new FSKANodeWiiU(bn);
 
                                 Animation.KeyNode bone = new Animation.KeyNode("");
-                                a.Bones.Add(bone);
+                                a.bones.Add(bone);
                                 if (ska.FlagsRotate == SkeletalAnimFlagsRotate.EulerXYZ)
-                                    bone.RotType = Animation.RotationType.EULER;
+                                    bone.rotType = Animation.RotationType.Euler;
                                 else
-                                    bone.RotType = Animation.RotationType.QUATERNION;
+                                    bone.rotType = Animation.RotationType.Quaternion;
 
                                 bone.Text = bonean.Text;
 
@@ -330,28 +324,28 @@ namespace SmashForge
                                     {
                                         if (bn.FlagsBase.HasFlag(BoneAnimFlagsBase.Scale))
                                         {
-                                            bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
-                                            bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
-                                            bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
+                                            bone.xsca.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
+                                            bone.ysca.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
+                                            bone.zsca.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
                                         }
                                         if (bn.FlagsBase.HasFlag(BoneAnimFlagsBase.Rotate))
                                         {
-                                            bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
-                                            bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
-                                            bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
-                                            bone.WROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.W });
+                                            bone.xrot.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
+                                            bone.yrot.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
+                                            bone.zrot.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
+                                            bone.wrot.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.W });
                                         }
                                         if (bn.FlagsBase.HasFlag(BoneAnimFlagsBase.Translate))
                                         {
-                                            bone.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
-                                            bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
-                                            bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
+                                            bone.xpos.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
+                                            bone.ypos.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
+                                            bone.zpos.keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
                                         }
                                     }
                                     foreach (FSKATrack track in bonean.tracks)
                                     {
                                         Animation.KeyFrame frame = new Animation.KeyFrame();
-                                        frame.InterType = Animation.InterpolationType.HERMITE;
+                                        frame.interType = Animation.InterpolationType.Hermite;
                                         frame.Frame = Frame;
 
                                         FSKAKey left = track.GetLeft(Frame);
@@ -365,15 +359,15 @@ namespace SmashForge
                                         // interpolate the value and apply
                                         switch (track.flag)
                                         {
-                                            case (int)TrackType.XPOS: frame.Value = value; bone.XPOS.Keys.Add(frame); break;
-                                            case (int)TrackType.YPOS: frame.Value = value; bone.YPOS.Keys.Add(frame); break;
-                                            case (int)TrackType.ZPOS: frame.Value = value; bone.ZPOS.Keys.Add(frame); break;
-                                            case (int)TrackType.XROT: frame.Value = value; bone.XROT.Keys.Add(frame); break;
-                                            case (int)TrackType.YROT: frame.Value = value; bone.YROT.Keys.Add(frame); break;
-                                            case (int)TrackType.ZROT: frame.Value = value; bone.ZROT.Keys.Add(frame); break;
-                                            case (int)TrackType.XSCA: frame.Value = value; bone.XSCA.Keys.Add(frame); break;
-                                            case (int)TrackType.YSCA: frame.Value = value; bone.YSCA.Keys.Add(frame); break;
-                                            case (int)TrackType.ZSCA: frame.Value = value; bone.ZSCA.Keys.Add(frame); break;
+                                            case (int)TrackType.XPOS: frame.Value = value; bone.xpos.keys.Add(frame); break;
+                                            case (int)TrackType.YPOS: frame.Value = value; bone.ypos.keys.Add(frame); break;
+                                            case (int)TrackType.ZPOS: frame.Value = value; bone.zpos.keys.Add(frame); break;
+                                            case (int)TrackType.XROT: frame.Value = value; bone.xrot.keys.Add(frame); break;
+                                            case (int)TrackType.YROT: frame.Value = value; bone.yrot.keys.Add(frame); break;
+                                            case (int)TrackType.ZROT: frame.Value = value; bone.zrot.keys.Add(frame); break;
+                                            case (int)TrackType.XSCA: frame.Value = value; bone.xsca.keys.Add(frame); break;
+                                            case (int)TrackType.YSCA: frame.Value = value; bone.ysca.keys.Add(frame); break;
+                                            case (int)TrackType.ZSCA: frame.Value = value; bone.zsca.keys.Add(frame); break;
                                         }
                                     }
                                 }

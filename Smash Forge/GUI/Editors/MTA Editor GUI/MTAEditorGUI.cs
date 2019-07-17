@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace SmashForge
 {
-    public partial class MTAEditorGUI : EditorBase
+    public partial class MtaEditorGui : EditorBase
     {
-        public MTAEditorGUI(MTA mta)
+        public MtaEditorGui(MTA mta)
         {
             InitializeComponent();
             this.mta = mta;
@@ -28,8 +21,8 @@ namespace SmashForge
             }
             FileOutput o = new FileOutput();
             byte[] n = mta.Rebuild();
-            o.writeBytes(n);
-            o.save(FilePath);
+            o.WriteBytes(n);
+            o.Save(FilePath);
             Edited = false;
         }
 
@@ -70,7 +63,7 @@ namespace SmashForge
             treeView1.ExpandAll();
         }
 
-        readonly Font CONSOLAS = new Font("Consolas", 11);
+        readonly Font consolas = new Font("Consolas", 11);
         private MTA mta;
         private TreeNode matNode = new TreeNode("Materials");
         private TreeNode visNode = new TreeNode("Visibility");
@@ -103,12 +96,12 @@ namespace SmashForge
                 if(m.name == "effColorGain" || m.name == "colorGain" || m.name == "aoColorGain" || m.name == "finalColorGain")
                 {
                     colorList1.Visible = true;
-                    colorList1.fill(m);
+                    colorList1.Fill(m);
                 }
                 else
                 {
                     matPropList1.Visible = true;
-                    matPropList1.fill(m);
+                    matPropList1.Fill(m);
                 }
             }
         }
@@ -137,13 +130,13 @@ namespace SmashForge
         
     }
 
-    public class colorKeyframe
+    public class ColorKeyframe
     {
         public Color color;
         public int frame;
         public int maxLength;
 
-        public colorKeyframe(int frame, Color color)
+        public ColorKeyframe(int frame, Color color)
         {
             this.color = color;
             this.frame = frame;
@@ -155,14 +148,14 @@ namespace SmashForge
         }
     }
 
-    public class standardKeyframe
+    public class StandardKeyframe
     {
         public int frame;
         public MatData.frame data;
         public string type;
         public int maxLength;
 
-        public standardKeyframe(int frame, MatData.frame data, string type)
+        public StandardKeyframe(int frame, MatData.frame data, string type)
         {
             this.frame = frame;
             this.data = data;

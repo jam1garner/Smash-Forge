@@ -172,7 +172,7 @@ namespace SmashForge
                         bool.TryParse(node.InnerText, out Runtime.renderHurtboxesZone);
                         break;
                     case "render_ECB":
-                        bool.TryParse(node.InnerText, out Runtime.renderECB);
+                        bool.TryParse(node.InnerText, out Runtime.renderEcb);
                         break;
                     case "render_special_bubbles":
                         bool.TryParse(node.InnerText, out Runtime.renderSpecialBubbles);
@@ -205,7 +205,7 @@ namespace SmashForge
                         bool.TryParse(node.InnerText, out Runtime.renderGeneralPoints);
                         break;
                     case "render_otherLVDEntries":
-                        bool.TryParse(node.InnerText, out Runtime.renderOtherLVDEntries);
+                        bool.TryParse(node.InnerText, out Runtime.renderOtherLvdEntries);
                         break;
                     case "render_swag":
                         bool.TryParse(node.InnerText, out Runtime.renderSwagY);
@@ -274,7 +274,7 @@ namespace SmashForge
                         TryParseHexColor(node, ref Runtime.wtSlowdownBubbleColor);
                         break;
                     case "loadAndRenderATKD":
-                        bool.TryParse(node.InnerText, out Runtime.LoadAndRenderATKD);
+                        bool.TryParse(node.InnerText, out Runtime.loadAndRenderAtkd);
                         break;
 
                     //Discord Stuff
@@ -313,7 +313,7 @@ namespace SmashForge
                                 case "floor": bool.TryParse(node.InnerText, out Runtime.renderFloor); break;
                                 case "lighting": bool.TryParse(node.InnerText, out Runtime.renderMaterialLighting); break;
                                 case "render_model": bool.TryParse(node.InnerText, out Runtime.renderModel); break;
-                                case "render_LVD": bool.TryParse(node.InnerText, out Runtime.renderLVD); break;
+                                case "render_LVD": bool.TryParse(node.InnerText, out Runtime.renderLvd); break;
                             }
                         }
                         break;
@@ -338,7 +338,7 @@ namespace SmashForge
                         }
                         break;
                     case "GamePath":
-                        Runtime.MarioOdysseyGamePath = (node.InnerText);
+                        Runtime.marioOdysseyGamePath = (node.InnerText);
                         break;
                 }
             }
@@ -436,7 +436,7 @@ namespace SmashForge
         }
         private static void AppendOdysseyCostumeEditor(XmlDocument doc, XmlNode parentNode)
         {
-            parentNode.AppendChild(createNode(doc, "GamePath", Runtime.MarioOdysseyGamePath.ToString()));
+            parentNode.AppendChild(createNode(doc, "GamePath", Runtime.marioOdysseyGamePath.ToString()));
         }
 
         private static void AppendRenderSettings(XmlDocument doc, XmlNode parentNode)
@@ -507,7 +507,7 @@ namespace SmashForge
 
         private static void AppendHitBoxHurtBoxRenderSettings(XmlDocument doc, XmlNode parentNode)
         {
-            parentNode.AppendChild(createNode(doc, "render_ECB", Runtime.renderECB.ToString()));
+            parentNode.AppendChild(createNode(doc, "render_ECB", Runtime.renderEcb.ToString()));
             parentNode.AppendChild(createNode(doc, "render_hurtboxes", Runtime.renderHurtboxes.ToString()));
             parentNode.AppendChild(createNode(doc, "render_hurtboxes_zone", Runtime.renderHurtboxesZone.ToString()));
             parentNode.AppendChild(createNode(doc, "render_hitboxes", Runtime.renderHitboxes.ToString()));
@@ -535,7 +535,7 @@ namespace SmashForge
             parentNode.AppendChild(createNode(doc, "shieldBubble_color", ColorTranslator.ToHtml(Runtime.shieldBubbleColor)));
             parentNode.AppendChild(createNode(doc, "absorbBubble_color", ColorTranslator.ToHtml(Runtime.absorbBubbleColor)));
             parentNode.AppendChild(createNode(doc, "wtSlowdownBubble_color", ColorTranslator.ToHtml(Runtime.wtSlowdownBubbleColor)));
-            parentNode.AppendChild(createNode(doc, "loadAndRenderATKD", Runtime.LoadAndRenderATKD.ToString()));
+            parentNode.AppendChild(createNode(doc, "loadAndRenderATKD", Runtime.loadAndRenderAtkd.ToString()));
 
             XmlNode hitboxKbColorNode = doc.CreateElement("hitbox_kb_colors");
             parentNode.AppendChild(hitboxKbColorNode);
@@ -564,14 +564,14 @@ namespace SmashForge
         {
             XmlNode lvdRenderSettingsNode = doc.CreateElement("render_LVD");
             parentNode.AppendChild(lvdRenderSettingsNode);
-            lvdRenderSettingsNode.AppendChild(createNode(doc, "enabled", Runtime.renderLVD.ToString()));
+            lvdRenderSettingsNode.AppendChild(createNode(doc, "enabled", Runtime.renderLvd.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_collisions", Runtime.renderCollisions.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_collision_normals", Runtime.renderCollisionNormals.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_respawns", Runtime.renderRespawns.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_spawns", Runtime.renderSpawns.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_item_spawners", Runtime.renderItemSpawners.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_general_points", Runtime.renderGeneralPoints.ToString()));
-            lvdRenderSettingsNode.AppendChild(createNode(doc, "render_otherLVDEntries", Runtime.renderOtherLVDEntries.ToString()));
+            lvdRenderSettingsNode.AppendChild(createNode(doc, "render_otherLVDEntries", Runtime.renderOtherLvdEntries.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_swag", Runtime.renderSwagY.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_swagZ", Runtime.renderSwagZ.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "reander_physicallyBasedRendering", Runtime.renderBfresPbr.ToString()));

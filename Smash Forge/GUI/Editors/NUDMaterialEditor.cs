@@ -5,7 +5,6 @@ using SFGraphics.Utils;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Timers;
 using System.Windows.Forms;
@@ -16,7 +15,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace SmashForge
 {
-    public partial class NUDMaterialEditor : DockContent
+    public partial class NudMaterialEditor : DockContent
     {
         public static Dictionary<int, string> cullModeByMatValue = new Dictionary<int, string>()
         {
@@ -102,12 +101,12 @@ namespace SmashForge
         private bool enableParam3SliderUpdates = true;
         private bool enableParam4SliderUpdates = true;
 
-        private NUDMaterialEditor()
+        private NudMaterialEditor()
         {
             InitializeComponent();
         }
 
-        public NUDMaterialEditor(Nud.Polygon p) : this()
+        public NudMaterialEditor(Nud.Polygon p) : this()
         {
             currentPolygon = p;
             currentMaterialList = p.materials;
@@ -120,8 +119,8 @@ namespace SmashForge
             RefreshTexturesImageList();
 
             // The dummy textures will be used later. 
-            OpenTKSharedResources.InitializeSharedResources();
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            OpenTkSharedResources.InitializeSharedResources();
+            if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Initialized)
             {
                 // Only happens once.
                 UpdateMaterialThumbnails();
@@ -137,7 +136,7 @@ namespace SmashForge
         private void AddTextureThumbnails(ImageList imageList)
         {
             // Reuse the same context to avoid CPU bottlenecks.
-            using (OpenTK.GameWindow gameWindow = OpenTKSharedResources.CreateGameWindowContext(64, 64))
+            using (OpenTK.GameWindow gameWindow = OpenTkSharedResources.CreateGameWindowContext(64, 64))
             {
                 Nud.Material mat = currentMaterialList[currentMatIndex];
                 RenderMaterialTexturesAddToImageList(imageList, mat);
@@ -147,11 +146,11 @@ namespace SmashForge
         private static void RenderMaterialTexturesAddToImageList(ImageList imageList, Nud.Material mat)
         {
             // Shaders weren't initialized.
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             // Generate thumbnails for all textures in case the material's texture IDs are changed.
-            foreach (NUT nut in Runtime.TextureContainers)
+            foreach (NUT nut in Runtime.textureContainers)
             {
                 foreach (var texture in nut.glTexByHashId)
                 {
@@ -616,7 +615,7 @@ namespace SmashForge
             string propertyName = propertiesListView.SelectedItems[0].Text;
             if (propertyName == "NU_materialHash")
             {
-                ParseMaterialHashTBText();
+                ParseMaterialHashTbText();
             }
             else
             {
@@ -631,7 +630,7 @@ namespace SmashForge
             UpdatePropertyButtonColor();
         }
 
-        private void ParseMaterialHashTBText()
+        private void ParseMaterialHashTbText()
         {
             int hash = GuiTools.TryParseTBInt(param1TB, true);
             if (hash != -1 && propertiesListView.SelectedItems.Count > 0)
@@ -783,14 +782,14 @@ namespace SmashForge
         public static List<Nud.Material> ReadMaterialListFromPreset(string file)
         {
             FileData matFile = new FileData(file);
-            int soff = matFile.readInt();
+            int soff = matFile.ReadInt();
 
             Nud.PolyData pol = new Nud.PolyData()
             {
-                texprop1 = matFile.readInt(),
-                texprop2 = matFile.readInt(),
-                texprop3 = matFile.readInt(),
-                texprop4 = matFile.readInt()
+                texprop1 = matFile.ReadInt(),
+                texprop2 = matFile.ReadInt(),
+                texprop3 = matFile.ReadInt(),
+                texprop4 = matFile.ReadInt()
             };
 
             List<Nud.Material> presetMaterials = Nud.ReadMaterials(matFile, pol, soff);
@@ -799,13 +798,13 @@ namespace SmashForge
 
         private void RenderTexture(bool justRenderAlpha = false)
         {
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             if (!tabControl1.SelectedTab.Text.Equals("Textures"))
                 return;
 
-            if (!OpenTKSharedResources.shaders["Texture"].LinkStatusIsOk)
+            if (!OpenTkSharedResources.shaders["Texture"].LinkStatusIsOk)
                 return;
 
             // Get the selected NUT texture.
@@ -820,7 +819,7 @@ namespace SmashForge
                     displayTexture = RenderTools.dummyTextures[(NudEnums.DummyTexture)hash];
                 else
                 {
-                    foreach (NUT n in Runtime.TextureContainers)
+                    foreach (NUT n in Runtime.textureContainers)
                     {
                         if (n.glTexByHashId.ContainsKey(hash))
                         {
@@ -1085,22 +1084,22 @@ namespace SmashForge
 
             FileOutput fin = new FileOutput();
 
-            fin.writeInt(0);
+            fin.WriteInt(0);
 
-            fin.writeInt(20 + c[0]);
+            fin.WriteInt(20 + c[0]);
             for (int i = 1; i < 4; i++)
             {
-                fin.writeInt(c[i] == c[i - 1] ? 0 : 20 + c[i]);
+                fin.WriteInt(c[i] == c[i - 1] ? 0 : 20 + c[i]);
             }
 
             for (int i = 0; i < 4 - c.Length; i++)
-                fin.writeInt(0);
+                fin.WriteInt(0);
 
             fin.WriteOutput(m);
-            fin.align(32, 0xFF);
-            fin.writeIntAt(fin.Size(), 0);
+            fin.Align(32, 0xFF);
+            fin.WriteIntAt(fin.Size(), 0);
             fin.WriteOutput(s);
-            fin.save(fileName);
+            fin.Save(fileName);
         }
 
         private void cullModeComboBox_SelectedIndexChanged(object sender, EventArgs e)

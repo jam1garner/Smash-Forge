@@ -1,42 +1,39 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
 
 namespace SmashForge
 {
     public class Animation : TreeNode
     {
-        public float Frame = 0;
-        public int FrameCount = 0;
+        public float frame = 0;
+        public int frameCount = 0;
 
-        public List<object> Children = new List<object>();
+        public List<object> children = new List<object>();
 
-        public List<KeyNode> Bones = new List<KeyNode>();
+        public List<KeyNode> bones = new List<KeyNode>();
 
-        public Animation(String Name)
+        public Animation(string name)
         {
-            Text = Name;
+            Text = name;
             ImageKey = "anim";
             SelectedImageKey = "anim";
-            
+
             ContextMenu cm = new ContextMenu();
 
-            MenuItem Export = new MenuItem("Export As");
-            Export.Click += SaveAs;
-            cm.MenuItems.Add(Export);
+            MenuItem export = new MenuItem("Export As");
+            export.Click += SaveAs;
+            cm.MenuItems.Add(export);
 
-            MenuItem Replace = new MenuItem("Replace");
-            Replace.Click += ReplaceAnimation;
-            cm.MenuItems.Add(Replace);
+            MenuItem replace = new MenuItem("Replace");
+            replace.Click += ReplaceAnimation;
+            cm.MenuItems.Add(replace);
 
-            MenuItem Remove = new MenuItem("Remove");
-            Remove.Click += RemoveAnimation;
-            cm.MenuItems.Add(Remove);
+            MenuItem remove = new MenuItem("Remove");
+            remove.Click += RemoveAnimation;
+            cm.MenuItems.Add(remove);
 
             ContextMenu = cm;
         }
@@ -45,7 +42,7 @@ namespace SmashForge
 
         public void RemoveAnimation(object sender, EventArgs args)
         {
-            if(Parent != null)
+            if (Parent != null)
                 Parent.Nodes.Remove(this);
             else
             {
@@ -59,7 +56,7 @@ namespace SmashForge
             {
                 of.ShowDialog();
 
-                foreach(string filename in of.FileNames)
+                foreach (string filename in of.FileNames)
                 {
                     if (filename.EndsWith(".omo"))
                     {
@@ -70,17 +67,17 @@ namespace SmashForge
                     if (filename.EndsWith(".smd"))
                     {
                         Animation a = new Animation(filename.Replace(".smd", ""));
-                        SMD.read(filename, a, Runtime.TargetVBN);
+                        Smd.Read(filename, a, Runtime.TargetVbn);
                         ReplaceMe(a);
                     }
                     if (filename.EndsWith(".chr0"))
                     {
-                        Animation a = (CHR0.read(new FileData(filename), Runtime.TargetVBN));
+                        Animation a = (CHR0.read(new FileData(filename), Runtime.TargetVbn));
                         ReplaceMe(a);
                     }
                     if (filename.EndsWith(".anim"))
                     {
-                        Animation a = (ANIM.read(filename, Runtime.TargetVBN));
+                        Animation a = (ANIM.read(filename, Runtime.TargetVbn));
                         ReplaceMe(a);
                     }
                 }
@@ -91,17 +88,17 @@ namespace SmashForge
         {
             Tag = null;
             Nodes.Clear();
-            Bones.Clear();
-            Children.Clear();
+            bones.Clear();
+            children.Clear();
 
-            Bones = a.Bones;
+            bones = a.bones;
 
-            FrameCount = a.FrameCount;
+            frameCount = a.frameCount;
         }
 
         public void SaveAs(object sender, EventArgs args)
         {
-            if (Runtime.TargetVBN == null)
+            if (Runtime.TargetVbn == null)
             {
                 MessageBox.Show("You must have a bone-set (VBN) selected to save animations.");
                 return;
@@ -122,9 +119,9 @@ namespace SmashForge
                     if (sfd.FileName.EndsWith(".anim"))
                     {
                         if (Tag is AnimTrack)
-                            ((AnimTrack)Tag).createANIM(sfd.FileName, Runtime.TargetVBN);
+                            ((AnimTrack)Tag).CreateAnim(sfd.FileName, Runtime.TargetVbn);
                         else
-                            ANIM.CreateANIM(sfd.FileName, this, Runtime.TargetVBN);
+                            ANIM.CreateANIM(sfd.FileName, this, Runtime.TargetVbn);
 
                     }
 
@@ -133,21 +130,21 @@ namespace SmashForge
                         if (Tag is FileData)
                         {
                             FileOutput o = new FileOutput();
-                            o.writeBytes(((FileData)Tag).getSection(0,
-                                ((FileData)Tag).size()));
-                            o.save(sfd.FileName);
+                            o.WriteBytes(((FileData)Tag).GetSection(0,
+                                ((FileData)Tag).Size()));
+                            o.Save(sfd.FileName);
                         }
                         else
-                            File.WriteAllBytes(sfd.FileName, OMOOld.CreateOMOFromAnimation(this, Runtime.TargetVBN));
-                            
+                            File.WriteAllBytes(sfd.FileName, OMOOld.CreateOMOFromAnimation(this, Runtime.TargetVbn));
+
                     }
 
 
                     if (sfd.FileName.EndsWith(".smd"))
                     {
-                        SMD.Save(this, Runtime.TargetVBN, sfd.FileName);
+                        Smd.Save(this, Runtime.TargetVbn, sfd.FileName);
                     }
-                    
+
                 }
             }
         }
@@ -156,49 +153,49 @@ namespace SmashForge
 
         public enum InterpolationType
         {
-            LINEAR = 0,
-            CONSTANT,
-            HERMITE,
-            STEP,
+            Linear = 0,
+            Constant,
+            Hermite,
+            Step,
         };
 
         public enum BoneType
         {
-            NORMAL = 0,
-            SWAG,
-            HELPER
+            Normal = 0,
+            Swag,
+            Helper
         }
 
         public enum RotationType
         {
-            EULER = 0,
-            QUATERNION
+            Euler = 0,
+            Quaternion
         }
 
 
         public class KeyNode : TreeNode
         {
-            public int Hash = -1;
-            public BoneType Type = BoneType.NORMAL;
+            public int hash = -1;
+            public BoneType type = BoneType.Normal;
 
-            public KeyGroup XPOS = new KeyGroup() { Text = "XPOS" };
-            public KeyGroup YPOS = new KeyGroup() { Text = "YPOS" };
-            public KeyGroup ZPOS = new KeyGroup() { Text = "ZPOS" };
+            public KeyGroup xpos = new KeyGroup() { Text = "XPOS" };
+            public KeyGroup ypos = new KeyGroup() { Text = "YPOS" };
+            public KeyGroup zpos = new KeyGroup() { Text = "ZPOS" };
 
-            public RotationType RotType = RotationType.QUATERNION;
-            public KeyGroup XROT = new KeyGroup() { Text = "XROT" };
-            public KeyGroup YROT = new KeyGroup() { Text = "YROT" };
-            public KeyGroup ZROT = new KeyGroup() { Text = "ZROT" };
-            public KeyGroup WROT = new KeyGroup() { Text = "WROT" };
+            public RotationType rotType = RotationType.Quaternion;
+            public KeyGroup xrot = new KeyGroup() { Text = "XROT" };
+            public KeyGroup yrot = new KeyGroup() { Text = "YROT" };
+            public KeyGroup zrot = new KeyGroup() { Text = "ZROT" };
+            public KeyGroup wrot = new KeyGroup() { Text = "WROT" };
 
-            public KeyGroup XSCA = new KeyGroup() { Text = "XSCA" };
-            public KeyGroup YSCA = new KeyGroup() { Text = "YSCA" };
-            public KeyGroup ZSCA = new KeyGroup() { Text = "ZSCA" };
+            public KeyGroup xsca = new KeyGroup() { Text = "XSCA" };
+            public KeyGroup ysca = new KeyGroup() { Text = "YSCA" };
+            public KeyGroup zsca = new KeyGroup() { Text = "ZSCA" };
 
-            public KeyNode(String bname)
+            public KeyNode(string bname)
             {
                 Text = bname;
-                if (bname!=null && bname.Equals("")) Text = Hash.ToString("x");
+                if (bname != null && bname.Equals("")) Text = hash.ToString("x");
                 ImageKey = "bone";
                 SelectedImageKey = "bone";
             }
@@ -208,48 +205,48 @@ namespace SmashForge
                 Vector3 rot = ANIM.quattoeul(bone.rot);
                 if (rot.X != bone.rotation[0] || rot.Y != bone.rotation[1] || rot.Z != bone.rotation[2])
                 {
-                    XROT.GetKeyFrame(frame).Value = bone.rot.X;
-                    YROT.GetKeyFrame(frame).Value = bone.rot.Y;
-                    ZROT.GetKeyFrame(frame).Value = bone.rot.Z;
-                    WROT.GetKeyFrame(frame).Value = bone.rot.W;
+                    xrot.GetKeyFrame(frame).Value = bone.rot.X;
+                    yrot.GetKeyFrame(frame).Value = bone.rot.Y;
+                    zrot.GetKeyFrame(frame).Value = bone.rot.Z;
+                    wrot.GetKeyFrame(frame).Value = bone.rot.W;
                 }
                 if (bone.pos.X != bone.position[0] || bone.pos.Y != bone.position[1] || bone.pos.Z != bone.position[2])
                 {
-                    XPOS.GetKeyFrame(frame).Value = bone.pos.X;
-                    YPOS.GetKeyFrame(frame).Value = bone.pos.Y;
-                    ZPOS.GetKeyFrame(frame).Value = bone.pos.Z;
+                    xpos.GetKeyFrame(frame).Value = bone.pos.X;
+                    ypos.GetKeyFrame(frame).Value = bone.pos.Y;
+                    zpos.GetKeyFrame(frame).Value = bone.pos.Z;
                 }
                 if (bone.sca.X != bone.scale[0] || bone.sca.Y != bone.scale[1] || bone.sca.Z != bone.scale[2])
                 {
-                    XSCA.GetKeyFrame(frame).Value = bone.sca.X;
-                    YSCA.GetKeyFrame(frame).Value = bone.sca.Y;
-                    ZSCA.GetKeyFrame(frame).Value = bone.sca.Z;
+                    xsca.GetKeyFrame(frame).Value = bone.sca.X;
+                    ysca.GetKeyFrame(frame).Value = bone.sca.Y;
+                    zsca.GetKeyFrame(frame).Value = bone.sca.Z;
                 }
             }
 
             public void ExpandNodes()
             {
-                XPOS.Text = "XPOS";
-                YPOS.Text = "YPOS";
-                ZPOS.Text = "ZPOS";
-                XROT.Text = "XROT";
-                YROT.Text = "YROT";
-                ZROT.Text = "ZROT";
-                WROT.Text = "WROT";
-                XSCA.Text = "XSCA";
-                YSCA.Text = "YSCA";
-                ZSCA.Text = "ZSCA";
+                xpos.Text = "XPOS";
+                ypos.Text = "YPOS";
+                zpos.Text = "ZPOS";
+                xrot.Text = "XROT";
+                yrot.Text = "YROT";
+                zrot.Text = "ZROT";
+                wrot.Text = "WROT";
+                xsca.Text = "XSCA";
+                ysca.Text = "YSCA";
+                zsca.Text = "ZSCA";
                 Nodes.Clear();
-                Nodes.Add(XPOS);
-                Nodes.Add(YPOS);
-                Nodes.Add(ZPOS);
-                Nodes.Add(XROT);
-                Nodes.Add(YROT);
-                Nodes.Add(ZROT);
-                Nodes.Add(WROT);
-                Nodes.Add(XSCA);
-                Nodes.Add(YSCA);
-                Nodes.Add(ZSCA);
+                Nodes.Add(xpos);
+                Nodes.Add(ypos);
+                Nodes.Add(zpos);
+                Nodes.Add(xrot);
+                Nodes.Add(yrot);
+                Nodes.Add(zrot);
+                Nodes.Add(wrot);
+                Nodes.Add(xsca);
+                Nodes.Add(ysca);
+                Nodes.Add(zsca);
             }
         }
 
@@ -257,56 +254,60 @@ namespace SmashForge
         {
             public bool HasAnimation()
             {
-                return Keys.Count > 0;
+                return keys.Count > 0;
             }
 
-            public List<KeyFrame> Keys = new List<KeyFrame>();
-            public float FrameCount { get {
+            public List<KeyFrame> keys = new List<KeyFrame>();
+            public float FrameCount
+            {
+                get
+                {
                     float fc = 0;
-                    foreach (KeyFrame k in Keys)
+                    foreach (KeyFrame k in keys)
                         if (k.Frame > fc) fc = k.Frame;
                     return fc;
-                } }
+                }
+            }
 
             public KeyFrame GetKeyFrame(float frame)
             {
                 KeyFrame key = null;
                 int i;
-                for(i = 0; i < Keys.Count; i++)
+                for (i = 0; i < keys.Count; i++)
                 {
-                    if(Keys[i].Frame == frame)
+                    if (keys[i].Frame == frame)
                     {
-                        key = Keys[i];
+                        key = keys[i];
                         break;
                     }
-                    if (Keys[i].Frame > frame)
+                    if (keys[i].Frame > frame)
                     {
                         break;
                     }
                 }
 
-                if(key == null)
+                if (key == null)
                 {
                     key = new KeyFrame();
                     key.Frame = frame;
-                    Keys.Insert(i, key);
+                    keys.Insert(i, key);
                 }
 
                 return key;
             }
 
-            int LastFound = 0;
-            float LastFrame;
+            int lastFound = 0;
+            float lastFrame;
             public float GetValue(float frame)
             {
-                KeyFrame k1 = (KeyFrame)Keys[0], k2 = (KeyFrame)Keys[0];
+                KeyFrame k1 = (KeyFrame)keys[0], k2 = (KeyFrame)keys[0];
                 int i = 0;
-                if (frame < LastFrame)
-                    LastFound = 0;
-                for (i = LastFound; i < Keys.Count; i++)
+                if (frame < lastFrame)
+                    lastFound = 0;
+                for (i = lastFound; i < keys.Count; i++)
                 {
-                    LastFound = i % (Keys.Count);
-                    KeyFrame k = Keys[LastFound];
+                    lastFound = i % (keys.Count);
+                    KeyFrame k = keys[lastFound];
                     if (k.Frame < frame)
                     {
                         k1 = k;
@@ -317,27 +318,27 @@ namespace SmashForge
                         break;
                     }
                 }
-                LastFound -= 1;
-                if (LastFound < 0)
-                    LastFound = 0;
-                if (LastFound >= Keys.Count - 2)
-                    LastFound = 0;
-                LastFrame = frame;
+                lastFound -= 1;
+                if (lastFound < 0)
+                    lastFound = 0;
+                if (lastFound >= keys.Count - 2)
+                    lastFound = 0;
+                lastFrame = frame;
 
-                if (k1.InterType == InterpolationType.CONSTANT)
+                if (k1.interType == InterpolationType.Constant)
                     return k1.Value;
-                if (k1.InterType == InterpolationType.STEP)
+                if (k1.interType == InterpolationType.Step)
                     return k1.Value;
-                if (k1.InterType == InterpolationType.LINEAR)
+                if (k1.interType == InterpolationType.Linear)
                 {
                     return Lerp(k1.Value, k2.Value, k1.Frame, k2.Frame, frame);
                 }
-                if (k1.InterType == InterpolationType.HERMITE)
+                if (k1.interType == InterpolationType.Hermite)
                 {
-                    float val = Hermite(frame, k1.Frame, k2.Frame, k1.In, k1.Out != -1 ? k1.Out : k2.In, k1.Value, k2.Value) * (k1.Degrees ? (float)Math.PI / 180 : 1);
+                    float val = Hermite(frame, k1.Frame, k2.Frame, k1.In, k1.Out != -1 ? k1.Out : k2.In, k1.Value, k2.Value) * (k1.degrees ? (float)Math.PI / 180 : 1);
                     if (Parent != null && Text.Equals("XROT"))
                         Console.WriteLine(Text + " " + k1.Value + " " + k2.Value + " " + k1.Frame + " " + k2.Frame + " " + (val * 180 / (float)Math.PI));
-                    if (float.IsNaN(val)) val = k1._value;
+                    if (float.IsNaN(val)) val = k1.value;
 
                     return val;//k1.Out != -1 ? k1.Out : 
                 }
@@ -347,9 +348,9 @@ namespace SmashForge
 
             public KeyFrame[] GetFrame(float frame)
             {
-                if (Keys.Count == 0) return null;
-                KeyFrame k1 = (KeyFrame)Keys[0], k2 = (KeyFrame)Keys[0];
-                foreach (KeyFrame k in Keys)
+                if (keys.Count == 0) return null;
+                KeyFrame k1 = (KeyFrame)keys[0], k2 = (KeyFrame)keys[0];
+                foreach (KeyFrame k in keys)
                 {
                     if (k.Frame < frame)
                     {
@@ -362,13 +363,13 @@ namespace SmashForge
                     }
                 }
 
-                return new KeyFrame[] { k1, k2};
+                return new KeyFrame[] { k1, k2 };
             }
-            
+
             public void ExpandNodes()
             {
                 Nodes.Clear();
-                foreach (KeyFrame v in Keys)
+                foreach (KeyFrame v in keys)
                 {
                     Nodes.Add(v.GetNode());
                 }
@@ -379,21 +380,21 @@ namespace SmashForge
         {
             public float Value
             {
-                get { if (Degrees) return _value * 180 / (float)Math.PI; else return _value; }
-                set { _value = value; }//Text = _frame + " : " + _value; }
+                get { if (degrees) return value * 180 / (float)Math.PI; else return value; }
+                set { this.value = value; }//Text = _frame + " : " + _value; }
             }
-            public float _value;
+            public float value;
             public float Frame
             {
-                get { return _frame; }
-                set { _frame= value; }//Text = _frame + " : " + _value; }
+                get { return frame; }
+                set { frame = value; }//Text = _frame + " : " + _value; }
             }
-            public String Text;
-            public float _frame;
+            public string text;
+            public float frame;
             public float In = 0, Out = -1;
-            public bool Weighted = false;
-            public bool Degrees = false; // Use Degrees
-            public InterpolationType InterType = InterpolationType.LINEAR;
+            public bool weighted = false;
+            public bool degrees = false; // Use Degrees
+            public InterpolationType interType = InterpolationType.Linear;
 
             public KeyFrame(float value, float frame)
             {
@@ -422,26 +423,26 @@ namespace SmashForge
 
         public void SetFrame(float frame)
         {
-            Frame = frame;
+            this.frame = frame;
         }
 
         public int Size()
         {
-            return FrameCount;
+            return frameCount;
         }
 
         public void NextFrame(VBN skeleton, bool isChild = false)
         {
-            if (Frame >= FrameCount) return;
+            if (frame >= frameCount) return;
 
-            if (Frame == 0 && !isChild)
+            if (frame == 0 && !isChild)
                 skeleton.reset();
 
-            foreach (object child in Children)
+            foreach (object child in children)
             {
                 if (child is Animation)
                 {
-                    ((Animation)child).SetFrame(Frame);
+                    ((Animation)child).SetFrame(frame);
                     ((Animation)child).NextFrame(skeleton, isChild: true);
                 }
                 if (child is MTA)
@@ -450,7 +451,7 @@ namespace SmashForge
                     {
                         if (((ModelContainer)skeleton.Parent).NUD != null)
                         {
-                            ((ModelContainer)skeleton.Parent).NUD.ApplyMta(((MTA)child), (int)Frame);
+                            ((ModelContainer)skeleton.Parent).NUD.ApplyMta(((MTA)child), (int)frame);
                         }
                     }
                 }
@@ -459,77 +460,77 @@ namespace SmashForge
                     {
                         if (((ModelContainer)skeleton.Parent).Bfres != null)
                         {
-                            ((ModelContainer)skeleton.Parent).Bfres.ApplyMta(((BFRES.MTA)child), (int)Frame);
+                            ((ModelContainer)skeleton.Parent).Bfres.ApplyMta(((BFRES.MTA)child), (int)frame);
                         }
                     }
                 }
             }
 
-            bool Updated = false; // no need to update skeleton of animations that didn't change
-            foreach (KeyNode node in Bones)
+            bool updated = false; // no need to update skeleton of animations that didn't change
+            foreach (KeyNode node in bones)
             {
                 // Get Skeleton Node
                 Bone b = null;
-                if (node.Hash == -1)
+                if (node.hash == -1)
                     b = skeleton.getBone(node.Text);
                 else
-                    b = skeleton.GetBone((uint)node.Hash);
+                    b = skeleton.GetBone((uint)node.hash);
                 if (b == null) continue;
-                Updated = true;
+                updated = true;
 
-                if (node.XPOS.HasAnimation() && b.boneType != 3)
-                    b.pos.X = node.XPOS.GetValue(Frame);
-                if (node.YPOS.HasAnimation() && b.boneType != 3)
-                    b.pos.Y = node.YPOS.GetValue(Frame);
-                if (node.ZPOS.HasAnimation() && b.boneType != 3)
-                    b.pos.Z = node.ZPOS.GetValue(Frame);
+                if (node.xpos.HasAnimation() && b.boneType != 3)
+                    b.pos.X = node.xpos.GetValue(frame);
+                if (node.ypos.HasAnimation() && b.boneType != 3)
+                    b.pos.Y = node.ypos.GetValue(frame);
+                if (node.zpos.HasAnimation() && b.boneType != 3)
+                    b.pos.Z = node.zpos.GetValue(frame);
 
-                if (node.XSCA.HasAnimation())
-                    b.sca.X = node.XSCA.GetValue(Frame);
-                   else b.sca.X = 1;
-                if (node.YSCA.HasAnimation())
-                    b.sca.Y = node.YSCA.GetValue(Frame);
+                if (node.xsca.HasAnimation())
+                    b.sca.X = node.xsca.GetValue(frame);
+                else b.sca.X = 1;
+                if (node.ysca.HasAnimation())
+                    b.sca.Y = node.ysca.GetValue(frame);
                 else b.sca.Y = 1;
-                if (node.ZSCA.HasAnimation())
-                    b.sca.Z = node.ZSCA.GetValue(Frame);
+                if (node.zsca.HasAnimation())
+                    b.sca.Z = node.zsca.GetValue(frame);
                 else b.sca.Z = 1;
 
 
-                if (node.XROT.HasAnimation() || node.YROT.HasAnimation() || node.ZROT.HasAnimation())
+                if (node.xrot.HasAnimation() || node.yrot.HasAnimation() || node.zrot.HasAnimation())
                 {
-                    if (node.RotType == RotationType.QUATERNION)
+                    if (node.rotType == RotationType.Quaternion)
                     {
-                        KeyFrame[] x = node.XROT.GetFrame(Frame);
-                        KeyFrame[] y = node.YROT.GetFrame(Frame);
-                        KeyFrame[] z = node.ZROT.GetFrame(Frame);
-                        KeyFrame[] w = node.WROT.GetFrame(Frame);
+                        KeyFrame[] x = node.xrot.GetFrame(frame);
+                        KeyFrame[] y = node.yrot.GetFrame(frame);
+                        KeyFrame[] z = node.zrot.GetFrame(frame);
+                        KeyFrame[] w = node.wrot.GetFrame(frame);
                         Quaternion q1 = new Quaternion(x[0].Value, y[0].Value, z[0].Value, w[0].Value);
                         Quaternion q2 = new Quaternion(x[1].Value, y[1].Value, z[1].Value, w[1].Value);
-                        if (x[0].Frame == Frame)
+                        if (x[0].Frame == frame)
                             b.rot = q1;
                         else
-                        if (x[1].Frame == Frame)
+                        if (x[1].Frame == frame)
                             b.rot = q2;
                         else
-                            b.rot = Quaternion.Slerp(q1, q2, (Frame - x[0].Frame) / (x[1].Frame - x[0].Frame));
+                            b.rot = Quaternion.Slerp(q1, q2, (frame - x[0].Frame) / (x[1].Frame - x[0].Frame));
                     }
                     else
-                    if (node.RotType == RotationType.EULER)
+                    if (node.rotType == RotationType.Euler)
                     {
-                        float x = node.XROT.HasAnimation() ? node.XROT.GetValue(Frame) : b.rotation[0];
-                        float y = node.YROT.HasAnimation() ? node.YROT.GetValue(Frame) : b.rotation[1];
-                        float z = node.ZROT.HasAnimation() ? node.ZROT.GetValue(Frame) : b.rotation[2];
+                        float x = node.xrot.HasAnimation() ? node.xrot.GetValue(frame) : b.rotation[0];
+                        float y = node.yrot.HasAnimation() ? node.yrot.GetValue(frame) : b.rotation[1];
+                        float z = node.zrot.HasAnimation() ? node.zrot.GetValue(frame) : b.rotation[2];
                         b.rot = EulerToQuat(z, y, x);
                     }
                 }
             }
-            Frame += 1f;
-            if(Frame >= FrameCount)
+            frame += 1f;
+            if (frame >= frameCount)
             {
-                Frame = 0;
+                frame = 0;
             }
 
-            if (!isChild && Updated)
+            if (!isChild && updated)
             {
                 skeleton.update();
             }
@@ -538,21 +539,21 @@ namespace SmashForge
         public void ExpandBones()
         {
             Nodes.Clear();
-            foreach(var v in Bones)
+            foreach (var v in bones)
                 Nodes.Add(v);
         }
 
-        public bool HasBone(String name)
+        public bool HasBone(string name)
         {
-            foreach (var v in Bones)
+            foreach (var v in bones)
                 if (v.Text.Equals(name))
                     return true;
             return false;
         }
 
-        public KeyNode GetBone(String name)
+        public KeyNode GetBone(string name)
         {
-            foreach (var v in Bones)
+            foreach (var v in bones)
                 if (v.Text.Equals(name))
                     return v;
             return null;
@@ -616,8 +617,8 @@ namespace SmashForge
 
             double dot = Vector4.Dot(v0, v1);
 
-            const double DOT_THRESHOLD = 0.9995;
-            if (Math.Abs(dot) > DOT_THRESHOLD)
+            const double dotThreshold = 0.9995;
+            if (Math.Abs(dot) > dotThreshold)
             {
                 Vector4 result = v0 + new Vector4((float)t) * (v1 - v0);
                 result.Normalize();
@@ -631,8 +632,8 @@ namespace SmashForge
 
             if (dot < -1) dot = -1;
             if (dot > 1) dot = 1;
-            double theta_0 = Math.Acos(dot);  // theta_0 = angle between input vectors
-            double theta = theta_0 * t;    // theta = angle between v0 and result 
+            double theta0 = Math.Acos(dot);  // theta_0 = angle between input vectors
+            double theta = theta0 * t;    // theta = angle between v0 and result 
 
             Vector4 v2 = v1 - v0 * new Vector4((float)dot);
             v2.Normalize();              // { v0, v2 } is now an orthonormal basis

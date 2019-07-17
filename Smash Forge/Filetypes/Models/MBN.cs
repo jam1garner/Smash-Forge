@@ -147,7 +147,7 @@ namespace SmashForge
             if (shader == null)
             {
                 shader = new Shader();
-                shader = Rendering.OpenTKSharedResources.shaders["Mbn"];
+                shader = Rendering.OpenTkSharedResources.shaders["Mbn"];
             }
         }
 
@@ -158,16 +158,16 @@ namespace SmashForge
         public override void Read(string filename)
         {
             FileData d = new FileData(filename);
-            d.seek(0);
-            d.Endian = Endianness.Little;
+            d.Seek(0);
+            d.endian = Endianness.Little;
 
-            format = d.readUShort();
-            unknown = d.readUShort();
-            flags = d.readInt();
-            mode = d.readInt();
+            format = d.ReadUShort();
+            unknown = d.ReadUShort();
+            flags = d.ReadInt();
+            mode = d.ReadInt();
             bool hasNameTable = (flags & 2) > 0;
 
-            int polyCount = d.readInt();
+            int polyCount = d.ReadInt();
 
             mesh = new List<Mesh>();
             descript = new List<Descriptor>();
@@ -184,25 +184,25 @@ namespace SmashForge
                 Mesh m = new Mesh();
                 mesh.Add(m);
 
-                int faceCount = d.readInt();
+                int faceCount = d.ReadInt();
                 List<int> prims = new List<int>();
                 prim.Add(prims);
                 for (int j = 0; j < faceCount; j++)
                 {
-                    int nodeCount = d.readInt();
+                    int nodeCount = d.ReadInt();
                     List<int> nodeList = new List<int>();
                     m.nodeList.Add(nodeList);
 
                     for (int k = 0; k < nodeCount; k++)
-                        nodeList.Add(d.readInt()); // for a node list?
+                        nodeList.Add(d.ReadInt()); // for a node list?
                     
 
-                    int primitiveCount = d.readInt();
+                    int primitiveCount = d.ReadInt();
                     prims.Add(primitiveCount);
 
                     if (hasNameTable)
                     {
-                        int nameId = d.readInt();
+                        int nameId = d.ReadInt();
                     }
 
                     if (mode == 0)
@@ -212,9 +212,9 @@ namespace SmashForge
                             int[] buffer = new int[primitiveCount];
                             for (int k = 0; k < primitiveCount; k++)
                             {
-                                buffer[k] = d.readUShort();
+                                buffer[k] = d.ReadUShort();
                             }
-                            d.align(4);
+                            d.Align(4);
                             List<int> buf = new List<int>();
                             buf.AddRange(buffer);
                             m.faces.Add(buf);
@@ -239,16 +239,16 @@ namespace SmashForge
             {
                 for (int i = 0; i < mesh.Count; i++)
                 {
-                    int index = d.readByte();
-                    nameTable.Add(d.readString());
+                    int index = d.ReadByte();
+                    nameTable.Add(d.ReadString());
                 }
             }
 
 
-            if (format != 4) d.align(32);
+            if (format != 4) d.Align(32);
 
             // Vertex Bank
-            int start = d.pos();
+            int start = d.Pos();
             for (int i = 0; i < 1; i++)
             {
                 if (mode == 0 || i == 0)
@@ -257,14 +257,14 @@ namespace SmashForge
 
                     if (format != 4)
                     {
-                        while (d.pos() < start + des.length)
+                        while (d.Pos() < start + des.length)
                         {
                             Vertex v = new Vertex();
                             vertices.Add(v);
 
                             for (int k = 0; k < des.type.Length; k++)
                             {
-                                d.align(2);
+                                d.Align(2);
                                 switch(des.type[k]){
                                     case 0: //Position
                                         v.pos.X = readType(d, des.format[k], des.scale[k]);
@@ -289,8 +289,8 @@ namespace SmashForge
                                         v.tx.Add(new Vector2(readType(d, des.format[k], des.scale[k]), readType(d, des.format[k], des.scale[k])));
                                         break;
                                     case 5: //Bone Index
-                                        v.node.Add(d.readByte());
-                                        v.node.Add(d.readByte());
+                                        v.node.Add(d.ReadByte());
+                                        v.node.Add(d.ReadByte());
                                         break;
                                     case 6: //Bone Weight
                                         v.weight.Add(readType(d, des.format[k], des.scale[k]));
@@ -301,7 +301,7 @@ namespace SmashForge
                                 }
                             }
                         }
-                        d.align(32);
+                        d.Align(32);
                     }
                 }
 
@@ -312,8 +312,8 @@ namespace SmashForge
                         List<int> face = new List<int>();
                         mesh[j].faces.Add(face);
                         for (int k = 0; k < l; k++)
-                            face.Add(d.readUShort());
-                        d.align(32);
+                            face.Add(d.ReadUShort());
+                        d.Align(32);
                     }
                 }
 
@@ -325,17 +325,17 @@ namespace SmashForge
         public override byte[] Rebuild()
         {
             FileOutput f = new FileOutput();
-            f.Endian = Endianness.Little;
+            f.endian = Endianness.Little;
             FileOutput fv = new FileOutput();
-            fv.Endian = Endianness.Little;
+            fv.endian = Endianness.Little;
 
-            f.writeShort(format);
-            f.writeShort(unknown);
-            f.writeInt(flags);
-            f.writeInt(mode);
+            f.WriteShort(format);
+            f.WriteShort(unknown);
+            f.WriteInt(flags);
+            f.WriteInt(mode);
             bool hasNameTable = (flags & 2) > 0;
 
-            f.writeInt(mesh.Count);
+            f.WriteInt(mesh.Count);
 
             int vertSize = 0;
 
@@ -352,7 +352,7 @@ namespace SmashForge
                         {
                             for (int k = 0; k < des.type.Length; k++)
                             {
-                                fv.align(2, 0x00);
+                                fv.Align(2, 0x00);
                                 switch(des.type[k]){
                                     case 0: //Position
                                         writeType(fv, v.pos.X, des.format[k], des.scale[k]);
@@ -379,8 +379,8 @@ namespace SmashForge
                                         writeType(fv, v.tx[1].Y, des.format[k], des.scale[k]);
                                         break;
                                     case 5: //Bone Index
-                                        fv.writeByte(v.node[0]);
-                                        fv.writeByte(v.node[1]);
+                                        fv.WriteByte(v.node[0]);
+                                        fv.WriteByte(v.node[1]);
                                         break;
                                     case 6: //Bone Weight
                                         writeType(fv, v.weight[0], des.format[k], des.scale[k]);
@@ -392,7 +392,7 @@ namespace SmashForge
                             }
                         }
                         vertSize = fv.Size();
-                        fv.align(32, 0xFF);
+                        fv.Align(32, 0xFF);
                     }
                 }
 
@@ -402,8 +402,8 @@ namespace SmashForge
                     foreach (List<int> l in mesh[j].faces)
                     {
                         foreach (int index in l)
-                            fv.writeShort(index);
-                        fv.align(32, 0xFF);
+                            fv.WriteShort(index);
+                        fv.Align(32, 0xFF);
                     }
                 }
 
@@ -415,19 +415,19 @@ namespace SmashForge
                 if (i == 0 && mode == 1)
                 {
                     descript[0].WriteDescription(f);
-                    f.writeInt(vertSize);
+                    f.WriteInt(vertSize);
                 }
 
-                f.writeInt(mesh[i].nodeList.Count);
+                f.WriteInt(mesh[i].nodeList.Count);
                 //Console.WriteLine(mesh[i].faces.Count + " " + mesh[i].nodeList.Count);
                 for (int j = 0; j < mesh[i].nodeList.Count; j++)
                 {
-                    f.writeInt(mesh[i].nodeList[j].Count);
+                    f.WriteInt(mesh[i].nodeList[j].Count);
 
                     for (int k = 0; k < mesh[i].nodeList[j].Count; k++)
-                        f.writeInt(mesh[i].nodeList[j][k]);
+                        f.WriteInt(mesh[i].nodeList[j][k]);
 
-                    f.writeInt(mesh[i].faces[j].Count);
+                    f.WriteInt(mesh[i].faces[j].Count);
 
                     // TODO: This stuff
                     if (hasNameTable)
@@ -471,7 +471,7 @@ namespace SmashForge
             }*/
 
 
-            if (format != 4) f.align(32, 0xFF);
+            if (format != 4) f.Align(32, 0xFF);
 
             f.WriteOutput(fv);
 
@@ -490,13 +490,13 @@ namespace SmashForge
         private static float readType(FileData d, int format, float scale){
             switch(format){
                 case 0:
-                    return d.readFloat() * scale;
+                    return d.ReadFloat() * scale;
                 case 1:
-                    return d.readByte() * scale;
+                    return d.ReadByte() * scale;
                 case 2:
-                    return d.readSByte() * scale;
+                    return d.ReadSByte() * scale;
                 case 3:
-                    return d.readShort() * scale;
+                    return d.ReadShort() * scale;
             }
             return 0;
         }
@@ -504,16 +504,16 @@ namespace SmashForge
         private static void writeType(FileOutput d, float value, int format, float scale){
             switch(format){
                 case 0:
-                    d.writeFloat(value / scale);
+                    d.WriteFloat(value / scale);
                     break;
                 case 1:
-                    d.writeByte((byte)(value / scale));
+                    d.WriteByte((byte)(value / scale));
                     break;
                 case 2:
-                    d.writeByte((byte)(value / scale));
+                    d.WriteByte((byte)(value / scale));
                     break;
                 case 3:
-                    d.writeShort((short)(value / scale));
+                    d.WriteShort((short)(value / scale));
                     break;
             }
         }
@@ -639,30 +639,30 @@ namespace SmashForge
 
             public void ReadDescription(FileData d)
             {
-                int count = d.readInt();
+                int count = d.ReadInt();
 
                 type = new int[count];
                 format = new int[count];
                 scale = new float[count];
 
                 for(int i = 0 ;i < count ; i++){
-                    type[i] = d.readInt();
-                    format[i] = d.readInt();
-                    scale[i] = d.readFloat();
+                    type[i] = d.ReadInt();
+                    format[i] = d.ReadInt();
+                    scale[i] = d.ReadFloat();
                 }
 
-                length = d.readInt(); 
+                length = d.ReadInt(); 
             }
 
             public void WriteDescription(FileOutput f)
             {
                 // TODO: Calculate Length
-                f.writeInt(type.Length);
+                f.WriteInt(type.Length);
 
                 for(int i = 0 ;i < type.Length ; i++){
-                    f.writeInt(type[i]);
-                    f.writeInt(format[i]);
-                    f.writeFloat(scale[i]);
+                    f.WriteInt(type[i]);
+                    f.WriteInt(format[i]);
+                    f.WriteFloat(scale[i]);
                 }
             }
         }

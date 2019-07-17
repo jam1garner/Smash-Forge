@@ -39,10 +39,10 @@ namespace SmashForge.Rendering
             uvTestPattern.TextureWrapT = TextureWrapMode.Repeat;
 
             // TODO: Simplify this conversion.
-            DDS specularSdr = new DDS(new FileData(Properties.Resources.specularSDR));      
+            Dds specularSdr = new Dds(new FileData(Properties.Resources.specularSDR));      
             specularPbr = NUT.CreateTextureCubeMap(specularSdr.ToNutTexture());
 
-            DDS diffuseSdr = new DDS(new FileData(Properties.Resources.diffuseSDR));
+            Dds diffuseSdr = new Dds(new FileData(Properties.Resources.diffuseSDR));
             diffusePbr = NUT.CreateTextureCubeMap(diffuseSdr.ToNutTexture());
             // Don't use mipmaps.
             diffusePbr.MinFilter = TextureMinFilter.Linear;

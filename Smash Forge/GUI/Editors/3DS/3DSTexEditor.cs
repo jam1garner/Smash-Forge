@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
@@ -23,7 +17,7 @@ namespace SmashForge
         public _3DSTexEditor(string fname) : this()
         {
             FilePath = fname;
-            OpenTEX(fname);
+            OpenTex(fname);
             Edited = false;
         }
 
@@ -34,7 +28,7 @@ namespace SmashForge
                 SaveAs();
                 return;
             }
-            ExportTEX(FilePath);
+            ExportTex(FilePath);
             Edited = false;
         }
 
@@ -66,25 +60,25 @@ namespace SmashForge
 
         }
 
-        public void OpenTEX(string fname)
+        public void OpenTex(string fname)
         {
             Edited = true;
             FileData d = new FileData(fname);
-            d.Endian = System.IO.Endianness.Little;
+            d.endian = System.IO.Endianness.Little;
 
-            int width = d.readInt();
-            int height = d.readInt();
-            int type = d.readByte();
-            int dunno = d.readByte();
-            d.skip(2); // padding
+            int width = d.ReadInt();
+            int height = d.ReadInt();
+            int type = d.ReadByte();
+            int dunno = d.ReadByte();
+            d.Skip(2); // padding
 
             string name = "";
 
-            int i = d.readByte();
+            int i = d.ReadByte();
             while (i != 0x00)
             {
                 name += (char)i;
-                i = d.readByte();
+                i = d.ReadByte();
             }
 
             if (type > 0xD || type < 0)
@@ -95,14 +89,14 @@ namespace SmashForge
             label3.Text = "Width: " + width;
             label4.Text = "Height: " + height;
 
-            byte[] data = d.getSection(0x80, d.size() - 0x80);
+            byte[] data = d.GetSection(0x80, d.Size() - 0x80);
 
             pictureBox1.Image = _3DS.DecodeImage(data, width, height, (_3DS.Tex_Formats)type);
             
             pictureBox1.Image.RotateFlip(RotateFlipType.RotateNoneFlipY);
         }
 
-        public void OpenPNG(string filename)
+        public void OpenPng(string filename)
         {
             Edited = true;
             pictureBox1.Image = new Bitmap(filename);
@@ -126,7 +120,7 @@ namespace SmashForge
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    OpenTEX(ofd.FileName);
+                    OpenTex(ofd.FileName);
                 }
             }
         }
@@ -152,32 +146,32 @@ namespace SmashForge
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    OpenPNG(ofd.FileName);
+                    OpenPng(ofd.FileName);
                 }
             }
         }
 
-        public void ExportTEX(string filename)
+        public void ExportTex(string filename)
         {
             FileOutput o = new FileOutput();
-            o.Endian = Endianness.Little;
+            o.endian = Endianness.Little;
 
-            o.writeInt(pictureBox1.Image.Width);
-            o.writeInt(pictureBox1.Image.Height);
-            o.writeByte(formatSelector.SelectedIndex);
-            o.writeByte(1);
-            o.writeShort(0);
+            o.WriteInt(pictureBox1.Image.Width);
+            o.WriteInt(pictureBox1.Image.Height);
+            o.WriteByte(formatSelector.SelectedIndex);
+            o.WriteByte(1);
+            o.WriteShort(0);
             o.WriteString(nameBox.Text);
             for (int i = 0; i < 0x74 - nameBox.Text.Length; i++)
-                o.writeByte(0);
+                o.WriteByte(0);
 
             pictureBox1.Image.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
-            o.writeBytes(_3DS.EncodeImage(new Bitmap(pictureBox1.Image), (_3DS.Tex_Formats)formatSelector.SelectedIndex));
+            o.WriteBytes(_3DS.EncodeImage(new Bitmap(pictureBox1.Image), (_3DS.Tex_Formats)formatSelector.SelectedIndex));
 
             pictureBox1.Image.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
-            o.save(filename);
+            o.Save(filename);
         }
 
         private void tEXToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -188,7 +182,7 @@ namespace SmashForge
 
             if (result == DialogResult.OK)
             {
-                ExportTEX(save.FileName);
+                ExportTex(save.FileName);
             }
         }
 
@@ -203,11 +197,11 @@ namespace SmashForge
                 {
                     if (Path.GetExtension(ofd.FileName).ToLower().Equals(".png"))
                     {
-                        OpenPNG(ofd.FileName);
+                        OpenPng(ofd.FileName);
                     }
                     if (Path.GetExtension(ofd.FileName).ToLower().Equals(".tex"))
                     {
-                        OpenTEX(ofd.FileName);
+                        OpenTex(ofd.FileName);
                     }
                 }
             }
@@ -228,7 +222,7 @@ namespace SmashForge
                 }
                 if (Path.GetExtension(save.FileName).ToLower().Equals(".tex"))
                 {
-                    ExportTEX(save.FileName);
+                    ExportTex(save.FileName);
                 }
             }
         }

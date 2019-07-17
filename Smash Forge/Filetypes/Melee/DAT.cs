@@ -84,43 +84,43 @@ namespace SmashForge
 
         public void Read(FileData d)
         {
-            d.Endian = System.IO.Endianness.Big;
-            d.seek(0);
+            d.endian = System.IO.Endianness.Big;
+            d.Seek(0);
 
             header.Read(d);
 
-            int dataBlockOffset = d.pos();
-            d.skip(header.dataBlockSize); // skip to relocation table
+            int dataBlockOffset = d.Pos();
+            d.Skip(header.dataBlockSize); // skip to relocation table
 
-            int relocationTableOffset = d.pos();
+            int relocationTableOffset = d.Pos();
 
             // update relocation table and data offset
             for (int i = 0; i < header.relocationTableCount; ++i)
             {
                 int relocationOffset = relocationTableOffset + i * 4;
 
-                d.seek(relocationOffset);
+                d.Seek(relocationOffset);
 
-                int dataOffset = d.readInt() + headerSize;
+                int dataOffset = d.ReadInt() + headerSize;
 
-                d.writeInt(relocationOffset, dataOffset);
+                d.WriteInt(relocationOffset, dataOffset);
 
-                d.seek(dataOffset);
+                d.Seek(dataOffset);
 
-                d.writeInt(dataOffset, d.readInt() + headerSize);
+                d.WriteInt(dataOffset, d.ReadInt() + headerSize);
             }
 
-            d.seek(relocationTableOffset + header.relocationTableCount * 4); // skip relocation table
+            d.Seek(relocationTableOffset + header.relocationTableCount * 4); // skip relocation table
 
-            int strOffset = d.pos() + header.rootCount * 8 + header.referenceNodeCount * 8;
+            int strOffset = d.Pos() + header.rootCount * 8 + header.referenceNodeCount * 8;
             int[] sectionOffset = new int[header.rootCount];
             string[] sectionNames = new string[header.rootCount];
-            Console.WriteLine(d.pos().ToString("x") + " " + strOffset.ToString("x"));
+            Console.WriteLine(d.Pos().ToString("x") + " " + strOffset.ToString("x"));
             for (int i = 0; i < header.rootCount; i++)
             {
                 // data then string
-                int data = d.readInt() + headerSize;
-                string s = d.readString(d.readInt() + strOffset, -1);
+                int data = d.ReadInt() + headerSize;
+                string s = d.ReadString(d.ReadInt() + strOffset, -1);
                 sectionOffset[i] = data;
                 sectionNames[i] = s;
                 Console.WriteLine(s + " " + data.ToString("x"));
@@ -130,12 +130,12 @@ namespace SmashForge
                 node.Tag = data;
                 tree.Add(node);
             }
-            Console.WriteLine(d.pos().ToString("x") + " " + strOffset.ToString("x"));
+            Console.WriteLine(d.Pos().ToString("x") + " " + strOffset.ToString("x"));
 
             foreach (TreeNode node in tree)
             {
                 // then a file system is read... it works like a tree?
-                d.seek((int)node.Tag);
+                d.Seek((int)node.Tag);
                 // now, the name determines what happens here
                 // for now, it just assumes the _joint
                 if (node.Text.EndsWith("_joint") && !node.Text.Contains("matanim") && !node.Text.Contains("anim_joint"))
@@ -146,7 +146,7 @@ namespace SmashForge
                 }
                 else if (node.Text.EndsWith("grGroundParam"))
                 {
-                    stageScale = d.readFloat();
+                    stageScale = d.ReadFloat();
                     Console.WriteLine($"Stage scale - {stageScale}");
                 }
                 else if (node.Text.EndsWith("map_head"))
@@ -349,7 +349,7 @@ namespace SmashForge
 
             facedata = face.ToArray();
 
-            if (Rendering.OpenTKSharedResources.shaders["Dat"].LinkStatusIsOk)
+            if (Rendering.OpenTkSharedResources.shaders["Dat"].LinkStatusIsOk)
                 SetupShader();
         }
 
@@ -362,7 +362,7 @@ namespace SmashForge
             if (shader == null)
             {
                 shader = new Shader();
-                shader = Rendering.OpenTKSharedResources.shaders["Dat"];
+                shader = Rendering.OpenTkSharedResources.shaders["Dat"];
             }
 
             GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
@@ -378,7 +378,7 @@ namespace SmashForge
             if (shader == null)
                 return;
 
-            shader = Rendering.OpenTKSharedResources.shaders["Dat"];
+            shader = Rendering.OpenTkSharedResources.shaders["Dat"];
             shader.UseProgram();
 
             GL.UniformMatrix4(shader.GetUniformLocation("modelview"), false, ref modelview);
@@ -506,7 +506,7 @@ namespace SmashForge
             {
                 MemoryStream stream = new MemoryStream();
                 bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
-                result = new FileData(stream.ToArray()).getSection(0x36, (int)stream.Length - 0x36);
+                result = new FileData(stream.ToArray()).GetSection(0x36, (int)stream.Length - 0x36);
             }
             return result;
         }
@@ -584,7 +584,7 @@ namespace SmashForge
             {
                 foreach (COLL_DATA.Link link in collisions.links)
                 {
-                    Collision c = new Collision() { name = $"COL_MELEE_{j}", subname = $"MELEE_{j++}" };
+                    Collision c = new Collision() { Name = $"COL_MELEE_{j}", Subname = $"MELEE_{j++}" };
                     addLink(link, c);
                     lvd.collisions.Add(c);
                 }
@@ -593,7 +593,7 @@ namespace SmashForge
             {
                 foreach (int[] poly in collisions.polyRanges)
                 {
-                    Collision c = new Collision() { name = $"COL_MELEE_{j}", subname = $"MELEE_{j++}" };
+                    Collision c = new Collision() { Name = $"COL_MELEE_{j}", Subname = $"MELEE_{j++}" };
                     int k = 0;
                     foreach (COLL_DATA.Link link in collisions.links)
                     {
@@ -611,13 +611,13 @@ namespace SmashForge
             lvd.cameraBounds.Add(cameraBounds);
             j = 0;
             foreach (Point s in spawns)
-                lvd.spawns.Add(new Spawn() { x = s.x, y = s.y, name = $"Spawn_{j}", subname = $"{j++}" });
+                lvd.spawns.Add(new Spawn() { x = s.x, y = s.y, Name = $"Spawn_{j}", Subname = $"{j++}" });
             j = 0;
             foreach (Point s in respawns)
-                lvd.respawns.Add(new Spawn() { x = s.x, y = s.y, name = $"Respawn_{j}", subname = $"{j++}" });
+                lvd.respawns.Add(new Spawn() { x = s.x, y = s.y, Name = $"Respawn_{j}", Subname = $"{j++}" });
             j = 0;
             foreach (Point p in itemSpawns)
-                lvd.generalPoints.Add(new GeneralPoint() { x = p.x, y = p.y, name = $"Item_{j}", subname = $"{j++}" });
+                lvd.generalPoints.Add(new GeneralPoint() { x = p.x, y = p.y, Name = $"Item_{j}", Subname = $"{j++}" });
 
             /*//This is basically for DSX8 for him quickly converting items in the "dumb" way
             foreach (Vector3 p in itemSpawns)
@@ -643,7 +643,7 @@ namespace SmashForge
 
             // create a nut?
             NUT nut = new NUT();
-            Runtime.TextureContainers.Add(nut);
+            Runtime.textureContainers.Add(nut);
             int texid = 0;
             foreach (int key in texturesLinker.Keys)
             {
@@ -765,22 +765,22 @@ namespace SmashForge
 
             public void Read(FileData d)
             {
-                fileSize = d.readInt();
-                dataBlockSize = d.readInt();
-                relocationTableCount = d.readInt();
-                rootCount = d.readInt();
-                referenceNodeCount = d.readInt();
-                unk1 = d.readInt();
-                unk2 = d.readInt();
-                unk3 = d.readInt();
+                fileSize = d.ReadInt();
+                dataBlockSize = d.ReadInt();
+                relocationTableCount = d.ReadInt();
+                rootCount = d.ReadInt();
+                referenceNodeCount = d.ReadInt();
+                unk1 = d.ReadInt();
+                unk2 = d.ReadInt();
+                unk3 = d.ReadInt();
             }
         }
 
         #region Collisions
 
-        public class COLL_DATA : LVDEntry
+        public class COLL_DATA : LvdEntry
         {
-            public override string magic { get { return "030401017735BB7500000002"; } }
+            public override string Magic { get { return "030401017735BB7500000002"; } }
             public class Link
             {
                 public int[] vertexIndices;
@@ -823,66 +823,66 @@ namespace SmashForge
 
             public COLL_DATA()
             {
-                name = "Collisions";
-                subname = "00";
+                Name = "Collisions";
+                Subname = "00";
             }
 
             public void Read(FileData f)
             {
-                vertOffOff = f.pos();
-                int vertOff = f.readInt();
-                int vertCount = f.readInt();
-                linkOffOff = f.pos();
-                int linkOff = f.readInt();
-                int linkCount = f.readInt();
-                f.skip(0x14);
-                polyOffOff = f.pos();
-                int polyOff = f.readInt();
-                int polyCount = f.readInt();
-                int returnOffset = f.pos();
-                f.seek(vertOff);
+                vertOffOff = f.Pos();
+                int vertOff = f.ReadInt();
+                int vertCount = f.ReadInt();
+                linkOffOff = f.Pos();
+                int linkOff = f.ReadInt();
+                int linkCount = f.ReadInt();
+                f.Skip(0x14);
+                polyOffOff = f.Pos();
+                int polyOff = f.ReadInt();
+                int polyCount = f.ReadInt();
+                int returnOffset = f.Pos();
+                f.Seek(vertOff);
                 for (int i = 0; i < vertCount; i++)
                 {
                     Vector2 point = new Vector2();
-                    point.X = f.readFloat();
-                    point.Y = f.readFloat();
+                    point.X = f.ReadFloat();
+                    point.Y = f.ReadFloat();
                     vertices.Add(point);
                 }
-                f.seek(polyOff);
+                f.Seek(polyOff);
                 for (int i = 0; i < polyCount; i++)
                 {
                     AreaTableEntry entry = new AreaTableEntry();
-                    entry.idxFirstTopLink = f.readUShort();
-                    entry.nbTopLinks = f.readUShort();
-                    entry.idxFirstBotLink = f.readUShort();
-                    entry.nbBotLinks = f.readUShort();
-                    entry.idxFirstRightLink = f.readUShort();
-                    entry.nbRightLinks = f.readUShort();
-                    entry.idxFirstLeftLink = f.readUShort();
-                    entry.nbLeftLinks = f.readUShort();
-                    f.skip(4);
-                    entry.xBotLeftCorner = f.readFloat();
-                    entry.yBotLeftCorner = f.readFloat();
-                    entry.xTopRightCorner = f.readFloat();
-                    entry.yTopRightCorner = f.readFloat();
-                    entry.idxLowestSpot = f.readUShort();
-                    entry.nbLinks = f.readUShort();
+                    entry.idxFirstTopLink = f.ReadUShort();
+                    entry.nbTopLinks = f.ReadUShort();
+                    entry.idxFirstBotLink = f.ReadUShort();
+                    entry.nbBotLinks = f.ReadUShort();
+                    entry.idxFirstRightLink = f.ReadUShort();
+                    entry.nbRightLinks = f.ReadUShort();
+                    entry.idxFirstLeftLink = f.ReadUShort();
+                    entry.nbLeftLinks = f.ReadUShort();
+                    f.Skip(4);
+                    entry.xBotLeftCorner = f.ReadFloat();
+                    entry.yBotLeftCorner = f.ReadFloat();
+                    entry.xTopRightCorner = f.ReadFloat();
+                    entry.yTopRightCorner = f.ReadFloat();
+                    entry.idxLowestSpot = f.ReadUShort();
+                    entry.nbLinks = f.ReadUShort();
                     areaTable.Add(entry);
                     int[] range = { entry.idxLowestSpot, entry.idxLowestSpot + entry.nbLinks };
                     polyRanges.Add(range);
                     polys.Add(vertices.GetRange(entry.idxLowestSpot, entry.nbLinks));
                 }
-                f.seek(linkOff);
+                f.Seek(linkOff);
                 for (int i = 0; i < linkCount; i++)
                 {
                     Link link = new Link();
-                    link.vertexIndices = new int[] { f.readShort(), f.readShort() };
-                    link.connectors = new int[] { f.readShort(), f.readShort() };
-                    link.idxVertFromLink = f.readShort();
-                    link.idxVertToLink = f.readShort();
-                    link.collisionAngle = f.readShort();
-                    link.flags = (byte)f.readByte();
-                    link.material = (byte)f.readByte();
+                    link.vertexIndices = new int[] { f.ReadShort(), f.ReadShort() };
+                    link.connectors = new int[] { f.ReadShort(), f.ReadShort() };
+                    link.idxVertFromLink = f.ReadShort();
+                    link.idxVertToLink = f.ReadShort();
+                    link.collisionAngle = f.ReadShort();
+                    link.flags = (byte)f.ReadByte();
+                    link.material = (byte)f.ReadByte();
                     links.Add(link);
                 }
                 /*foreach (List<Vector2> poly in polys)
@@ -931,77 +931,77 @@ namespace SmashForge
                         node.Text = "NodeObject";
 
                         // WTF ARE THESE OFFSETS OMG
-                        int jPointer = d.readInt();
-                        Console.WriteLine((d.readInt()).ToString("x") + " " +
-                            (d.readInt()).ToString("x") + " " +
-                            (d.readInt()).ToString("x") + " " +
-                            (d.readInt()).ToString("x") + " " +
-                            (d.readInt()).ToString("x") + " " +
-                            (d.readInt()).ToString("x") + " " +
-                            (d.readInt()).ToString("x") + " " +
+                        int jPointer = d.ReadInt();
+                        Console.WriteLine((d.ReadInt()).ToString("x") + " " +
+                            (d.ReadInt()).ToString("x") + " " +
+                            (d.ReadInt()).ToString("x") + " " +
+                            (d.ReadInt()).ToString("x") + " " +
+                            (d.ReadInt()).ToString("x") + " " +
+                            (d.ReadInt()).ToString("x") + " " +
+                            (d.ReadInt()).ToString("x") + " " +
 
-                            (d.readInt()).ToString("x") + " " +
-                            (d.readInt()).ToString("x") + " " +
-                            (d.readInt()).ToString("x") + " " +
-                            (d.readInt()).ToString("x") + " " +
-                            (d.readInt()).ToString("x") + " ");
+                            (d.ReadInt()).ToString("x") + " " +
+                            (d.ReadInt()).ToString("x") + " " +
+                            (d.ReadInt()).ToString("x") + " " +
+                            (d.ReadInt()).ToString("x") + " " +
+                            (d.ReadInt()).ToString("x") + " ");
 
                         if (jPointer == 0 || jPointer == -1)
                             return;
 
-                        int temp = d.pos();
+                        int temp = d.Pos();
                         if (!dat.jobjOffsetLinker.ContainsKey(jPointer))
                         {
-                            d.seek(jPointer);
+                            d.Seek(jPointer);
                             JOBJ j = new JOBJ();
                             j.Read(d, dat, node);
                         }
 
-                        d.seek(temp);
+                        d.Seek(temp);
                     }
                 }
             }
 
             public void Read(FileData d, DAT dat, TreeNode parentNode)
             {
-                int start = d.pos();
+                int start = d.Pos();
                 Console.WriteLine($"Map_Head Start {start}");
-                int spawnyOffset = d.readInt();
-                int spawnyCount = d.readInt(); // ?? jammy-senpai assist ploaj-chan pls
+                int spawnyOffset = d.ReadInt();
+                int spawnyCount = d.ReadInt(); // ?? jammy-senpai assist ploaj-chan pls
 
-                int mappymodelOffset = d.readInt();
-                int mappymodelCount = d.readInt();
+                int mappymodelOffset = d.ReadInt();
+                int mappymodelCount = d.ReadInt();
 
                 // and some other nonsense
                 Console.WriteLine($"spawnyOffset = {spawnyOffset}");
-                d.seek(spawnyOffset);
-                int stageBonesRoot = d.readInt();
-                int boneIdTableOffset = d.readInt();
-                int idEntryCount = d.readInt();
+                d.Seek(spawnyOffset);
+                int stageBonesRoot = d.ReadInt();
+                int boneIdTableOffset = d.ReadInt();
+                int idEntryCount = d.ReadInt();
 
                 Console.WriteLine($"boneIdTableOffset = {boneIdTableOffset}");
-                d.seek(boneIdTableOffset);
+                d.Seek(boneIdTableOffset);
                 Dictionary<short, short> boneIds = new Dictionary<short, short>();
                 for (int i = 0; i < idEntryCount; i++)
-                    boneIds.Add((short)(d.readShort() - 1), (short)d.readShort());
+                    boneIds.Add((short)(d.ReadShort() - 1), (short)d.ReadShort());
 
                 Console.WriteLine($"stageBonesRoot = {stageBonesRoot}");
-                d.seek(stageBonesRoot);
+                d.Seek(stageBonesRoot);
                 //PLOAJ WORK YOUR MAGIC HERE <3
                 // you got it fam
                 JOBJ j = new JOBJ();
                 j.Read(d, dat, parentNode);
 
                 // models I guess gosh
-                d.seek(mappymodelOffset);
+                d.Seek(mappymodelOffset);
                 Head_Node node = new Head_Node();
                 node.id = mappymodelCount;
                 node.Read(d, dat, parentNode);
                 dat.headNode = node;
 
                 short index = 0;
-                dat.cameraBounds = new Bounds() { name = "Camera Bounds", subname = "00" };
-                dat.blastzones = new Bounds() { name = "Blastzones", subname = "00" };
+                dat.cameraBounds = new Bounds() { Name = "Camera Bounds", Subname = "00" };
+                dat.blastzones = new Bounds() { Name = "Blastzones", Subname = "00" };
                 dat.itemSpawns = new List<Point>();
                 dat.spawns = new List<Point>();
                 dat.respawns = new List<Point>();
@@ -1017,7 +1017,7 @@ namespace SmashForge
                     if (!(t.Tag is JOBJ))
                         continue;
                     Vector3 point = Vector3.Multiply(((JOBJ)t.Tag).pos, dat.stageScale);
-                    Point pos = new Point() { name = "", subname = "", x = point.X, y = point.Y };
+                    Point pos = new Point() { Name = "", Subname = "", x = point.X, y = point.Y };
                     int type = -1;
                     try
                     {
@@ -1112,26 +1112,26 @@ namespace SmashForge
 
             public void Read(FileData d, DAT dat, TreeNode parentNode)
             {
-                if (dat.jobjOffsetLinker.ContainsKey(d.pos()))
+                if (dat.jobjOffsetLinker.ContainsKey(d.Pos()))
                     return;
-                dat.jobjOffsetLinker.Add(d.pos(), this);
-                unk1 = d.readInt();
-                flags = d.readInt();
-                childOffset = d.readInt();
-                nextOffset = d.readInt();
-                dobjOffset = d.readInt();
-                rot.X = d.readFloat();
-                rot.Y = d.readFloat();
-                rot.Z = d.readFloat();
-                sca.X = d.readFloat();
-                sca.Y = d.readFloat();
-                sca.Z = d.readFloat();
-                posOff = d.pos();
-                pos.X = d.readFloat();
-                pos.Y = d.readFloat();
-                pos.Z = d.readFloat();
-                inverseTransformOffset = d.readInt();
-                int OFFsetmb = d.readInt();
+                dat.jobjOffsetLinker.Add(d.Pos(), this);
+                unk1 = d.ReadInt();
+                flags = d.ReadInt();
+                childOffset = d.ReadInt();
+                nextOffset = d.ReadInt();
+                dobjOffset = d.ReadInt();
+                rot.X = d.ReadFloat();
+                rot.Y = d.ReadFloat();
+                rot.Z = d.ReadFloat();
+                sca.X = d.ReadFloat();
+                sca.Y = d.ReadFloat();
+                sca.Z = d.ReadFloat();
+                posOff = d.Pos();
+                pos.X = d.ReadFloat();
+                pos.Y = d.ReadFloat();
+                pos.Z = d.ReadFloat();
+                inverseTransformOffset = d.ReadInt();
+                int OFFsetmb = d.ReadInt();
 
                 transform = Matrix4.CreateScale(sca)
                                     * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(rot.Z, rot.Y, rot.X))
@@ -1139,20 +1139,20 @@ namespace SmashForge
 
                 if (inverseTransformOffset != 0)
                 {
-                    d.seek(inverseTransformOffset);
+                    d.Seek(inverseTransformOffset);
 
-                    inverseTransform.M11 = d.readFloat();
-                    inverseTransform.M12 = d.readFloat();
-                    inverseTransform.M13 = d.readFloat();
-                    inverseTransform.M14 = d.readFloat();
-                    inverseTransform.M21 = d.readFloat();
-                    inverseTransform.M22 = d.readFloat();
-                    inverseTransform.M23 = d.readFloat();
-                    inverseTransform.M24 = d.readFloat();
-                    inverseTransform.M31 = d.readFloat();
-                    inverseTransform.M32 = d.readFloat();
-                    inverseTransform.M33 = d.readFloat();
-                    inverseTransform.M34 = d.readFloat();
+                    inverseTransform.M11 = d.ReadFloat();
+                    inverseTransform.M12 = d.ReadFloat();
+                    inverseTransform.M13 = d.ReadFloat();
+                    inverseTransform.M14 = d.ReadFloat();
+                    inverseTransform.M21 = d.ReadFloat();
+                    inverseTransform.M22 = d.ReadFloat();
+                    inverseTransform.M23 = d.ReadFloat();
+                    inverseTransform.M24 = d.ReadFloat();
+                    inverseTransform.M31 = d.ReadFloat();
+                    inverseTransform.M32 = d.ReadFloat();
+                    inverseTransform.M33 = d.ReadFloat();
+                    inverseTransform.M34 = d.ReadFloat();
                     inverseTransform.M44 = 1;
 
                     inverseTransform.Transpose();
@@ -1171,7 +1171,7 @@ namespace SmashForge
 
                 if (nextOffset != 0)
                 {
-                    d.seek(nextOffset);
+                    d.Seek(nextOffset);
                     JOBJ j = new JOBJ();
                     j.Read(d, dat, parentNode);
                 }
@@ -1180,7 +1180,7 @@ namespace SmashForge
                 {
                     if ((flags & 0x1000) == 0)
                     {
-                        d.seek(childOffset);
+                        d.Seek(childOffset);
                         JOBJ j = new JOBJ();
                         j.Read(d, dat, node);
                     }
@@ -1200,7 +1200,7 @@ namespace SmashForge
                     else
                     {
                         //Console.WriteLine("DOBJ" + dobjOffset.ToString("X"));
-                        d.seek(dobjOffset);
+                        d.Seek(dobjOffset);
                         DOBJ dobj = new DOBJ();
                         dobj.Read(d, dat, node);
                     }
@@ -1225,29 +1225,29 @@ namespace SmashForge
                 //if (dat.dobjs.Count > 0) return;
                 //dat.dobjs.Add(this);
 
-                node.Text = "Mesh_" + d.pos().ToString("X8");
+                node.Text = "Mesh_" + d.Pos().ToString("X8");
                 node.Tag = this;
                 node.Checked = true;
                 node.ImageKey = "mesh";
                 node.SelectedImageKey = "mesh";
                 parent.Nodes.Add(node);
 
-                unk1 = d.readInt();
-                nextOffset = d.readInt();
-                mobjOffset = d.readInt();
-                pobjOffset = d.readInt();
+                unk1 = d.ReadInt();
+                nextOffset = d.ReadInt();
+                mobjOffset = d.ReadInt();
+                pobjOffset = d.ReadInt();
 
-                d.seek(pobjOffset);
+                d.Seek(pobjOffset);
                 //Console.WriteLine("POBJ" + pobjOffset.ToString("x"));
                 POBJ p = new POBJ();
                 p.Read(d, dat, this, node);
 
-                d.seek(mobjOffset);
+                d.Seek(mobjOffset);
                 material.Read(d, dat);
 
                 if (nextOffset != 0)
                 {
-                    d.seek(nextOffset);
+                    d.Seek(nextOffset);
                     DOBJ de = new DOBJ();
                     de.Read(d, dat, parent);
                 }
@@ -1263,16 +1263,16 @@ namespace SmashForge
 
                 public void Read(FileData d, DAT dat)
                 {
-                    unk1 = d.readInt();
-                    unk2 = d.readInt();
-                    tobjOffset = d.readInt();
-                    materialOffset = d.readInt();
-                    unk3 = d.readInt();
-                    unk4 = d.readInt();
+                    unk1 = d.ReadInt();
+                    unk2 = d.ReadInt();
+                    tobjOffset = d.ReadInt();
+                    materialOffset = d.ReadInt();
+                    unk3 = d.ReadInt();
+                    unk4 = d.ReadInt();
 
                     if (tobjOffset != 0)
                     {
-                        d.seek(tobjOffset);
+                        d.Seek(tobjOffset);
                         texture.Read(d, dat);
                     }
                 }
@@ -1301,42 +1301,42 @@ namespace SmashForge
                 public void Read(FileData d, DAT dat)
                 {
                     for (int i = 0; i < 13; i++)
-                        d.skip(4); // ?? TODO:
+                        d.Skip(4); // ?? TODO:
 
-                    int testOffset = d.pos();
-                    wrap_s = d.readInt();
-                    wrap_t = d.readInt();
-                    scale_w = d.readByte();
-                    scale_h = d.readByte();
-                    d.skip(2);
-                    d.skip(12);
-                    imageOffset = d.readInt();
-                    paletteOffset = d.readInt();
-                    unkOffset = d.readInt();
+                    int testOffset = d.Pos();
+                    wrap_s = d.ReadInt();
+                    wrap_t = d.ReadInt();
+                    scale_w = d.ReadByte();
+                    scale_h = d.ReadByte();
+                    d.Skip(2);
+                    d.Skip(12);
+                    imageOffset = d.ReadInt();
+                    paletteOffset = d.ReadInt();
+                    unkOffset = d.ReadInt();
 
-                    d.seek(imageOffset);
-                    imageDataOffset = d.readInt();
-                    width = d.readShort();
-                    height = d.readShort();
-                    format = d.readInt();
+                    d.Seek(imageOffset);
+                    imageDataOffset = d.ReadInt();
+                    width = d.ReadShort();
+                    height = d.ReadShort();
+                    format = d.ReadInt();
 
                     Console.WriteLine($"TOBJ offset - {testOffset.ToString("X")} | image offset - {imageOffset.ToString("X")} | image data offset - {imageDataOffset.ToString("X")}");
 
-                    d.seek(paletteOffset);
-                    paletteDataOffset = d.readInt();
-                    paletteFormat = d.readInt();
-                    unk = d.readInt();
-                    count = d.readShort();
-                    unkown = d.readShort();
+                    d.Seek(paletteOffset);
+                    paletteDataOffset = d.ReadInt();
+                    paletteFormat = d.ReadInt();
+                    unk = d.ReadInt();
+                    count = d.ReadShort();
+                    unkown = d.ReadShort();
 
 
                     if (dat.texturesLinker.Keys.Contains(imageDataOffset))
                         image = dat.texturesLinker[imageDataOffset];
                     else
                     {
-                        image = TPL.ConvertFromTextureMelee(d.getSection(imageDataOffset, TPL.textureByteSize((TPL_TextureFormat)format, width, height)),
+                        image = TPL.ConvertFromTextureMelee(d.GetSection(imageDataOffset, TPL.textureByteSize((TPL_TextureFormat)format, width, height)),
                             width, height, format,
-                            paletteOffset == 0 ? null : d.getSection(paletteDataOffset, 4 * count), count, paletteFormat);
+                            paletteOffset == 0 ? null : d.GetSection(paletteDataOffset, 4 * count), count, paletteFormat);
 
                         dat.texturesLinker.Add(imageDataOffset, image);
                         dat.tobjLinker.Add(imageDataOffset, new object[] { testOffset, image, imageOffset, imageDataOffset });
@@ -1387,16 +1387,16 @@ namespace SmashForge
 
             public VertexAttr Read(FileData d)
             {
-                vtxAttr = d.readInt();
+                vtxAttr = d.ReadInt();
                 if (vtxAttr == 0xFF)
                     return null;
-                vtxAttrType = (GXAttrType)d.readInt();
-                compCnt = d.readInt();
-                compType = d.readInt();
-                scale = (byte)d.readByte();
-                unknown = (byte)d.readByte();
-                vtxStride = (short)d.readShort();
-                dataOffset = d.readInt();
+                vtxAttrType = (GXAttrType)d.ReadInt();
+                compCnt = d.ReadInt();
+                compType = d.ReadInt();
+                scale = (byte)d.ReadByte();
+                unknown = (byte)d.ReadByte();
+                vtxStride = (short)d.ReadShort();
+                dataOffset = d.ReadInt();
 
                 //Console.WriteLine((GXAttr)vtxAttr + " " + vtxAttrType + " comp type " + compType + " Data Offset: " + dataOffset.ToString("x") + " Scale: " + scale);
 
@@ -1487,17 +1487,17 @@ namespace SmashForge
                 node.SelectedImageKey = "polygon";
                 parent.Nodes.Add(node);
 
-                unk1 = d.readInt();
-                nextOffset = d.readInt();
-                vertexAttrArray = d.readInt();
-                flags = (short)d.readShort();
-                displayListSize = (short)d.readShort();
-                displayListOffset = d.readInt();
-                weightListOffset = d.readInt();
+                unk1 = d.ReadInt();
+                nextOffset = d.ReadInt();
+                vertexAttrArray = d.ReadInt();
+                flags = (short)d.ReadShort();
+                displayListSize = (short)d.ReadShort();
+                displayListOffset = d.ReadInt();
+                weightListOffset = d.ReadInt();
                 node.Text = "Polygon_" + flags.ToString("X4");
 
                 // vertex attributes
-                d.seek(vertexAttrArray);
+                d.Seek(vertexAttrArray);
                 VertexAttr a = new VertexAttr();
                 a.Read(d);
                 while (a.vtxAttr != 0xFF)
@@ -1538,25 +1538,25 @@ namespace SmashForge
                             break;
                         case 0x2000:
                             {
-                                d.seek(weightListOffset);
+                                d.Seek(weightListOffset);
                                 int offset = 0;
-                                while ((offset = d.readInt()) != 0)
+                                while ((offset = d.ReadInt()) != 0)
                                 {
-                                    var temp = d.pos();
+                                    var temp = d.Pos();
                                     var jobjs = new List<object>();
                                     var weights = new List<float>();
 
-                                    d.seek(offset);
+                                    d.Seek(offset);
 
-                                    int off1 = d.readInt();
-                                    float wei1 = d.readFloat();
+                                    int off1 = d.ReadInt();
+                                    float wei1 = d.ReadFloat();
                                     while (off1 != 0)
                                     {
                                         jobjs.Add(off1);
                                         weights.Add(wei1);
 
-                                        off1 = d.readInt();
-                                        wei1 = d.readFloat();
+                                        off1 = d.ReadInt();
+                                        wei1 = d.ReadFloat();
                                     }
 
                                     boneList.Add(jobjs);
@@ -1567,7 +1567,7 @@ namespace SmashForge
                                         Console.WriteLine(string.Format("Error: Weight count ({0}) > {1}.", weights.Count, MaxWeightCount));
                                     }
 
-                                    d.seek(temp);
+                                    d.Seek(temp);
                                 }
                             }
                             break;
@@ -1575,15 +1575,15 @@ namespace SmashForge
                 }
 
                 // display list
-                d.seek(displayListOffset);
+                d.Seek(displayListOffset);
                 //Console.WriteLine("Display 0x" + displayListOffset + " " + displayListSize);
                 int bid = 0;
                 List<Vertex> used = new List<Vertex>();
                 if (displayListOffset != 0)
                     for (int i = 0; i < displayListSize; i++)
                     {
-                        byte prim = (byte)d.readByte();
-                        int count = d.readShort();
+                        byte prim = (byte)d.ReadByte();
+                        int count = d.ReadShort();
 
                         if (prim == 0)
                             break;
@@ -1608,17 +1608,17 @@ namespace SmashForge
                                 {
                                     case GXAttrType.GX_DIRECT:
                                         if (att.vtxAttr != (int)GXAttr.GX_VA_CLR0)
-                                            value = d.readByte();
+                                            value = d.ReadByte();
                                         else
                                         {
                                             v.clr = readGXClr(d, att.compType);
                                         }
                                         break;
                                     case GXAttrType.GX_INDEX8:
-                                        value = d.readByte();
+                                        value = d.ReadByte();
                                         break;
                                     case GXAttrType.GX_INDEX16:
-                                        value = (short)d.readShort() & 0xFFFF;
+                                        value = (short)d.ReadShort() & 0xFFFF;
                                         break;
                                     default:
                                         break;
@@ -1633,14 +1633,14 @@ namespace SmashForge
                                         // here add face and vertex for rendering......
                                         int vr = value;
 
-                                        int te = d.pos();
-                                        d.seek(att.dataOffset + att.vtxStride * vr);
+                                        int te = d.Pos();
+                                        d.Seek(att.dataOffset + att.vtxStride * vr);
                                         f = read3(d, att.compType, att.vtxStride);
                                         v.pos.X = f[0];
                                         v.pos.Y = f[1];
                                         v.pos.Z = f[2];
                                         v.pos = Vector3.Divide(v.pos, (float)Math.Pow(2, att.scale));
-                                        d.seek(te);
+                                        d.Seek(te);
 
                                         // sometimes we need to transform the default vertex by
                                         // the normal transform; I plan on storing it in a normal way
@@ -1694,42 +1694,42 @@ namespace SmashForge
                                         break;
 
                                     case GXAttr.GX_VA_NRM:
-                                        int ten = d.pos();
-                                        d.seek(att.dataOffset + att.vtxStride * value);
+                                        int ten = d.Pos();
+                                        d.Seek(att.dataOffset + att.vtxStride * value);
                                         f = read3(d, att.compType, att.vtxStride);
                                         v.nrm.X = f[0];
                                         v.nrm.Y = f[1];
                                         v.nrm.Z = f[2];
                                         v.nrm = Vector3.Divide(v.nrm, (float)Math.Pow(2, att.scale));
-                                        d.seek(ten);
+                                        d.Seek(ten);
                                         break;
 
                                     case GXAttr.GX_VA_TEX0:
-                                        temp = d.pos();
-                                        d.seek(att.dataOffset + att.vtxStride * value);
+                                        temp = d.Pos();
+                                        d.Seek(att.dataOffset + att.vtxStride * value);
                                         f = read3(d, att.compType, att.vtxStride / GX_COMPSIZE[att.compType]);
                                         v.tx0.X = f[0];
                                         v.tx0.Y = f[1];
                                         v.tx0 = Vector2.Divide(v.tx0, (float)Math.Pow(2, att.scale));
-                                        d.seek(temp);
+                                        d.Seek(temp);
                                         break;
 
                                     case GXAttr.GX_VA_TEX1:
-                                        temp = d.pos();
-                                        d.seek(att.dataOffset + att.vtxStride * value);
+                                        temp = d.Pos();
+                                        d.Seek(att.dataOffset + att.vtxStride * value);
                                         f = read3(d, att.compType, att.vtxStride / GX_COMPSIZE[att.compType]);
                                         v.tx1.X = f[0];
                                         v.tx1.Y = f[1];
                                         v.tx1 = Vector2.Divide(v.tx0, (float)Math.Pow(2, att.scale));
-                                        d.seek(temp);
+                                        d.Seek(temp);
                                         break;
                                     case GXAttr.GX_VA_CLR0:
                                         if (att.dataOffset + att.vtxStride * value != 0)
                                         {
-                                            temp = d.pos();
-                                            d.seek(att.dataOffset + att.vtxStride * value);
+                                            temp = d.Pos();
+                                            d.Seek(att.dataOffset + att.vtxStride * value);
                                             v.clr = readGXClr(d, att.compType);
-                                            d.seek(temp);
+                                            d.Seek(temp);
                                         }
                                         break;
                                         /*default:
@@ -1745,7 +1745,7 @@ namespace SmashForge
 
                 if (nextOffset != 0)
                 {
-                    d.seek(nextOffset);
+                    d.Seek(nextOffset);
                     POBJ pol = new POBJ();
                     pol.Read(d, dat, dobj, parent);
                 }
@@ -1759,41 +1759,41 @@ namespace SmashForge
                 switch (type)
                 {
                     case 0: // GX_RGB565
-                        b = d.readShort();
+                        b = d.ReadShort();
                         clr.X = ((((b >> 11) & 0x1F) << 3) | (((b >> 11) & 0x1F) >> 2)) / (float)0xFF;
                         clr.Y = ((((b >> 5) & 0x3F) << 2) | (((b >> 5) & 0x3F) >> 4)) / (float)0xFF;
                         clr.Z = ((((b) & 0x1F) << 3) | (((b) & 0x1F) >> 2)) / (float)0xFF;
                         break;
                     case 1: // GX_RGB888
-                        clr.X = d.readByte() / (float)0xFF;
-                        clr.Y = d.readByte() / (float)0xFF;
-                        clr.Z = d.readByte() / (float)0xFF;
+                        clr.X = d.ReadByte() / (float)0xFF;
+                        clr.Y = d.ReadByte() / (float)0xFF;
+                        clr.Z = d.ReadByte() / (float)0xFF;
                         break;
                     case 2: // GX_RGBX888
-                        clr.X = d.readByte() / (float)0xFF;
-                        clr.Y = d.readByte() / (float)0xFF;
-                        clr.Z = d.readByte() / (float)0xFF;
-                        d.skip(8);
+                        clr.X = d.ReadByte() / (float)0xFF;
+                        clr.Y = d.ReadByte() / (float)0xFF;
+                        clr.Z = d.ReadByte() / (float)0xFF;
+                        d.Skip(8);
                         break;
                     case 3: // GX_RGBA4
-                        b = d.readShort();
+                        b = d.ReadShort();
                         clr.X = ((((b >> 12) & 0xF) << 4) | ((b >> 12) & 0xF)) / (float)0xFF;
                         clr.Y = ((((b >> 8) & 0xF) << 4) | ((b >> 8) & 0xF)) / (float)0xFF;
                         clr.Z = ((((b >> 4) & 0xF) << 4) | ((b >> 4) & 0xF)) / (float)0xFF;
                         clr.W = ((((b) & 0xF) << 4) | ((b) & 0xF)) / (float)0xFF;
                         break;
                     case 4: // GX_RGBA6
-                        b = d.readThree();
+                        b = d.ReadThree();
                         clr.X = ((((b >> 18) & 0x3F) << 2) | (((b >> 18) & 0x3F) >> 4)) / (float)0xFF;
                         clr.Y = ((((b >> 12) & 0x3F) << 2) | (((b >> 12) & 0x3F) >> 4)) / (float)0xFF;
                         clr.Z = ((((b >> 6) & 0x3F) << 2) | (((b >> 6) & 0x3F) >> 4)) / (float)0xFF;
                         clr.W = ((((b) & 0x3F) << 2) | (((b) & 0x3F) >> 4)) / (float)0xFF;
                         break;
                     case 5: // GX_RGBX888
-                        clr.X = d.readByte() / (float)0xFF;
-                        clr.Y = d.readByte() / (float)0xFF;
-                        clr.Z = d.readByte() / (float)0xFF;
-                        clr.W = d.readByte() / (float)0xFF;
+                        clr.X = d.ReadByte() / (float)0xFF;
+                        clr.Y = d.ReadByte() / (float)0xFF;
+                        clr.Z = d.ReadByte() / (float)0xFF;
+                        clr.W = d.ReadByte() / (float)0xFF;
                         break;
                 }
 
@@ -1808,23 +1808,23 @@ namespace SmashForge
                 {
                     case 0:
                         for (int i = 0; i < size; i++)
-                            a[i] = d.readByte();
+                            a[i] = d.ReadByte();
                         break;
                     case 1:
                         for (int i = 0; i < size; i++)
-                            a[i] = unchecked((sbyte)(d.readByte()));
+                            a[i] = unchecked((sbyte)(d.ReadByte()));
                         break;
                     case 2:
                         for (int i = 0; i < size; i++)
-                            a[i] = (d.readShort());
+                            a[i] = (d.ReadShort());
                         break;
                     case 3:
                         for (int i = 0; i < size; i++)
-                            a[i] = (short)(d.readShort());
+                            a[i] = (short)(d.ReadShort());
                         break;
                     case 4:
                         for (int i = 0; i < size; i++)
-                            a[i] = d.readFloat();
+                            a[i] = d.ReadFloat();
                         break;
                 }
 

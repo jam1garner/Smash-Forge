@@ -703,11 +703,11 @@
     <Compile Include="GUI\Menus\RenderSettingsMenu.Designer.cs">
       <DependentUpon>RenderSettingsMenu.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Menus\ROM_Injector.cs">
+    <Compile Include="GUI\Menus\RomInjector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Menus\ROM_Injector.Designer.cs">
-      <DependentUpon>ROM_Injector.cs</DependentUpon>
+    <Compile Include="GUI\Menus\RomInjector.Designer.cs">
+      <DependentUpon>RomInjector.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\ModelViewport.cs">
       <SubType>Form</SubType>
@@ -958,8 +958,8 @@
     <EmbeddedResource Include="GUI\Menus\PolygonSelector.resx">
       <DependentUpon>PolygonSelector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Menus\ROM_Injector.resx">
-      <DependentUpon>ROM_Injector.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Menus\RomInjector.resx">
+      <DependentUpon>RomInjector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\TextureSelector.resx">
       <DependentUpon>TextureSelector.cs</DependentUpon>

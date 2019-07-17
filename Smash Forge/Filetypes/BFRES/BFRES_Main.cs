@@ -1,21 +1,17 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using SFGraphics.Cameras;
+using SFGraphics.GLObjects.Shaders;
+using SFGraphics.Utils;
+using SmashForge.Rendering;
+using Syroot.NintenTools.Bfres;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.Drawing;
-using Syroot.NintenTools.Bfres;
-using Syroot.NintenTools.Bfres.GX2;
-using Syroot.NintenTools.Bfres.Helpers;
 using ResNSW = Syroot.NintenTools.NSW.Bfres;
-using SFGraphics.GLObjects.Shaders;
-using SFGraphics.GLObjects;
-using SFGraphics.Cameras;
-using SFGraphics.GLObjects.Textures;
-using SFGraphics.Utils;
-using SmashForge.Rendering;
 
 namespace SmashForge
 {
@@ -41,7 +37,7 @@ namespace SmashForge
         public int FSHACount; //Shape/Vertex animations
         public int FSCNCount; //Scene animations
 
-        //Wii U seperates it's material anims into different sections
+        //Wii U separates it's material anims into different sections
         public int FTXPCount; //Texture patterns
         public int FSHUCount; //Shader animations
 
@@ -105,9 +101,9 @@ namespace SmashForge
 
             BFRESFile = file_data;
 
-            f.seek(4);
+            f.Seek(4);
 
-            int SwitchCheck = f.readInt();
+            int SwitchCheck = f.ReadInt();
             if (SwitchCheck == 0x20202020)
             {
                 IsSwitchBFRES = true;
@@ -240,12 +236,12 @@ namespace SmashForge
                     FileData f = new FileData(ext.Data);
                     if (ext.Data.Length > 4) //BOTW has some external files that are smaller than 4 which i need to read for magic
                     {
-                        int EmMagic = f.readInt();
+                        int EmMagic = f.ReadInt();
                         if (EmMagic == 0x424E5458) //Textures
                         {
-                            f.Endian = Endianness.Little;
-                            f.skip(-4);
-                            int temp = f.pos();
+                            f.endian = Endianness.Little;
+                            f.Skip(-4);
+                            int temp = f.Pos();
                             NewBntx = new BNTX();
                             NewBntx.Read(f);
                             TEmbedded.Nodes.Add(NewBntx);
@@ -446,13 +442,13 @@ namespace SmashForge
 
             Shader shader;
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                shader = OpenTKSharedResources.shaders["BFRES_Debug"];
+                shader = OpenTkSharedResources.shaders["BFRES_Debug"];
             else if (mesh.material.shaderassign.ShaderModel == "uking_mat")
-                shader = OpenTKSharedResources.shaders["BFRES_Botw"];
+                shader = OpenTkSharedResources.shaders["BFRES_Botw"];
             else if (Runtime.renderBfresPbr)
-                shader = OpenTKSharedResources.shaders["BFRES_PBR"];
+                shader = OpenTkSharedResources.shaders["BFRES_PBR"];
             else
-                shader = OpenTKSharedResources.shaders["BFRES"];
+                shader = OpenTkSharedResources.shaders["BFRES"];
 
             shader.UseProgram();
 
@@ -870,7 +866,7 @@ namespace SmashForge
 
             if (IsSwitchBFRES == true)
             {
-                foreach (BNTX bntx in Runtime.BNTXList)
+                foreach (BNTX bntx in Runtime.bntxList)
                 {
                     if (bntx.glTexByName.TryGetValue(tex.Name, out texture))
                     {
@@ -880,7 +876,7 @@ namespace SmashForge
             }
             else
             {
-                foreach (FTEXContainer ftexC in Runtime.FTEXContainerList)
+                foreach (FTEXContainer ftexC in Runtime.ftexContainerList)
                 {
                     if (ftexC.glTexByName.TryGetValue(tex.Name, out texture))
                     {
@@ -1838,10 +1834,10 @@ namespace SmashForge
         private static VBN vbn()
         {
 
-            if (Runtime.TargetVBN == null) //Create VBN as target so we can export anims
-                Runtime.TargetVBN = new VBN();
+            if (Runtime.TargetVbn == null) //Create VBN as target so we can export anims
+                Runtime.TargetVbn = new VBN();
 
-            return Runtime.TargetVBN;
+            return Runtime.TargetVbn;
         }
         public class FMDL_Model : TreeNode
         {

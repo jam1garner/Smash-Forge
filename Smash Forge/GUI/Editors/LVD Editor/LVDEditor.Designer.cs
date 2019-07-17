@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class LVDEditor
+    partial class LvdEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -338,7 +338,7 @@
             this.nameTB.Name = "nameTB";
             this.nameTB.Size = new System.Drawing.Size(220, 20);
             this.nameTB.TabIndex = 1;
-            this.nameTB.TextChanged += new System.EventHandler(this.nameChange);
+            this.nameTB.TextChanged += new System.EventHandler(this.NameChange);
             // 
             // subnameTB
             // 
@@ -348,7 +348,7 @@
             this.subnameTB.Name = "subnameTB";
             this.subnameTB.Size = new System.Drawing.Size(220, 20);
             this.subnameTB.TabIndex = 2;
-            this.subnameTB.TextChanged += new System.EventHandler(this.nameChange);
+            this.subnameTB.TextChanged += new System.EventHandler(this.NameChange);
             // 
             // boneRigSelectButton
             // 
@@ -389,7 +389,7 @@
             this.zStartPosUpDown.Name = "zStartPosUpDown";
             this.zStartPosUpDown.Size = new System.Drawing.Size(56, 20);
             this.zStartPosUpDown.TabIndex = 31;
-            this.zStartPosUpDown.ValueChanged += new System.EventHandler(this.changeStart);
+            this.zStartPosUpDown.ValueChanged += new System.EventHandler(this.ChangeStart);
             // 
             // yStartPosUpDown
             // 
@@ -409,7 +409,7 @@
             this.yStartPosUpDown.Name = "yStartPosUpDown";
             this.yStartPosUpDown.Size = new System.Drawing.Size(56, 20);
             this.yStartPosUpDown.TabIndex = 30;
-            this.yStartPosUpDown.ValueChanged += new System.EventHandler(this.changeStart);
+            this.yStartPosUpDown.ValueChanged += new System.EventHandler(this.ChangeStart);
             // 
             // xStartPosUpDown
             // 
@@ -429,7 +429,7 @@
             this.xStartPosUpDown.Name = "xStartPosUpDown";
             this.xStartPosUpDown.Size = new System.Drawing.Size(56, 20);
             this.xStartPosUpDown.TabIndex = 29;
-            this.xStartPosUpDown.ValueChanged += new System.EventHandler(this.changeStart);
+            this.xStartPosUpDown.ValueChanged += new System.EventHandler(this.ChangeStart);
             // 
             // label10
             // 
@@ -481,7 +481,7 @@
             this.useStartPosCB.TabIndex = 10;
             this.useStartPosCB.Text = "Use Start Position";
             this.useStartPosCB.UseVisualStyleBackColor = true;
-            this.useStartPosCB.CheckedChanged += new System.EventHandler(this.changeStart);
+            this.useStartPosCB.CheckedChanged += new System.EventHandler(this.ChangeStart);
             // 
             // collisionGroup
             // 
@@ -634,7 +634,7 @@
             this.noWallJumpCB.TabIndex = 16;
             this.noWallJumpCB.Text = "No Wall Jump";
             this.noWallJumpCB.UseVisualStyleBackColor = true;
-            this.noWallJumpCB.CheckedChanged += new System.EventHandler(this.lineFlagChange);
+            this.noWallJumpCB.CheckedChanged += new System.EventHandler(this.LineFlagChange);
             // 
             // rightLedgeCB
             // 
@@ -646,7 +646,7 @@
             this.rightLedgeCB.TabIndex = 15;
             this.rightLedgeCB.Text = "Right Ledge";
             this.rightLedgeCB.UseVisualStyleBackColor = true;
-            this.rightLedgeCB.CheckedChanged += new System.EventHandler(this.lineFlagChange);
+            this.rightLedgeCB.CheckedChanged += new System.EventHandler(this.LineFlagChange);
             // 
             // leftLedgeCB
             // 
@@ -658,7 +658,7 @@
             this.leftLedgeCB.TabIndex = 14;
             this.leftLedgeCB.Text = "Left Ledge";
             this.leftLedgeCB.UseVisualStyleBackColor = true;
-            this.leftLedgeCB.CheckedChanged += new System.EventHandler(this.lineFlagChange);
+            this.leftLedgeCB.CheckedChanged += new System.EventHandler(this.LineFlagChange);
             // 
             // dropThroughCB
             // 
@@ -670,7 +670,7 @@
             this.dropThroughCB.TabIndex = 13;
             this.dropThroughCB.Text = "Drop-Through";
             this.dropThroughCB.UseVisualStyleBackColor = true;
-            this.dropThroughCB.CheckedChanged += new System.EventHandler(this.flagChange);
+            this.dropThroughCB.CheckedChanged += new System.EventHandler(this.FlagChange);
             // 
             // flag3CB
             // 
@@ -682,7 +682,7 @@
             this.flag3CB.TabIndex = 12;
             this.flag3CB.Text = "flag3";
             this.flag3CB.UseVisualStyleBackColor = true;
-            this.flag3CB.CheckedChanged += new System.EventHandler(this.flagChange);
+            this.flag3CB.CheckedChanged += new System.EventHandler(this.FlagChange);
             // 
             // rigCollisionCB
             // 
@@ -694,7 +694,7 @@
             this.rigCollisionCB.TabIndex = 11;
             this.rigCollisionCB.Text = "Rig Collision";
             this.rigCollisionCB.UseVisualStyleBackColor = true;
-            this.rigCollisionCB.CheckedChanged += new System.EventHandler(this.flagChange);
+            this.rigCollisionCB.CheckedChanged += new System.EventHandler(this.FlagChange);
             // 
             // flag1CB
             // 
@@ -706,7 +706,7 @@
             this.flag1CB.TabIndex = 10;
             this.flag1CB.Text = "flag1";
             this.flag1CB.UseVisualStyleBackColor = true;
-            this.flag1CB.CheckedChanged += new System.EventHandler(this.flagChange);
+            this.flag1CB.CheckedChanged += new System.EventHandler(this.FlagChange);
             // 
             // label4
             // 
@@ -747,7 +747,7 @@
             this.removeVertButton.TabIndex = 3;
             this.removeVertButton.Text = "-";
             this.removeVertButton.UseVisualStyleBackColor = true;
-            this.removeVertButton.Click += new System.EventHandler(this.removeVertButtonClicked);
+            this.removeVertButton.Click += new System.EventHandler(this.RemoveVertButtonClicked);
             // 
             // addVertButton
             // 
@@ -758,7 +758,7 @@
             this.addVertButton.TabIndex = 2;
             this.addVertButton.Text = "+";
             this.addVertButton.UseVisualStyleBackColor = true;
-            this.addVertButton.Click += new System.EventHandler(this.addVertButtonClicked);
+            this.addVertButton.Click += new System.EventHandler(this.AddVertButtonClicked);
             // 
             // label1
             // 
@@ -1089,7 +1089,7 @@
             this.yPointUpDown.Name = "yPointUpDown";
             this.yPointUpDown.Size = new System.Drawing.Size(56, 20);
             this.yPointUpDown.TabIndex = 33;
-            this.yPointUpDown.ValueChanged += new System.EventHandler(this.pointMoved);
+            this.yPointUpDown.ValueChanged += new System.EventHandler(this.PointMoved);
             // 
             // xPointUpDown
             // 
@@ -1109,7 +1109,7 @@
             this.xPointUpDown.Name = "xPointUpDown";
             this.xPointUpDown.Size = new System.Drawing.Size(56, 20);
             this.xPointUpDown.TabIndex = 32;
-            this.xPointUpDown.ValueChanged += new System.EventHandler(this.pointMoved);
+            this.xPointUpDown.ValueChanged += new System.EventHandler(this.PointMoved);
             // 
             // boundsGroup
             // 
@@ -1168,7 +1168,7 @@
             this.bottomVal.Name = "bottomVal";
             this.bottomVal.Size = new System.Drawing.Size(56, 20);
             this.bottomVal.TabIndex = 37;
-            this.bottomVal.ValueChanged += new System.EventHandler(this.boundsChanged);
+            this.bottomVal.ValueChanged += new System.EventHandler(this.BoundsChanged);
             // 
             // leftVal
             // 
@@ -1188,7 +1188,7 @@
             this.leftVal.Name = "leftVal";
             this.leftVal.Size = new System.Drawing.Size(56, 20);
             this.leftVal.TabIndex = 36;
-            this.leftVal.ValueChanged += new System.EventHandler(this.boundsChanged);
+            this.leftVal.ValueChanged += new System.EventHandler(this.BoundsChanged);
             // 
             // label13
             // 
@@ -1228,7 +1228,7 @@
             this.topValUpDown.Name = "topValUpDown";
             this.topValUpDown.Size = new System.Drawing.Size(56, 20);
             this.topValUpDown.TabIndex = 33;
-            this.topValUpDown.ValueChanged += new System.EventHandler(this.boundsChanged);
+            this.topValUpDown.ValueChanged += new System.EventHandler(this.BoundsChanged);
             // 
             // rightValUpDown
             // 
@@ -1248,7 +1248,7 @@
             this.rightValUpDown.Name = "rightValUpDown";
             this.rightValUpDown.Size = new System.Drawing.Size(56, 20);
             this.rightValUpDown.TabIndex = 32;
-            this.rightValUpDown.ValueChanged += new System.EventHandler(this.boundsChanged);
+            this.rightValUpDown.ValueChanged += new System.EventHandler(this.BoundsChanged);
             // 
             // enemyGeneratorGroup
             // 
@@ -1527,7 +1527,7 @@
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(50, 20);
             this.numericUpDown1.TabIndex = 41;
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.changeItemVertPosition);
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.ChangeItemVertPosition);
             // 
             // itemSpawnSectionTreeView
             // 
@@ -1557,7 +1557,7 @@
             this.numericUpDown2.Name = "numericUpDown2";
             this.numericUpDown2.Size = new System.Drawing.Size(50, 20);
             this.numericUpDown2.TabIndex = 40;
-            this.numericUpDown2.ValueChanged += new System.EventHandler(this.changeItemVertPosition);
+            this.numericUpDown2.ValueChanged += new System.EventHandler(this.ChangeItemVertPosition);
             // 
             // label20
             // 
@@ -1726,7 +1726,7 @@
             this.shapeValue1UpDown.Name = "shapeValue1UpDown";
             this.shapeValue1UpDown.Size = new System.Drawing.Size(56, 20);
             this.shapeValue1UpDown.TabIndex = 36;
-            this.shapeValue1UpDown.ValueChanged += new System.EventHandler(this.shapeValueChanged);
+            this.shapeValue1UpDown.ValueChanged += new System.EventHandler(this.ShapeValueChanged);
             // 
             // label25
             // 
@@ -1756,7 +1756,7 @@
             this.shapeValue2UpDown.Name = "shapeValue2UpDown";
             this.shapeValue2UpDown.Size = new System.Drawing.Size(56, 20);
             this.shapeValue2UpDown.TabIndex = 37;
-            this.shapeValue2UpDown.ValueChanged += new System.EventHandler(this.shapeValueChanged);
+            this.shapeValue2UpDown.ValueChanged += new System.EventHandler(this.ShapeValueChanged);
             // 
             // label26
             // 
@@ -1786,7 +1786,7 @@
             this.shapeValue3UpDown.Name = "shapeValue3UpDown";
             this.shapeValue3UpDown.Size = new System.Drawing.Size(56, 20);
             this.shapeValue3UpDown.TabIndex = 32;
-            this.shapeValue3UpDown.ValueChanged += new System.EventHandler(this.shapeValueChanged);
+            this.shapeValue3UpDown.ValueChanged += new System.EventHandler(this.ShapeValueChanged);
             // 
             // label27
             // 
@@ -1816,7 +1816,7 @@
             this.shapeValue4UpDown.Name = "shapeValue4UpDown";
             this.shapeValue4UpDown.Size = new System.Drawing.Size(56, 20);
             this.shapeValue4UpDown.TabIndex = 33;
-            this.shapeValue4UpDown.ValueChanged += new System.EventHandler(this.shapeValueChanged);
+            this.shapeValue4UpDown.ValueChanged += new System.EventHandler(this.ShapeValueChanged);
             // 
             // treeViewPath
             // 
@@ -1898,7 +1898,7 @@
             this.pathNodeY.Name = "pathNodeY";
             this.pathNodeY.Size = new System.Drawing.Size(56, 20);
             this.pathNodeY.TabIndex = 41;
-            this.pathNodeY.ValueChanged += new System.EventHandler(this.pathValueChanged);
+            this.pathNodeY.ValueChanged += new System.EventHandler(this.PathValueChanged);
             // 
             // pathNodeX
             // 
@@ -1918,7 +1918,7 @@
             this.pathNodeX.Name = "pathNodeX";
             this.pathNodeX.Size = new System.Drawing.Size(56, 20);
             this.pathNodeX.TabIndex = 40;
-            this.pathNodeX.ValueChanged += new System.EventHandler(this.pathValueChanged);
+            this.pathNodeX.ValueChanged += new System.EventHandler(this.PathValueChanged);
             // 
             // damageShapeGroup
             // 
@@ -2212,7 +2212,7 @@
             this.meleeVerts.Name = "meleeVerts";
             this.meleeVerts.Size = new System.Drawing.Size(188, 274);
             this.meleeVerts.TabIndex = 21;
-            this.meleeVerts.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.selectItem);
+            this.meleeVerts.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SelectItem);
             // 
             // meleeAddVert
             // 
@@ -2254,7 +2254,7 @@
             this.meleeY.Name = "meleeY";
             this.meleeY.Size = new System.Drawing.Size(50, 20);
             this.meleeY.TabIndex = 24;
-            this.meleeY.ValueChanged += new System.EventHandler(this.updateVertexPosition);
+            this.meleeY.ValueChanged += new System.EventHandler(this.UpdateVertexPosition);
             // 
             // label42
             // 
@@ -2294,7 +2294,7 @@
             this.meleeX.Name = "meleeX";
             this.meleeX.Size = new System.Drawing.Size(50, 20);
             this.meleeX.TabIndex = 23;
-            this.meleeX.ValueChanged += new System.EventHandler(this.updateVertexPosition);
+            this.meleeX.ValueChanged += new System.EventHandler(this.UpdateVertexPosition);
             // 
             // label43
             // 
@@ -2354,7 +2354,7 @@
             this.linkAfter.Name = "linkAfter";
             this.linkAfter.Size = new System.Drawing.Size(33, 20);
             this.linkAfter.TabIndex = 39;
-            this.linkAfter.ValueChanged += new System.EventHandler(this.linkVertUpdate);
+            this.linkAfter.ValueChanged += new System.EventHandler(this.LinkVertUpdate);
             // 
             // linkBefore
             // 
@@ -2373,7 +2373,7 @@
             this.linkBefore.Name = "linkBefore";
             this.linkBefore.Size = new System.Drawing.Size(33, 20);
             this.linkBefore.TabIndex = 38;
-            this.linkBefore.ValueChanged += new System.EventHandler(this.linkVertUpdate);
+            this.linkBefore.ValueChanged += new System.EventHandler(this.LinkVertUpdate);
             // 
             // label44
             // 
@@ -2405,7 +2405,7 @@
             this.meleeDropThrough.TabIndex = 35;
             this.meleeDropThrough.Text = "Drop Through";
             this.meleeDropThrough.UseVisualStyleBackColor = true;
-            this.meleeDropThrough.CheckedChanged += new System.EventHandler(this.linkPropertyUpdate);
+            this.meleeDropThrough.CheckedChanged += new System.EventHandler(this.LinkPropertyUpdate);
             // 
             // vertEnd
             // 
@@ -2419,7 +2419,7 @@
             this.vertEnd.Name = "vertEnd";
             this.vertEnd.Size = new System.Drawing.Size(33, 20);
             this.vertEnd.TabIndex = 34;
-            this.vertEnd.ValueChanged += new System.EventHandler(this.linkVertUpdate);
+            this.vertEnd.ValueChanged += new System.EventHandler(this.LinkVertUpdate);
             // 
             // label34
             // 
@@ -2443,7 +2443,7 @@
             this.vertStart.Name = "vertStart";
             this.vertStart.Size = new System.Drawing.Size(33, 20);
             this.vertStart.TabIndex = 32;
-            this.vertStart.ValueChanged += new System.EventHandler(this.linkVertUpdate);
+            this.vertStart.ValueChanged += new System.EventHandler(this.LinkVertUpdate);
             // 
             // label33
             // 
@@ -2463,7 +2463,7 @@
             this.meleeLinks.Name = "meleeLinks";
             this.meleeLinks.Size = new System.Drawing.Size(192, 204);
             this.meleeLinks.TabIndex = 22;
-            this.meleeLinks.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.selectItem);
+            this.meleeLinks.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SelectItem);
             // 
             // ceiling
             // 
@@ -2475,7 +2475,7 @@
             this.ceiling.TabIndex = 28;
             this.ceiling.Text = "Ceiling";
             this.ceiling.UseVisualStyleBackColor = true;
-            this.ceiling.CheckedChanged += new System.EventHandler(this.linkPropertyUpdate);
+            this.ceiling.CheckedChanged += new System.EventHandler(this.LinkPropertyUpdate);
             // 
             // meleeSubtractLink
             // 
@@ -2498,7 +2498,7 @@
             this.floor.TabIndex = 27;
             this.floor.Text = "Floor";
             this.floor.UseVisualStyleBackColor = true;
-            this.floor.CheckedChanged += new System.EventHandler(this.linkPropertyUpdate);
+            this.floor.CheckedChanged += new System.EventHandler(this.LinkPropertyUpdate);
             // 
             // meleeAddLink
             // 
@@ -2521,7 +2521,7 @@
             this.rightWall.TabIndex = 26;
             this.rightWall.Text = "Right Wall";
             this.rightWall.UseVisualStyleBackColor = true;
-            this.rightWall.CheckedChanged += new System.EventHandler(this.linkPropertyUpdate);
+            this.rightWall.CheckedChanged += new System.EventHandler(this.LinkPropertyUpdate);
             // 
             // label40
             // 
@@ -2543,7 +2543,7 @@
             this.leftWall.TabIndex = 25;
             this.leftWall.Text = "Left Wall";
             this.leftWall.UseVisualStyleBackColor = true;
-            this.leftWall.CheckedChanged += new System.EventHandler(this.linkPropertyUpdate);
+            this.leftWall.CheckedChanged += new System.EventHandler(this.LinkPropertyUpdate);
             // 
             // comboBox2
             // 
@@ -2590,7 +2590,7 @@
             this.ledge.TabIndex = 14;
             this.ledge.Text = "Ledge";
             this.ledge.UseVisualStyleBackColor = true;
-            this.ledge.CheckedChanged += new System.EventHandler(this.linkPropertyUpdate);
+            this.ledge.CheckedChanged += new System.EventHandler(this.LinkPropertyUpdate);
             // 
             // label38
             // 
@@ -2642,7 +2642,7 @@
             0,
             0,
             0});
-            this.polyEnd.ValueChanged += new System.EventHandler(this.polygonRangeChange);
+            this.polyEnd.ValueChanged += new System.EventHandler(this.PolygonRangeChange);
             // 
             // label36
             // 
@@ -2666,7 +2666,7 @@
             this.polyStart.Name = "polyStart";
             this.polyStart.Size = new System.Drawing.Size(41, 20);
             this.polyStart.TabIndex = 36;
-            this.polyStart.ValueChanged += new System.EventHandler(this.polygonRangeChange);
+            this.polyStart.ValueChanged += new System.EventHandler(this.PolygonRangeChange);
             // 
             // label37
             // 
@@ -2686,7 +2686,7 @@
             this.meleePolygons.Name = "meleePolygons";
             this.meleePolygons.Size = new System.Drawing.Size(192, 273);
             this.meleePolygons.TabIndex = 32;
-            this.meleePolygons.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.selectItem);
+            this.meleePolygons.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SelectItem);
             // 
             // polygonSubtract
             // 
@@ -2756,7 +2756,7 @@
             this.jobjZ.Name = "jobjZ";
             this.jobjZ.Size = new System.Drawing.Size(50, 20);
             this.jobjZ.TabIndex = 35;
-            this.jobjZ.ValueChanged += new System.EventHandler(this.jobjPostionUpdate);
+            this.jobjZ.ValueChanged += new System.EventHandler(this.JobjPostionUpdate);
             // 
             // label47
             // 
@@ -2806,7 +2806,7 @@
             this.jobjY.Name = "jobjY";
             this.jobjY.Size = new System.Drawing.Size(50, 20);
             this.jobjY.TabIndex = 33;
-            this.jobjY.ValueChanged += new System.EventHandler(this.jobjPostionUpdate);
+            this.jobjY.ValueChanged += new System.EventHandler(this.JobjPostionUpdate);
             // 
             // jobjX
             // 
@@ -2826,7 +2826,7 @@
             this.jobjX.Name = "jobjX";
             this.jobjX.Size = new System.Drawing.Size(50, 20);
             this.jobjX.TabIndex = 32;
-            this.jobjX.ValueChanged += new System.EventHandler(this.jobjPostionUpdate);
+            this.jobjX.ValueChanged += new System.EventHandler(this.JobjPostionUpdate);
             // 
             // LVDEditor
             // 
@@ -2837,7 +2837,7 @@
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(226, 638);
-            this.Name = "LVDEditor";
+            this.Name = "LvdEditor";
             this.ShowIcon = false;
             this.Text = "Level Editor";
             this.Load += new System.EventHandler(this.LVDEditor_Load);

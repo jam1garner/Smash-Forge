@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class ACMDPreviewEditor
+    partial class AcmdPreviewEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -48,7 +48,7 @@
             this.cb_section.Name = "cb_section";
             this.cb_section.Size = new System.Drawing.Size(420, 21);
             this.cb_section.TabIndex = 0;
-            this.cb_section.SelectedIndexChanged += new System.EventHandler(this.updateSelection);
+            this.cb_section.SelectedIndexChanged += new System.EventHandler(this.UpdateSelection);
             this.cb_section.TextUpdate += new System.EventHandler(this.cb_section_TextUpdate);
             // 
             // richTextBox1
@@ -83,7 +83,7 @@
             this.cb_crc.Name = "cb_crc";
             this.cb_crc.Size = new System.Drawing.Size(420, 21);
             this.cb_crc.TabIndex = 3;
-            this.cb_crc.SelectedIndexChanged += new System.EventHandler(this.updateCrc);
+            this.cb_crc.SelectedIndexChanged += new System.EventHandler(this.UpdateCrc);
             // 
             // ACMDPreviewEditor
             // 
@@ -95,7 +95,7 @@
             this.Controls.Add(this.cb_section);
             this.Controls.Add(this.cb_crc);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "ACMDPreviewEditor";
+            this.Name = "AcmdPreviewEditor";
             this.Text = "ACMDPreviewEditor";
             this.ResumeLayout(false);
 

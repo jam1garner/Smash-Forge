@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -18,31 +11,31 @@ namespace SmashForge
             InitializeComponent();
         }
 
-        public BYAML TargetBYAML;
-        public ByamlEditor BYAMLEditor;
+        public BYAML targetByaml;
+        public ByamlEditor byamlEditor;
 
 
-        public void fillList()
+        public void FillList()
         {
-            if (TargetBYAML != null)
+            if (targetByaml != null)
             {
                 Console.WriteLine("Adding items to list");
-                treeView1.Nodes.Add(TargetBYAML.Areas);
-                treeView1.Nodes.Add(TargetBYAML.Clips);
-                treeView1.Nodes.Add(TargetBYAML.ClipAreas);
-                treeView1.Nodes.Add(TargetBYAML.ClipPatterns);
-                treeView1.Nodes.Add(TargetBYAML.EnemyPaths);
-                treeView1.Nodes.Add(TargetBYAML.FirstCurve);
-                treeView1.Nodes.Add(TargetBYAML.GliderPaths);
-                treeView1.Nodes.Add(TargetBYAML.GravityCamPaths);
-                treeView1.Nodes.Add(TargetBYAML.GravityPaths);
-                treeView1.Nodes.Add(TargetBYAML.IntroCameras);
-                treeView1.Nodes.Add(TargetBYAML.ItemPaths);
-                treeView1.Nodes.Add(TargetBYAML.JugemPaths);
-                treeView1.Nodes.Add(TargetBYAML.LapPaths);
-                treeView1.Nodes.Add(TargetBYAML.Objs);
-                treeView1.Nodes.Add(TargetBYAML.ObjPaths);
-                treeView1.Nodes.Add(TargetBYAML.Paths);
+                treeView1.Nodes.Add(targetByaml.Areas);
+                treeView1.Nodes.Add(targetByaml.Clips);
+                treeView1.Nodes.Add(targetByaml.ClipAreas);
+                treeView1.Nodes.Add(targetByaml.ClipPatterns);
+                treeView1.Nodes.Add(targetByaml.EnemyPaths);
+                treeView1.Nodes.Add(targetByaml.FirstCurve);
+                treeView1.Nodes.Add(targetByaml.GliderPaths);
+                treeView1.Nodes.Add(targetByaml.GravityCamPaths);
+                treeView1.Nodes.Add(targetByaml.GravityPaths);
+                treeView1.Nodes.Add(targetByaml.IntroCameras);
+                treeView1.Nodes.Add(targetByaml.ItemPaths);
+                treeView1.Nodes.Add(targetByaml.JugemPaths);
+                treeView1.Nodes.Add(targetByaml.LapPaths);
+                treeView1.Nodes.Add(targetByaml.Objs);
+                treeView1.Nodes.Add(targetByaml.ObjPaths);
+                treeView1.Nodes.Add(targetByaml.Paths);
             }
         }
 
@@ -55,7 +48,7 @@ namespace SmashForge
 
             if (e.Node.Level != 0)
             {
-                BYAMLEditor.Open(pt);
+                byamlEditor.Open(pt);
             }
         }
     }

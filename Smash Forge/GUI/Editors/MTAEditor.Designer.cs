@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class MTAEditor
+    partial class MtaEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MTAEditor));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MtaEditor));
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.compileButton = new System.Windows.Forms.Button();
             this.loadViewportButton = new System.Windows.Forms.Button();
@@ -79,7 +79,7 @@
             this.Controls.Add(this.richTextBox1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "MTAEditor";
+            this.Name = "MtaEditor";
             this.Text = "MTAEditor";
             this.Load += new System.EventHandler(this.MTAEditor_Load);
             this.ResumeLayout(false);

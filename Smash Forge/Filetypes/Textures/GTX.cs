@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace SmashForge
 {
-    public class GTX
+    public class Gtx
     {
 
-        public struct GX2Surface
+        public struct Gx2Surface
         {
             public int dim;
             public int width;
@@ -33,295 +31,295 @@ namespace SmashForge
             public int[] mipOffset;
         };
 
-        public enum GX2SurfaceDimension
+        public enum Gx2SurfaceDimension
         {
-            GX2_SURFACE_DIM_1D = 0x0,
-            GX2_SURFACE_DIM_2D = 0x1,
-            GX2_SURFACE_DIM_3D = 0x2,
-            GX2_SURFACE_DIM_CUBE = 0x3,
-            GX2_SURFACE_DIM_1D_ARRAY = 0x4,
-            GX2_SURFACE_DIM_2D_ARRAY = 0x5,
-            GX2_SURFACE_DIM_2D_MSAA = 0x6,
-            GX2_SURFACE_DIM_2D_MSAA_ARRAY = 0x7,
-            GX2_SURFACE_DIM_FIRST = 0x0,
-            GX2_SURFACE_DIM_LAST = 0x7,
+            Gx2SurfaceDim1D = 0x0,
+            Gx2SurfaceDim2D = 0x1,
+            Gx2SurfaceDim3D = 0x2,
+            Gx2SurfaceDimCube = 0x3,
+            Gx2SurfaceDim1DArray = 0x4,
+            Gx2SurfaceDim2DArray = 0x5,
+            Gx2SurfaceDim2DMsaa = 0x6,
+            Gx2SurfaceDim2DMsaaArray = 0x7,
+            Gx2SurfaceDimFirst = 0x0,
+            Gx2SurfaceDimLast = 0x7,
         };
-        public enum GX2SurfaceFormat
+        public enum Gx2SurfaceFormat
         {
-            GX2_SURFACE_FORMAT_INVALID = 0x0,
-            GX2_SURFACE_FORMAT_TC_R8_UNORM = 0x1,
-            GX2_SURFACE_FORMAT_TC_R8_UINT = 0x101,
-            GX2_SURFACE_FORMAT_TC_R8_SNORM = 0x201,
-            GX2_SURFACE_FORMAT_TC_R8_SINT = 0x301,
-            GX2_SURFACE_FORMAT_T_R4_G4_UNORM = 0x2,
-            GX2_SURFACE_FORMAT_TCD_R16_UNORM = 0x5,
-            GX2_SURFACE_FORMAT_TC_R16_UINT = 0x105,
-            GX2_SURFACE_FORMAT_TC_R16_SNORM = 0x205,
-            GX2_SURFACE_FORMAT_TC_R16_SINT = 0x305,
-            GX2_SURFACE_FORMAT_TC_R16_FLOAT = 0x806,
-            GX2_SURFACE_FORMAT_TC_R8_G8_UNORM = 0x7,
-            GX2_SURFACE_FORMAT_TC_R8_G8_UINT = 0x107,
-            GX2_SURFACE_FORMAT_TC_R8_G8_SNORM = 0x207,
-            GX2_SURFACE_FORMAT_TC_R8_G8_SINT = 0x307,
-            GX2_SURFACE_FORMAT_TCS_R5_G6_B5_UNORM = 0x8,
-            GX2_SURFACE_FORMAT_TC_R5_G5_B5_A1_UNORM = 0xA,
-            GX2_SURFACE_FORMAT_TC_R4_G4_B4_A4_UNORM = 0xB,
-            GX2_SURFACE_FORMAT_TC_A1_B5_G5_R5_UNORM = 0xC,
-            GX2_SURFACE_FORMAT_TC_R32_UINT = 0x10D,
-            GX2_SURFACE_FORMAT_TC_R32_SINT = 0x30D,
-            GX2_SURFACE_FORMAT_TCD_R32_FLOAT = 0x80E,
-            GX2_SURFACE_FORMAT_TC_R16_G16_UNORM = 0xF,
-            GX2_SURFACE_FORMAT_TC_R16_G16_UINT = 0x10F,
-            GX2_SURFACE_FORMAT_TC_R16_G16_SNORM = 0x20F,
-            GX2_SURFACE_FORMAT_TC_R16_G16_SINT = 0x30F,
-            GX2_SURFACE_FORMAT_TC_R16_G16_FLOAT = 0x810,
-            GX2_SURFACE_FORMAT_D_D24_S8_UNORM = 0x11,
-            GX2_SURFACE_FORMAT_T_R24_UNORM_X8 = 0x11,
-            GX2_SURFACE_FORMAT_T_X24_G8_UINT = 0x111,
-            GX2_SURFACE_FORMAT_D_D24_S8_FLOAT = 0x811,
-            GX2_SURFACE_FORMAT_TC_R11_G11_B10_FLOAT = 0x816,
-            GX2_SURFACE_FORMAT_TCS_R10_G10_B10_A2_UNORM = 0x19,
-            GX2_SURFACE_FORMAT_TC_R10_G10_B10_A2_UINT = 0x119,
-            GX2_SURFACE_FORMAT_T_R10_G10_B10_A2_SNORM = 0x219,
-            GX2_SURFACE_FORMAT_TC_R10_G10_B10_A2_SNORM = 0x219,
-            GX2_SURFACE_FORMAT_TC_R10_G10_B10_A2_SINT = 0x319,
-            GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM = 0x1A,
-            GX2_SURFACE_FORMAT_TC_R8_G8_B8_A8_UINT = 0x11A,
-            GX2_SURFACE_FORMAT_TC_R8_G8_B8_A8_SNORM = 0x21A,
-            GX2_SURFACE_FORMAT_TC_R8_G8_B8_A8_SINT = 0x31A,
-            GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_SRGB = 0x41A,
-            GX2_SURFACE_FORMAT_TCS_A2_B10_G10_R10_UNORM = 0x1B,
-            GX2_SURFACE_FORMAT_TC_A2_B10_G10_R10_UINT = 0x11B,
-            GX2_SURFACE_FORMAT_D_D32_FLOAT_S8_UINT_X24 = 0x81C,
-            GX2_SURFACE_FORMAT_T_R32_FLOAT_X8_X24 = 0x81C,
-            GX2_SURFACE_FORMAT_T_X32_G8_UINT_X24 = 0x11C,
-            GX2_SURFACE_FORMAT_TC_R32_G32_UINT = 0x11D,
-            GX2_SURFACE_FORMAT_TC_R32_G32_SINT = 0x31D,
-            GX2_SURFACE_FORMAT_TC_R32_G32_FLOAT = 0x81E,
-            GX2_SURFACE_FORMAT_TC_R16_G16_B16_A16_UNORM = 0x1F,
-            GX2_SURFACE_FORMAT_TC_R16_G16_B16_A16_UINT = 0x11F,
-            GX2_SURFACE_FORMAT_TC_R16_G16_B16_A16_SNORM = 0x21F,
-            GX2_SURFACE_FORMAT_TC_R16_G16_B16_A16_SINT = 0x31F,
-            GX2_SURFACE_FORMAT_TC_R16_G16_B16_A16_FLOAT = 0x820,
-            GX2_SURFACE_FORMAT_TC_R32_G32_B32_A32_UINT = 0x122,
-            GX2_SURFACE_FORMAT_TC_R32_G32_B32_A32_SINT = 0x322,
-            GX2_SURFACE_FORMAT_TC_R32_G32_B32_A32_FLOAT = 0x823,
-            GX2_SURFACE_FORMAT_T_BC1_UNORM = 0x31,
-            GX2_SURFACE_FORMAT_T_BC1_SRGB = 0x431,
-            GX2_SURFACE_FORMAT_T_BC2_UNORM = 0x32,
-            GX2_SURFACE_FORMAT_T_BC2_SRGB = 0x432,
-            GX2_SURFACE_FORMAT_T_BC3_UNORM = 0x33,
-            GX2_SURFACE_FORMAT_T_BC3_SRGB = 0x433,
-            GX2_SURFACE_FORMAT_T_BC4_UNORM = 0x34,
-            GX2_SURFACE_FORMAT_T_BC4_SNORM = 0x234,
-            GX2_SURFACE_FORMAT_T_BC5_UNORM = 0x35,
-            GX2_SURFACE_FORMAT_T_BC5_SNORM = 0x235,
-            GX2_SURFACE_FORMAT_T_NV12_UNORM = 0x81,
-            GX2_SURFACE_FORMAT_FIRST = 0x1,
-            GX2_SURFACE_FORMAT_LAST = 0x83F,
+            Gx2SurfaceFormatInvalid = 0x0,
+            Gx2SurfaceFormatTcR8Unorm = 0x1,
+            Gx2SurfaceFormatTcR8Uint = 0x101,
+            Gx2SurfaceFormatTcR8Snorm = 0x201,
+            Gx2SurfaceFormatTcR8Sint = 0x301,
+            Gx2SurfaceFormatTR4G4Unorm = 0x2,
+            Gx2SurfaceFormatTcdR16Unorm = 0x5,
+            Gx2SurfaceFormatTcR16Uint = 0x105,
+            Gx2SurfaceFormatTcR16Snorm = 0x205,
+            Gx2SurfaceFormatTcR16Sint = 0x305,
+            Gx2SurfaceFormatTcR16Float = 0x806,
+            Gx2SurfaceFormatTcR8G8Unorm = 0x7,
+            Gx2SurfaceFormatTcR8G8Uint = 0x107,
+            Gx2SurfaceFormatTcR8G8Snorm = 0x207,
+            Gx2SurfaceFormatTcR8G8Sint = 0x307,
+            Gx2SurfaceFormatTcsR5G6B5Unorm = 0x8,
+            Gx2SurfaceFormatTcR5G5B5A1Unorm = 0xA,
+            Gx2SurfaceFormatTcR4G4B4A4Unorm = 0xB,
+            Gx2SurfaceFormatTcA1B5G5R5Unorm = 0xC,
+            Gx2SurfaceFormatTcR32Uint = 0x10D,
+            Gx2SurfaceFormatTcR32Sint = 0x30D,
+            Gx2SurfaceFormatTcdR32Float = 0x80E,
+            Gx2SurfaceFormatTcR16G16Unorm = 0xF,
+            Gx2SurfaceFormatTcR16G16Uint = 0x10F,
+            Gx2SurfaceFormatTcR16G16Snorm = 0x20F,
+            Gx2SurfaceFormatTcR16G16Sint = 0x30F,
+            Gx2SurfaceFormatTcR16G16Float = 0x810,
+            Gx2SurfaceFormatDD24S8Unorm = 0x11,
+            Gx2SurfaceFormatTR24UnormX8 = 0x11,
+            Gx2SurfaceFormatTX24G8Uint = 0x111,
+            Gx2SurfaceFormatDD24S8Float = 0x811,
+            Gx2SurfaceFormatTcR11G11B10Float = 0x816,
+            Gx2SurfaceFormatTcsR10G10B10A2Unorm = 0x19,
+            Gx2SurfaceFormatTcR10G10B10A2Uint = 0x119,
+            Gx2SurfaceFormatTR10G10B10A2Snorm = 0x219,
+            Gx2SurfaceFormatTcR10G10B10A2Snorm = 0x219,
+            Gx2SurfaceFormatTcR10G10B10A2Sint = 0x319,
+            Gx2SurfaceFormatTcsR8G8B8A8Unorm = 0x1A,
+            Gx2SurfaceFormatTcR8G8B8A8Uint = 0x11A,
+            Gx2SurfaceFormatTcR8G8B8A8Snorm = 0x21A,
+            Gx2SurfaceFormatTcR8G8B8A8Sint = 0x31A,
+            Gx2SurfaceFormatTcsR8G8B8A8Srgb = 0x41A,
+            Gx2SurfaceFormatTcsA2B10G10R10Unorm = 0x1B,
+            Gx2SurfaceFormatTcA2B10G10R10Uint = 0x11B,
+            Gx2SurfaceFormatDD32FloatS8UintX24 = 0x81C,
+            Gx2SurfaceFormatTR32FloatX8X24 = 0x81C,
+            Gx2SurfaceFormatTX32G8UintX24 = 0x11C,
+            Gx2SurfaceFormatTcR32G32Uint = 0x11D,
+            Gx2SurfaceFormatTcR32G32Sint = 0x31D,
+            Gx2SurfaceFormatTcR32G32Float = 0x81E,
+            Gx2SurfaceFormatTcR16G16B16A16Unorm = 0x1F,
+            Gx2SurfaceFormatTcR16G16B16A16Uint = 0x11F,
+            Gx2SurfaceFormatTcR16G16B16A16Snorm = 0x21F,
+            Gx2SurfaceFormatTcR16G16B16A16Sint = 0x31F,
+            Gx2SurfaceFormatTcR16G16B16A16Float = 0x820,
+            Gx2SurfaceFormatTcR32G32B32A32Uint = 0x122,
+            Gx2SurfaceFormatTcR32G32B32A32Sint = 0x322,
+            Gx2SurfaceFormatTcR32G32B32A32Float = 0x823,
+            Gx2SurfaceFormatTBc1Unorm = 0x31,
+            Gx2SurfaceFormatTBc1Srgb = 0x431,
+            Gx2SurfaceFormatTBc2Unorm = 0x32,
+            Gx2SurfaceFormatTBc2Srgb = 0x432,
+            Gx2SurfaceFormatTBc3Unorm = 0x33,
+            Gx2SurfaceFormatTBc3Srgb = 0x433,
+            Gx2SurfaceFormatTBc4Unorm = 0x34,
+            Gx2SurfaceFormatTBc4Snorm = 0x234,
+            Gx2SurfaceFormatTBc5Unorm = 0x35,
+            Gx2SurfaceFormatTBc5Snorm = 0x235,
+            Gx2SurfaceFormatTNv12Unorm = 0x81,
+            Gx2SurfaceFormatFirst = 0x1,
+            Gx2SurfaceFormatLast = 0x83F,
         };
-        public enum GX2AAMode
+        public enum Gx2AaMode
         {
-            GX2_AA_MODE_1X = 0x0,
-            GX2_AA_MODE_2X = 0x1,
-            GX2_AA_MODE_4X = 0x2,
-            GX2_AA_MODE_8X = 0x3,
-            GX2_AA_MODE_FIRST = 0x0,
-            GX2_AA_MODE_LAST = 0x3,
+            Gx2AaMode1X = 0x0,
+            Gx2AaMode2X = 0x1,
+            Gx2AaMode4X = 0x2,
+            Gx2AaMode8X = 0x3,
+            Gx2AaModeFirst = 0x0,
+            Gx2AaModeLast = 0x3,
         };
-        public enum GX2SurfaceUse : uint
+        public enum Gx2SurfaceUse : uint
         {
-            GX2_SURFACE_USE_TEXTURE = 0x1,
-            GX2_SURFACE_USE_COLOR_BUFFER = 0x2,
-            GX2_SURFACE_USE_DEPTH_BUFFER = 0x4,
-            GX2_SURFACE_USE_SCAN_BUFFER = 0x8,
-            GX2_SURFACE_USE_FTV = 0x80000000,
-            GX2_SURFACE_USE_COLOR_BUFFER_TEXTURE = 0x3,
-            GX2_SURFACE_USE_DEPTH_BUFFER_TEXTURE = 0x5,
-            GX2_SURFACE_USE_COLOR_BUFFER_FTV = 0x80000002,
-            GX2_SURFACE_USE_COLOR_BUFFER_TEXTURE_FTV = 0x80000003,
-            GX2_SURFACE_USE_FIRST = 0x1,
-            GX2_SURFACE_USE_LAST = 0x8,
+            Gx2SurfaceUseTexture = 0x1,
+            Gx2SurfaceUseColorBuffer = 0x2,
+            Gx2SurfaceUseDepthBuffer = 0x4,
+            Gx2SurfaceUseScanBuffer = 0x8,
+            Gx2SurfaceUseFtv = 0x80000000,
+            Gx2SurfaceUseColorBufferTexture = 0x3,
+            Gx2SurfaceUseDepthBufferTexture = 0x5,
+            Gx2SurfaceUseColorBufferFtv = 0x80000002,
+            Gx2SurfaceUseColorBufferTextureFtv = 0x80000003,
+            Gx2SurfaceUseFirst = 0x1,
+            Gx2SurfaceUseLast = 0x8,
         };
-        public enum GX2RResourceFlags
+        public enum Gx2RResourceFlags
         {
-            GX2R_RESOURCE_FLAGS_NONE = 0x0,
-            GX2R_BIND_NONE = 0x0,
-            GX2R_BIND_TEXTURE = 0x1,
-            GX2R_BIND_COLOR_BUFFER = 0x2,
-            GX2R_BIND_DEPTH_BUFFER = 0x4,
-            GX2R_BIND_SCAN_BUFFER = 0x8,
-            GX2R_BIND_VERTEX_BUFFER = 0x10,
-            GX2R_BIND_INDEX_BUFFER = 0x20,
-            GX2R_BIND_UNIFORM_BLOCK = 0x40,
-            GX2R_BIND_SHADER_PROGRAM = 0x80,
-            GX2R_BIND_STREAM_OUTPUT = 0x100,
-            GX2R_BIND_DISPLAY_LIST = 0x200,
-            GX2R_BIND_GS_RING = 0x400,
-            GX2R_USAGE_NONE = 0x0,
-            GX2R_USAGE_CPU_READ = 0x800,
-            GX2R_USAGE_CPU_WRITE = 0x1000,
-            GX2R_USAGE_GPU_READ = 0x2000,
-            GX2R_USAGE_GPU_WRITE = 0x4000,
-            GX2R_USAGE_DMA_READ = 0x8000,
-            GX2R_USAGE_DMA_WRITE = 0x10000,
-            GX2R_USAGE_FORCE_MEM1 = 0x20000,
-            GX2R_USAGE_FORCE_MEM2 = 0x40000,
-            GX2R_USAGE_MEM_DEFAULT = 0x0,
-            GX2R_USAGE_CPU_READWRITE = 0x1800,
-            GX2R_USAGE_GPU_READWRITE = 0x6000,
-            GX2R_USAGE_NON_CPU_WRITE = 0x14000,
-            GX2R_OPTION_NONE = 0x0,
-            GX2R_OPTION_IGNORE_IN_USE = 0x80000,
-            GX2R_OPTION_FIRST = 0x80000,
-            GX2R_OPTION_NO_CPU_INVALIDATE = 0x100000,
-            GX2R_OPTION_NO_GPU_INVALIDATE = 0x200000,
-            GX2R_OPTION_LOCK_READONLY = 0x400000,
-            GX2R_OPTION_NO_TOUCH_DESTROY = 0x800000,
-            GX2R_OPTION_LAST = 0x800000,
-            GX2R_OPTION_NO_INVALIDATE = 0x300000,
-            GX2R_OPTION_MASK = 0xF80000,
-            GX2R_RESOURCE_FLAG_RESERVED2 = 0x10000000,
-            GX2R_RESOURCE_FLAG_RESERVED1 = 0x20000000,
-            GX2R_RESOURCE_FLAG_RESERVED0 = 0x40000000,
+            Gx2RResourceFlagsNone = 0x0,
+            Gx2RBindNone = 0x0,
+            Gx2RBindTexture = 0x1,
+            Gx2RBindColorBuffer = 0x2,
+            Gx2RBindDepthBuffer = 0x4,
+            Gx2RBindScanBuffer = 0x8,
+            Gx2RBindVertexBuffer = 0x10,
+            Gx2RBindIndexBuffer = 0x20,
+            Gx2RBindUniformBlock = 0x40,
+            Gx2RBindShaderProgram = 0x80,
+            Gx2RBindStreamOutput = 0x100,
+            Gx2RBindDisplayList = 0x200,
+            Gx2RBindGsRing = 0x400,
+            Gx2RUsageNone = 0x0,
+            Gx2RUsageCpuRead = 0x800,
+            Gx2RUsageCpuWrite = 0x1000,
+            Gx2RUsageGpuRead = 0x2000,
+            Gx2RUsageGpuWrite = 0x4000,
+            Gx2RUsageDmaRead = 0x8000,
+            Gx2RUsageDmaWrite = 0x10000,
+            Gx2RUsageForceMem1 = 0x20000,
+            Gx2RUsageForceMem2 = 0x40000,
+            Gx2RUsageMemDefault = 0x0,
+            Gx2RUsageCpuReadwrite = 0x1800,
+            Gx2RUsageGpuReadwrite = 0x6000,
+            Gx2RUsageNonCpuWrite = 0x14000,
+            Gx2ROptionNone = 0x0,
+            Gx2ROptionIgnoreInUse = 0x80000,
+            Gx2ROptionFirst = 0x80000,
+            Gx2ROptionNoCpuInvalidate = 0x100000,
+            Gx2ROptionNoGpuInvalidate = 0x200000,
+            Gx2ROptionLockReadonly = 0x400000,
+            Gx2ROptionNoTouchDestroy = 0x800000,
+            Gx2ROptionLast = 0x800000,
+            Gx2ROptionNoInvalidate = 0x300000,
+            Gx2ROptionMask = 0xF80000,
+            Gx2RResourceFlagReserved2 = 0x10000000,
+            Gx2RResourceFlagReserved1 = 0x20000000,
+            Gx2RResourceFlagReserved0 = 0x40000000,
         };
-        public enum GX2TileMode
+        public enum Gx2TileMode
         {
-            GX2_TILE_MODE_DEFAULT = 0x0,
-            GX2_TILE_MODE_LINEAR_SPECIAL = 0x10,
-            GX2_TILE_MODE_DEFAULT_FIX2197 = 0x20,
-            GX2_TILE_MODE_LINEAR_ALIGNED = 0x1,
-            GX2_TILE_MODE_1D_TILED_THIN1 = 0x2,
-            GX2_TILE_MODE_1D_TILED_THICK = 0x3,
-            GX2_TILE_MODE_2D_TILED_THIN1 = 0x4,
-            GX2_TILE_MODE_2D_TILED_THIN2 = 0x5,
-            GX2_TILE_MODE_2D_TILED_THIN4 = 0x6,
-            GX2_TILE_MODE_2D_TILED_THICK = 0x7,
-            GX2_TILE_MODE_2B_TILED_THIN1 = 0x8,
-            GX2_TILE_MODE_2B_TILED_THIN2 = 0x9,
-            GX2_TILE_MODE_2B_TILED_THIN4 = 0xA,
-            GX2_TILE_MODE_2B_TILED_THICK = 0xB,
-            GX2_TILE_MODE_3D_TILED_THIN1 = 0xC,
-            GX2_TILE_MODE_3D_TILED_THICK = 0xD,
-            GX2_TILE_MODE_3B_TILED_THIN1 = 0xE,
-            GX2_TILE_MODE_3B_TILED_THICK = 0xF,
-            GX2_TILE_MODE_FIRST = 0x0,
-            GX2_TILE_MODE_LAST = 0x20,
+            Gx2TileModeDefault = 0x0,
+            Gx2TileModeLinearSpecial = 0x10,
+            Gx2TileModeDefaultFix2197 = 0x20,
+            Gx2TileModeLinearAligned = 0x1,
+            Gx2TileMode1DTiledThin1 = 0x2,
+            Gx2TileMode1DTiledThick = 0x3,
+            Gx2TileMode2DTiledThin1 = 0x4,
+            Gx2TileMode2DTiledThin2 = 0x5,
+            Gx2TileMode2DTiledThin4 = 0x6,
+            Gx2TileMode2DTiledThick = 0x7,
+            Gx2TileMode2BTiledThin1 = 0x8,
+            Gx2TileMode2BTiledThin2 = 0x9,
+            Gx2TileMode2BTiledThin4 = 0xA,
+            Gx2TileMode2BTiledThick = 0xB,
+            Gx2TileMode3DTiledThin1 = 0xC,
+            Gx2TileMode3DTiledThick = 0xD,
+            Gx2TileMode3BTiledThin1 = 0xE,
+            Gx2TileMode3BTiledThick = 0xF,
+            Gx2TileModeFirst = 0x0,
+            Gx2TileModeLast = 0x20,
         };
 
         public enum AddrTileMode
         {
-            ADDR_TM_LINEAR_GENERAL = 0x0,
-            ADDR_TM_LINEAR_ALIGNED = 0x1,
-            ADDR_TM_1D_TILED_THIN1 = 0x2,
-            ADDR_TM_1D_TILED_THICK = 0x3,
-            ADDR_TM_2D_TILED_THIN1 = 0x4,
-            ADDR_TM_2D_TILED_THIN2 = 0x5,
-            ADDR_TM_2D_TILED_THIN4 = 0x6,
-            ADDR_TM_2D_TILED_THICK = 0x7,
-            ADDR_TM_2B_TILED_THIN1 = 0x8,
-            ADDR_TM_2B_TILED_THIN2 = 0x9,
-            ADDR_TM_2B_TILED_THIN4 = 0x0A,
-            ADDR_TM_2B_TILED_THICK = 0x0B,
-            ADDR_TM_3D_TILED_THIN1 = 0x0C,
-            ADDR_TM_3D_TILED_THICK = 0x0D,
-            ADDR_TM_3B_TILED_THIN1 = 0x0E,
-            ADDR_TM_3B_TILED_THICK = 0x0F,
-            ADDR_TM_2D_TILED_XTHICK = 0x10,
-            ADDR_TM_3D_TILED_XTHICK = 0x11,
-            ADDR_TM_POWER_SAVE = 0x12,
-            ADDR_TM_COUNT = 0x13,
+            AddrTmLinearGeneral = 0x0,
+            AddrTmLinearAligned = 0x1,
+            AddrTm1DTiledThin1 = 0x2,
+            AddrTm1DTiledThick = 0x3,
+            AddrTm2DTiledThin1 = 0x4,
+            AddrTm2DTiledThin2 = 0x5,
+            AddrTm2DTiledThin4 = 0x6,
+            AddrTm2DTiledThick = 0x7,
+            AddrTm2BTiledThin1 = 0x8,
+            AddrTm2BTiledThin2 = 0x9,
+            AddrTm2BTiledThin4 = 0x0A,
+            AddrTm2BTiledThick = 0x0B,
+            AddrTm3DTiledThin1 = 0x0C,
+            AddrTm3DTiledThick = 0x0D,
+            AddrTm3BTiledThin1 = 0x0E,
+            AddrTm3BTiledThick = 0x0F,
+            AddrTm2DTiledXthick = 0x10,
+            AddrTm3DTiledXthick = 0x11,
+            AddrTmPowerSave = 0x12,
+            AddrTmCount = 0x13,
         }
         public enum AddrTileType
         {
-            ADDR_DISPLAYABLE = 0,
-            ADDR_NON_DISPLAYABLE = 1,
-            ADDR_DEPTH_SAMPLE_ORDER = 2,
-            ADDR_THICK_TILING = 3,
+            AddrDisplayable = 0,
+            AddrNonDisplayable = 1,
+            AddrDepthSampleOrder = 2,
+            AddrThickTiling = 3,
         }
         public enum AddrPipeCfg
         {
-            ADDR_PIPECFG_INVALID = 0x0,
-            ADDR_PIPECFG_P2 = 0x1,
-            ADDR_PIPECFG_P4_8x16 = 0x5,
-            ADDR_PIPECFG_P4_16x16 = 0x6,
-            ADDR_PIPECFG_P4_16x32 = 0x7,
-            ADDR_PIPECFG_P4_32x32 = 0x8,
-            ADDR_PIPECFG_P8_16x16_8x16 = 0x9,
-            ADDR_PIPECFG_P8_16x32_8x16 = 0xA,
-            ADDR_PIPECFG_P8_32x32_8x16 = 0xB,
-            ADDR_PIPECFG_P8_16x32_16x16 = 0xC,
-            ADDR_PIPECFG_P8_32x32_16x16 = 0xD,
-            ADDR_PIPECFG_P8_32x32_16x32 = 0xE,
-            ADDR_PIPECFG_P8_32x64_32x32 = 0xF,
-            ADDR_PIPECFG_MAX = 0x10,
+            AddrPipecfgInvalid = 0x0,
+            AddrPipecfgP2 = 0x1,
+            AddrPipecfgP48X16 = 0x5,
+            AddrPipecfgP416X16 = 0x6,
+            AddrPipecfgP416X32 = 0x7,
+            AddrPipecfgP432X32 = 0x8,
+            AddrPipecfgP816X168X16 = 0x9,
+            AddrPipecfgP816X328X16 = 0xA,
+            AddrPipecfgP832X328X16 = 0xB,
+            AddrPipecfgP816X3216X16 = 0xC,
+            AddrPipecfgP832X3216X16 = 0xD,
+            AddrPipecfgP832X3216X32 = 0xE,
+            AddrPipecfgP832X6432X32 = 0xF,
+            AddrPipecfgMax = 0x10,
         }
         public enum AddrFormat
         {
-            ADDR_FMT_INVALID = 0x0,
-            ADDR_FMT_8 = 0x1,
-            ADDR_FMT_4_4 = 0x2,
-            ADDR_FMT_3_3_2 = 0x3,
-            ADDR_FMT_RESERVED_4 = 0x4,
-            ADDR_FMT_16 = 0x5,
-            ADDR_FMT_16_FLOAT = 0x6,
-            ADDR_FMT_8_8 = 0x7,
-            ADDR_FMT_5_6_5 = 0x8,
-            ADDR_FMT_6_5_5 = 0x9,
-            ADDR_FMT_1_5_5_5 = 0xA,
-            ADDR_FMT_4_4_4_4 = 0xB,
-            ADDR_FMT_5_5_5_1 = 0xC,
-            ADDR_FMT_32 = 0xD,
-            ADDR_FMT_32_FLOAT = 0xE,
-            ADDR_FMT_16_16 = 0xF,
-            ADDR_FMT_16_16_FLOAT = 0x10,
-            ADDR_FMT_8_24 = 0x11,
-            ADDR_FMT_8_24_FLOAT = 0x12,
-            ADDR_FMT_24_8 = 0x13,
-            ADDR_FMT_24_8_FLOAT = 0x14,
-            ADDR_FMT_10_11_11 = 0x15,
-            ADDR_FMT_10_11_11_FLOAT = 0x16,
-            ADDR_FMT_11_11_10 = 0x17,
-            ADDR_FMT_11_11_10_FLOAT = 0x18,
-            ADDR_FMT_2_10_10_10 = 0x19,
-            ADDR_FMT_8_8_8_8 = 0x1A,
-            ADDR_FMT_10_10_10_2 = 0x1B,
-            ADDR_FMT_X24_8_32_FLOAT = 0x1C,
-            ADDR_FMT_32_32 = 0x1D,
-            ADDR_FMT_32_32_FLOAT = 0x1E,
-            ADDR_FMT_16_16_16_16 = 0x1F,
-            ADDR_FMT_16_16_16_16_FLOAT = 0x20,
-            ADDR_FMT_RESERVED_33 = 0x21,
-            ADDR_FMT_32_32_32_32 = 0x22,
-            ADDR_FMT_32_32_32_32_FLOAT = 0x23,
-            ADDR_FMT_RESERVED_36 = 0x24,
-            ADDR_FMT_1 = 0x25,
-            ADDR_FMT_1_REVERSED = 0x26,
-            ADDR_FMT_GB_GR = 0x27,
-            ADDR_FMT_BG_RG = 0x28,
-            ADDR_FMT_32_AS_8 = 0x29,
-            ADDR_FMT_32_AS_8_8 = 0x2A,
-            ADDR_FMT_5_9_9_9_SHAREDEXP = 0x2B,
-            ADDR_FMT_8_8_8 = 0x2C,
-            ADDR_FMT_16_16_16 = 0x2D,
-            ADDR_FMT_16_16_16_FLOAT = 0x2E,
-            ADDR_FMT_32_32_32 = 0x2F,
-            ADDR_FMT_32_32_32_FLOAT = 0x30,
-            ADDR_FMT_BC1 = 0x31,
-            ADDR_FMT_BC2 = 0x32,
-            ADDR_FMT_BC3 = 0x33,
-            ADDR_FMT_BC4 = 0x34,
-            ADDR_FMT_BC5 = 0x35,
-            ADDR_FMT_BC6 = 0x36,
-            ADDR_FMT_BC7 = 0x37,
-            ADDR_FMT_32_AS_32_32_32_32 = 0x38,
-            ADDR_FMT_APC3 = 0x39,
-            ADDR_FMT_APC4 = 0x3A,
-            ADDR_FMT_APC5 = 0x3B,
-            ADDR_FMT_APC6 = 0x3C,
-            ADDR_FMT_APC7 = 0x3D,
-            ADDR_FMT_CTX1 = 0x3E,
-            ADDR_FMT_RESERVED_63 = 0x3F,
+            AddrFmtInvalid = 0x0,
+            AddrFmt8 = 0x1,
+            AddrFmt44 = 0x2,
+            AddrFmt332 = 0x3,
+            AddrFmtReserved4 = 0x4,
+            AddrFmt16 = 0x5,
+            AddrFmt16Float = 0x6,
+            AddrFmt88 = 0x7,
+            AddrFmt565 = 0x8,
+            AddrFmt655 = 0x9,
+            AddrFmt1555 = 0xA,
+            AddrFmt4444 = 0xB,
+            AddrFmt5551 = 0xC,
+            AddrFmt32 = 0xD,
+            AddrFmt32Float = 0xE,
+            AddrFmt1616 = 0xF,
+            AddrFmt1616Float = 0x10,
+            AddrFmt824 = 0x11,
+            AddrFmt824Float = 0x12,
+            AddrFmt248 = 0x13,
+            AddrFmt248Float = 0x14,
+            AddrFmt101111 = 0x15,
+            AddrFmt101111Float = 0x16,
+            AddrFmt111110 = 0x17,
+            AddrFmt111110Float = 0x18,
+            AddrFmt2101010 = 0x19,
+            AddrFmt8888 = 0x1A,
+            AddrFmt1010102 = 0x1B,
+            AddrFmtX24832Float = 0x1C,
+            AddrFmt3232 = 0x1D,
+            AddrFmt3232Float = 0x1E,
+            AddrFmt16161616 = 0x1F,
+            AddrFmt16161616Float = 0x20,
+            AddrFmtReserved33 = 0x21,
+            AddrFmt32323232 = 0x22,
+            AddrFmt32323232Float = 0x23,
+            AddrFmtReserved36 = 0x24,
+            AddrFmt1 = 0x25,
+            AddrFmt1Reversed = 0x26,
+            AddrFmtGbGr = 0x27,
+            AddrFmtBgRg = 0x28,
+            AddrFmt32As8 = 0x29,
+            AddrFmt32As88 = 0x2A,
+            AddrFmt5999Sharedexp = 0x2B,
+            AddrFmt888 = 0x2C,
+            AddrFmt161616 = 0x2D,
+            AddrFmt161616Float = 0x2E,
+            AddrFmt323232 = 0x2F,
+            AddrFmt323232Float = 0x30,
+            AddrFmtBc1 = 0x31,
+            AddrFmtBc2 = 0x32,
+            AddrFmtBc3 = 0x33,
+            AddrFmtBc4 = 0x34,
+            AddrFmtBc5 = 0x35,
+            AddrFmtBc6 = 0x36,
+            AddrFmtBc7 = 0x37,
+            AddrFmt32As32323232 = 0x38,
+            AddrFmtApc3 = 0x39,
+            AddrFmtApc4 = 0x3A,
+            AddrFmtApc5 = 0x3B,
+            AddrFmtApc6 = 0x3C,
+            AddrFmtApc7 = 0x3D,
+            AddrFmtCtx1 = 0x3E,
+            AddrFmtReserved63 = 0x3F,
         };
 
         private static byte[] formatHwInfo = {
@@ -364,9 +362,9 @@ namespace SmashForge
     };*/
 
 
-        public static byte[] swizzleBC(byte[] data, int width, int height, int format, int tileMode, int pitch, int swizzle)
+        public static byte[] SwizzleBc(byte[] data, int width, int height, int format, int tileMode, int pitch, int swizzle)
         {
-            GX2Surface sur = new GX2Surface();
+            Gx2Surface sur = new Gx2Surface();
             sur.width = width;
             sur.height = height;
             sur.tileMode = tileMode;
@@ -376,35 +374,35 @@ namespace SmashForge
             sur.data = data;
             sur.imageSize = data.Length;
             //return swizzleBC(sur);
-            return swizzleSurface(sur, (GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM &
-                (GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_SRGB);
+            return SwizzleSurface(sur, (Gx2SurfaceFormat)sur.format != Gx2SurfaceFormat.Gx2SurfaceFormatTcsR8G8B8A8Unorm &
+                (Gx2SurfaceFormat)sur.format != Gx2SurfaceFormat.Gx2SurfaceFormatTcsR8G8B8A8Srgb);
         }
 
-        public static int getBPP(int i)
+        public static int GetBpp(int i)
         {
-            switch ((GX2SurfaceFormat)i)
+            switch ((Gx2SurfaceFormat)i)
             {
-                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_TC_R5_G5_B5_A1_UNORM:
+                case Gx2SurfaceFormat.Gx2SurfaceFormatTcR5G5B5A1Unorm:
                     return 0x10;
-                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM:
+                case Gx2SurfaceFormat.Gx2SurfaceFormatTcsR8G8B8A8Unorm:
                     return 0x20;
-                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM:
-                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
-                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_SRGB:
-                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM:
+                case Gx2SurfaceFormat.Gx2SurfaceFormatTBc1Unorm:
+                case Gx2SurfaceFormat.Gx2SurfaceFormatTBc4Unorm:
+                case Gx2SurfaceFormat.Gx2SurfaceFormatTBc1Srgb:
+                case Gx2SurfaceFormat.Gx2SurfaceFormatTBc4Snorm:
                     return 0x40;
-                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_UNORM:
-                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_UNORM:
-                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_UNORM:
-                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_SRGB:
-                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_SRGB:
-                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_SNORM:
+                case Gx2SurfaceFormat.Gx2SurfaceFormatTBc2Unorm:
+                case Gx2SurfaceFormat.Gx2SurfaceFormatTBc3Unorm:
+                case Gx2SurfaceFormat.Gx2SurfaceFormatTBc5Unorm:
+                case Gx2SurfaceFormat.Gx2SurfaceFormatTBc2Srgb:
+                case Gx2SurfaceFormat.Gx2SurfaceFormatTBc3Srgb:
+                case Gx2SurfaceFormat.Gx2SurfaceFormatTBc5Snorm:
                     return 0x80;
             }
             return -1;
         }
 
-        public static byte[] swizzleSurface(GX2Surface surface, bool isCompressed)
+        public static byte[] SwizzleSurface(Gx2Surface surface, bool isCompressed)
         {
             byte[] original = new byte[surface.data.Length];
 
@@ -415,18 +413,18 @@ namespace SmashForge
             int width = surface.width;
             int height = surface.height;
 
-            int format = getBPP(surface.format);
-            Console.WriteLine(((GX2SurfaceFormat)surface.format).ToString());
+            int format = GetBpp(surface.format);
+            Console.WriteLine(((Gx2SurfaceFormat)surface.format).ToString());
 
             if (isCompressed)
             {
                 width /= 4;
                 height /= 4;
 
-                if ((GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM ||
-                    (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_SRGB ||
-                    (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM ||
-                    (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM)
+                if ((Gx2SurfaceFormat)surface.format == Gx2SurfaceFormat.Gx2SurfaceFormatTBc1Unorm ||
+                    (Gx2SurfaceFormat)surface.format == Gx2SurfaceFormat.Gx2SurfaceFormatTBc1Srgb ||
+                    (Gx2SurfaceFormat)surface.format == Gx2SurfaceFormat.Gx2SurfaceFormatTBc4Unorm ||
+                    (Gx2SurfaceFormat)surface.format == Gx2SurfaceFormat.Gx2SurfaceFormatTBc4Snorm)
                 {
                     blockSize = 8;
                 }
@@ -449,30 +447,30 @@ namespace SmashForge
             {
                 for (int x = 0; x < width; x++)
                 {
-                    int pos = surfaceAddrFromCoordMacroTiled(x, y, format, surface.pitch, swizzle);
-                    int pos_ = (y * width + x) * blockSize;
+                    int pos = SurfaceAddrFromCoordMacroTiled(x, y, format, surface.pitch, swizzle);
+                    int size = (y * width + x) * blockSize;
 
                     for (int k = 0; k < blockSize; k++)
                     {
-                        if (pos + k >= original.Length || pos_ + k >= surface.data.Length)
+                        if (pos + k >= original.Length || size + k >= surface.data.Length)
                         {
-                            Console.WriteLine("Break Point " + pos_ + " " + pos);
+                            Console.WriteLine("Break Point " + size + " " + pos);
                             break;
                         }
-                        surface.data[pos_ + k] = original[pos + k];
+                        surface.data[size + k] = original[pos + k];
                     }
                 }
             }
             return surface.data;
         }
 
-        public static int surfaceAddrFromCoordMacroTiled(int x, int y, int bpp, int pitch, int swizzle)
+        public static int SurfaceAddrFromCoordMacroTiled(int x, int y, int bpp, int pitch, int swizzle)
         {
-            int pixelIndex = computePixelIndexWithinMicroTile(x, y, bpp);
+            int pixelIndex = ComputePixelIndexWithinMicroTile(x, y, bpp);
             int elemOffset = (bpp * pixelIndex) >> 3;
 
-            int pipe = computePipeFromCoordWoRotation(x, y);
-            int bank = computeBankFromCoordWoRotation(x, y);
+            int pipe = ComputePipeFromCoordWoRotation(x, y);
+            int bank = ComputeBankFromCoordWoRotation(x, y);
             int bankPipe = ((pipe + 2 * bank) ^ swizzle) % 9;
 
             pipe = bankPipe % 2;
@@ -487,7 +485,7 @@ namespace SmashForge
             return (unk2 << 3) | (0xFF & unk1) | (pipe << 8) | (bank << 9);
         }
 
-        public static int computePixelIndexWithinMicroTile(int x, int y, int bpp)
+        public static int ComputePixelIndexWithinMicroTile(int x, int y, int bpp)
         {
             int bits = ((x & 4) << 1) | ((y & 2) << 3) | ((y & 4) << 3);
 
@@ -507,26 +505,26 @@ namespace SmashForge
             return bits;
         }
 
-        public static int getFormatBpp(int format)
+        public static int GetFormatBpp(int format)
         {
             int hwFormat = format & 0x3F;
             return formatHwInfo[hwFormat * 4];
         }
 
-        public static int computeSurfaceThickness(AddrTileMode tileMode)
+        public static int ComputeSurfaceThickness(AddrTileMode tileMode)
         {
             switch (tileMode)
             {
-                case AddrTileMode.ADDR_TM_1D_TILED_THICK:
-                case AddrTileMode.ADDR_TM_2D_TILED_THICK:
-                case AddrTileMode.ADDR_TM_2B_TILED_THICK:
-                case AddrTileMode.ADDR_TM_3D_TILED_THICK:
-                case AddrTileMode.ADDR_TM_3B_TILED_THICK:
+                case AddrTileMode.AddrTm1DTiledThick:
+                case AddrTileMode.AddrTm2DTiledThick:
+                case AddrTileMode.AddrTm2BTiledThick:
+                case AddrTileMode.AddrTm3DTiledThick:
+                case AddrTileMode.AddrTm3BTiledThick:
                     {
                         return 4;
                     }
-                case AddrTileMode.ADDR_TM_2D_TILED_XTHICK:
-                case AddrTileMode.ADDR_TM_3D_TILED_XTHICK:
+                case AddrTileMode.AddrTm2DTiledXthick:
+                case AddrTileMode.AddrTm3DTiledXthick:
                     {
                         return 8;
                     }
@@ -535,14 +533,14 @@ namespace SmashForge
             return 1;
         }
 
-        public static int isThickMacroTiled(AddrTileMode tileMode)
+        public static int IsThickMacroTiled(AddrTileMode tileMode)
         {
             switch (tileMode)
             {
-                case AddrTileMode.ADDR_TM_2D_TILED_THICK:
-                case AddrTileMode.ADDR_TM_2B_TILED_THICK:
-                case AddrTileMode.ADDR_TM_3D_TILED_THICK:
-                case AddrTileMode.ADDR_TM_3B_TILED_THICK:
+                case AddrTileMode.AddrTm2DTiledThick:
+                case AddrTileMode.AddrTm2BTiledThick:
+                case AddrTileMode.AddrTm3DTiledThick:
+                case AddrTileMode.AddrTm3BTiledThick:
                     {
                         return 1;
                     }
@@ -551,16 +549,16 @@ namespace SmashForge
             return 0;
         }
 
-        public static int isBankSwappedTileMode(AddrTileMode tileMode)
+        public static int IsBankSwappedTileMode(AddrTileMode tileMode)
         {
             switch (tileMode)
             {
-                case AddrTileMode.ADDR_TM_2B_TILED_THIN1:
-                case AddrTileMode.ADDR_TM_2B_TILED_THIN2:
-                case AddrTileMode.ADDR_TM_2B_TILED_THIN4:
-                case AddrTileMode.ADDR_TM_2B_TILED_THICK:
-                case AddrTileMode.ADDR_TM_3B_TILED_THIN1:
-                case AddrTileMode.ADDR_TM_3B_TILED_THICK:
+                case AddrTileMode.AddrTm2BTiledThin1:
+                case AddrTileMode.AddrTm2BTiledThin2:
+                case AddrTileMode.AddrTm2BTiledThin4:
+                case AddrTileMode.AddrTm2BTiledThick:
+                case AddrTileMode.AddrTm3BTiledThin1:
+                case AddrTileMode.AddrTm3BTiledThick:
                     {
                         return 1;
                     }
@@ -568,7 +566,7 @@ namespace SmashForge
             return 0;
         }
 
-        public static int computeSurfaceRotationFromTileMode(AddrTileMode tileMode)
+        public static int ComputeSurfaceRotationFromTileMode(AddrTileMode tileMode)
         {
             switch ((int)tileMode)
             {
@@ -595,13 +593,13 @@ namespace SmashForge
             return 0;
         }
 
-        public static int computePipeFromCoordWoRotation(int x, int y)
+        public static int ComputePipeFromCoordWoRotation(int x, int y)
         {
             int pipe = ((y >> 3) ^ (x >> 3)) & 1;
             return pipe;
         }
 
-        public static int computeBankFromCoordWoRotation(int x, int y)
+        public static int ComputeBankFromCoordWoRotation(int x, int y)
         {
             int bankBit0 = ((y / (16 * 2)) ^ (x >> 3)) & 1;
             int bank = bankBit0 | 2 * (((y / (8 * 2)) ^ (x >> 4)) & 1);
@@ -609,23 +607,23 @@ namespace SmashForge
             return bank;
         }
 
-        public static int computeMacroTileAspectRatio(AddrTileMode tileMode)
+        public static int ComputeMacroTileAspectRatio(AddrTileMode tileMode)
         {
             switch (tileMode)
             {
-                case AddrTileMode.ADDR_TM_2B_TILED_THIN1:
-                case AddrTileMode.ADDR_TM_3D_TILED_THIN1:
-                case AddrTileMode.ADDR_TM_3B_TILED_THIN1:
+                case AddrTileMode.AddrTm2BTiledThin1:
+                case AddrTileMode.AddrTm3DTiledThin1:
+                case AddrTileMode.AddrTm3BTiledThin1:
                     {
                         return 1;
                     }
-                case AddrTileMode.ADDR_TM_2D_TILED_THIN2:
-                case AddrTileMode.ADDR_TM_2B_TILED_THIN2:
+                case AddrTileMode.AddrTm2DTiledThin2:
+                case AddrTileMode.AddrTm2BTiledThin2:
                     {
                         return 2;
                     }
-                case AddrTileMode.ADDR_TM_2D_TILED_THIN4:
-                case AddrTileMode.ADDR_TM_2B_TILED_THIN4:
+                case AddrTileMode.AddrTm2DTiledThin4:
+                case AddrTileMode.AddrTm2BTiledThin4:
                     {
                         return 4;
                     }
@@ -634,7 +632,7 @@ namespace SmashForge
             return 1;
         }
 
-        public static int computeSurfaceBankSwappedWidth(AddrTileMode tileMode, int bpp, int numSamples, int pitch, int pSlicesPerTile)
+        public static int ComputeSurfaceBankSwappedWidth(AddrTileMode tileMode, int bpp, int numSamples, int pitch, int pSlicesPerTile)
         {
             int bankSwapWidth = 0;
             int numBanks = 4;
@@ -661,20 +659,20 @@ namespace SmashForge
                 pSlicesPerTile = slicesPerTile;
             }
 
-            if (isThickMacroTiled(tileMode) == 1)
+            if (IsThickMacroTiled(tileMode) == 1)
             {
                 numSamples = 4;
             }
 
             int bytesPerTileSlice = numSamples * bytesPerSample / slicesPerTile;
 
-            if (isBankSwappedTileMode(tileMode) == 1)
+            if (IsBankSwappedTileMode(tileMode) == 1)
             {
                 int v7;
                 int v8;
                 int v9;
 
-                int factor = computeMacroTileAspectRatio(tileMode);
+                int factor = ComputeMacroTileAspectRatio(tileMode);
                 int swapTiles = (swapSize >> 1) / bpp;
 
                 if (swapTiles != 0)
@@ -720,7 +718,7 @@ namespace SmashForge
             return bankSwapWidth;
         }
 
-        public static int computePixelIndexWithinMicroTile(int x, int y, int z, int bpp, AddrTileMode tileMode, int microTileType)
+        public static int ComputePixelIndexWithinMicroTile(int x, int y, int z, int bpp, AddrTileMode tileMode, int microTileType)
         {
             int pixelBit0 = 0;
             int pixelBit1 = 0;
@@ -731,7 +729,7 @@ namespace SmashForge
             int pixelBit6 = 0;
             int pixelBit7 = 0;
             int pixelBit8 = 0;
-            int thickness = computeSurfaceThickness(tileMode);
+            int thickness = ComputeSurfaceThickness(tileMode);
 
             if (microTileType == 3)
             {
@@ -836,7 +834,7 @@ namespace SmashForge
                 (pixelBit1 << 1);
         }
 
-        public static int surfaceAddrFromCoordMacroTiled(
+        public static int SurfaceAddrFromCoordMacroTiled(
             int x, int y, int slice, int sample, int bpp,
             int pitch, int height, int numSamples, AddrTileMode tileMode,
             int isDepth, int tileBase, int compBits,
@@ -849,11 +847,11 @@ namespace SmashForge
             const int numPipeBits = 1;
             const int numBankBits = 2;
 
-            int microTileThickness = computeSurfaceThickness(tileMode);
+            int microTileThickness = ComputeSurfaceThickness(tileMode);
             int microTileBits = numSamples * bpp * (microTileThickness * (8 * 8));
             int microTileBytes = microTileBits >> 3;
             int microTileType = (isDepth == 1) ? 1 : 0;
-            int pixelIndex = computePixelIndexWithinMicroTile(x, y, slice, bpp, tileMode, microTileType);
+            int pixelIndex = ComputePixelIndexWithinMicroTile(x, y, slice, bpp, tileMode, microTileType);
 
             int sampleOffset;
             int pixelOffset;
@@ -900,14 +898,14 @@ namespace SmashForge
 
             elemOffset >>= 3;
 
-            int pipe = computePipeFromCoordWoRotation(x, y);
-            int bank = computeBankFromCoordWoRotation(x, y);
+            int pipe = ComputePipeFromCoordWoRotation(x, y);
+            int bank = ComputeBankFromCoordWoRotation(x, y);
             int bankPipe = pipe + numPipes * bank;
-            int rotation = computeSurfaceRotationFromTileMode(tileMode);
+            int rotation = ComputeSurfaceRotationFromTileMode(tileMode);
             int swizzle = pipeSwizzle + numPipes * bankSwizzle;
             int sliceIn = slice;
 
-            if (isThickMacroTiled(tileMode) == 1)
+            if (IsThickMacroTiled(tileMode) == 1)
             {
                 sliceIn >>= 2;
             }
@@ -954,7 +952,7 @@ namespace SmashForge
                 case 14:
                 case 15:
                     {
-                        bankSwapWidth = computeSurfaceBankSwappedWidth(tileMode, bpp, numSamples, pitch, 0);
+                        bankSwapWidth = ComputeSurfaceBankSwappedWidth(tileMode, bpp, numSamples, pitch, 0);
                         swapIndex = macroTilePitch * macroTileIndexX / bankSwapWidth;
                         bankMask = 3; // m_banks-1
                         bank ^= bankSwapOrder[swapIndex & bankMask];
@@ -978,7 +976,7 @@ namespace SmashForge
             return subOffset1 | subOffset2 | p4 | p5;
         }
 
-        public static byte[] swizzleBC(GX2Surface surface)
+        public static byte[] SwizzleBc(Gx2Surface surface)
         {
             //std::vector<u8> result;
             //List<byte> result = new List<byte>();
@@ -996,7 +994,7 @@ namespace SmashForge
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    int bpp = getFormatBpp(surface.format);
+                    int bpp = GetFormatBpp(surface.format);
                     int pos = 0;
 
                     switch (surface.tileMode)
@@ -1029,7 +1027,7 @@ namespace SmashForge
 
                         default:
                             {
-                                pos = surfaceAddrFromCoordMacroTiled(
+                                pos = SurfaceAddrFromCoordMacroTiled(
                                     x, y, 0, 0, bpp, surface.pitch, height,
                                     1, (AddrTileMode)surface.tileMode, 0, 0, 0,
                                     (surface.swizzle >> 8) & 1,

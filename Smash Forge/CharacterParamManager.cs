@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SALT.PARAMS;
 using System.Drawing;
 using System.IO;
@@ -168,7 +166,7 @@ namespace SmashForge
 
         public void UnselectHurtboxes()
         {
-            Runtime.SelectedHurtboxID = -1;
+            Runtime.SelectedHurtboxId = -1;
         }
 
         public void SaveHurtboxes()
@@ -193,7 +191,7 @@ namespace SmashForge
             }
         }
 
-        public void RenderHurtboxes(float frame, int scriptId, ForgeACMDScript acmdScript, VBN vbn)
+        public void RenderHurtboxes(float frame, int scriptId, ForgeAcmdScript acmdScript, VBN vbn)
         {
             if (Hurtboxes.Count > 0)
             {
@@ -217,7 +215,7 @@ namespace SmashForge
                         continue;
 
                     var va = new Vector3(h.X, h.Y, h.Z);
-                    Bone b = ForgeACMDScript.getBone(h.Bone, vbn);
+                    Bone b = ForgeAcmdScript.GetBone(h.Bone, vbn);
                     if (b == null) continue; 
 
                     if (acmdScript != null)
@@ -234,13 +232,13 @@ namespace SmashForge
                     {
                         switch (h.Zone)
                         {
-                            case Hurtbox.LW_ZONE:
+                            case Hurtbox.LwZone:
                                 GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorLow));
                                 break;
-                            case Hurtbox.N_ZONE:
+                            case Hurtbox.NZone:
                                 GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorMed));
                                 break;
-                            case Hurtbox.HI_ZONE:
+                            case Hurtbox.HiZone:
                                 GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorHi));
                                 break;
                         }
@@ -264,22 +262,22 @@ namespace SmashForge
 
                     if (h.IsSphere)
                     {
-                        Rendering.ShapeDrawing.drawSphereTransformedVisible(va, h.Size, 30, b.transform);
+                        Rendering.ShapeDrawing.DrawSphereTransformedVisible(va, h.Size, 30, b.transform);
                     }
                     else
                     {
-                        Rendering.ShapeDrawing.drawReducedCylinderTransformed(va, va2, h.Size, b.transform);
+                        Rendering.ShapeDrawing.DrawReducedCylinderTransformed(va, va2, h.Size, b.transform);
                     }
-                    if (Runtime.SelectedHurtboxID == h.Id)
+                    if (Runtime.SelectedHurtboxId == h.Id)
                     {
                         GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorSelected));
                         if (h.IsSphere)
                         {
-                            Rendering.ShapeDrawing.drawWireframeSphereTransformedVisible(va, h.Size, 20, b.transform);
+                            Rendering.ShapeDrawing.DrawWireframeSphereTransformedVisible(va, h.Size, 20, b.transform);
                         }
                         else
                         {
-                            Rendering.ShapeDrawing.drawWireframeCylinderTransformed(va, va2, h.Size, b.transform);
+                            Rendering.ShapeDrawing.DrawWireframeCylinderTransformed(va, va2, h.Size, b.transform);
                         }
                     }
                 }
@@ -373,9 +371,9 @@ namespace SmashForge
         public int Zone { get; set; }
         public bool IsSphere { get; set; } = false;
 
-        public const int LW_ZONE = 0;
-        public const int N_ZONE = 1;
-        public const int HI_ZONE = 2;
+        public const int LwZone = 0;
+        public const int NZone = 1;
+        public const int HiZone = 2;
 
         public int Part { get; set; }
 
@@ -422,12 +420,12 @@ namespace SmashForge
     {
         public enum BubbleType
         {
-            COUNTER,
-            REFLECT,
-            ABSORB,
-            SHIELD,
-            WT_SLOWDOWN,
-            OTHER = -1
+            Counter,
+            Reflect,
+            Absorb,
+            Shield,
+            WtSlowdown,
+            Other = -1
         }
 
         public List<string> Animations { get; set; }
@@ -455,15 +453,15 @@ namespace SmashForge
             {
                 switch (type)
                 {
-                    case BubbleType.COUNTER:
+                    case BubbleType.Counter:
                         return Runtime.counterBubbleColor;
-                    case BubbleType.REFLECT:
+                    case BubbleType.Reflect:
                         return Runtime.reflectBubbleColor;
-                    case BubbleType.ABSORB:
+                    case BubbleType.Absorb:
                         return Runtime.absorbBubbleColor;
-                    case BubbleType.SHIELD:
+                    case BubbleType.Shield:
                         return Runtime.shieldBubbleColor;
-                    case BubbleType.WT_SLOWDOWN:
+                    case BubbleType.WtSlowdown:
                         return Runtime.wtSlowdownBubbleColor;
                 }
                 return Color.FromArgb(0x32, 0x32, 0x32);

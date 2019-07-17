@@ -1,28 +1,21 @@
 ﻿using System.Data;
 using System.IO;
 using System.Windows.Forms;
-using SmashForge.Rendering;
-using OpenTK.Graphics.OpenGL;
-using SmashForge.Rendering.Meshes;
-using SFGraphics.GLObjects.Shaders;
-using OpenTK;
-using SFGraphics.GLObjects.Textures;
-using SFGraphics.GLObjects.GLObjectManagement;
 using SmashForge.Gui.Menus;
 
 namespace SmashForge
 {
-    public partial class LMList : EditorBase
+    public partial class LmList : EditorBase
     {
-        public Lumen Lumen;
-        public NUT Nut;
+        public Lumen lumen;
+        public NUT nut;
 
-        public LMList(string fileName = null)
+        public LmList(string fileName = null)
         {
             InitializeComponent();
             if (fileName != null)
             {
-                Lumen = new Lumen(fileName);
+                lumen = new Lumen(fileName);
             }
             treeView1.Nodes.Add(symbolNode);
             treeView1.Nodes.Add(colorNode);
@@ -35,7 +28,7 @@ namespace SmashForge
             treeView1.Nodes.Add(textsNode);
 
 
-            fillList();
+            FillList();
 
             treeView1.NodeMouseClick += (sender, args) => treeView1.SelectedNode = args.Node;
         }
@@ -49,7 +42,7 @@ namespace SmashForge
         public TreeNode spritesNode = new TreeNode("Sprites");
         public TreeNode textsNode = new TreeNode("Texts");
 
-        public void fillList()
+        public void FillList()
         {
             symbolNode.Nodes.Clear();
             colorNode.Nodes.Clear();
@@ -62,59 +55,59 @@ namespace SmashForge
             textsNode.Nodes.Clear();
             
 
-            if (Lumen != null)
+            if (lumen != null)
             {
-                foreach (string s in Lumen.Strings)
+                foreach (string s in lumen.Strings)
                 {
                     symbolNode.Nodes.Add(new TreeNode(s) { Text = s });
                 }
-                foreach (var x in Lumen.Colors)
+                foreach (var x in lumen.Colors)
                 {
                     colorNode.Nodes.Add(new TreeNode((x * 255).ToString()));
                 }
-                for (int i = 0; i < Lumen.Transforms.Count; i++)
+                for (int i = 0; i < lumen.Transforms.Count; i++)
                 {
                     transformNode.Nodes.Add(new TreeNode("Transform 0x" + i.ToString("X")));
                 }
-                for (int i = 0; i < Lumen.Positions.Count; i++)
+                for (int i = 0; i < lumen.Positions.Count; i++)
                 {
                     positionsNode.Nodes.Add(new TreeNode("Position 0x" + i.ToString("X")));
                 }
-                for (int i = 0; i < Lumen.Bounds.Count; i++)
+                for (int i = 0; i < lumen.Bounds.Count; i++)
                 {
                     boundsNode.Nodes.Add(new TreeNode("Bounds 0x" + i.ToString("X")));
                 }
-                for (int i = 0; i < Lumen.Atlases.Count; i++)
+                for (int i = 0; i < lumen.Atlases.Count; i++)
                 {
                     atlasNode.Nodes.Add(new TreeNode("Atlas 0x" + i.ToString("X")));
                 }
-                for (int i = 0; i < Lumen.Shapes.Count; i++)
+                for (int i = 0; i < lumen.Shapes.Count; i++)
                 {
                     TreeNode newNode = new TreeNode("Shape 0x" + i.ToString("X"));
-                    for (int j = 0; j < Lumen.Shapes[i].numGraphics; j++)
+                    for (int j = 0; j < lumen.Shapes[i].numGraphics; j++)
                     {
                         newNode.Nodes.Add("Graphic 0x" + j.ToString("X"));
                     }
                     shapesNode.Nodes.Add(newNode);
                 }
-                for (int i = 0; i < Lumen.Sprites.Count; i++)
+                for (int i = 0; i < lumen.Sprites.Count; i++)
                 {
                     TreeNode spriteNode = new TreeNode("Sprite 0x" + i.ToString("X"));
                     TreeNode labelNode = new TreeNode("Frame Labels");
                     TreeNode showNode = new TreeNode("Show Frames");
                     TreeNode keyNode = new TreeNode("Key Frames");
 
-                    for (int j = 0; j < Lumen.Sprites[i].labels.Count; j++)
+                    for (int j = 0; j < lumen.Sprites[i].labels.Count; j++)
                     {
                         labelNode.Nodes.Add("Label 0x" + j.ToString("X"));
                     }
 
-                    for (int j = 0; j < Lumen.Sprites[i].Frames.Count; j++)
+                    for (int j = 0; j < lumen.Sprites[i].Frames.Count; j++)
                     {
                         showNode.Nodes.Add("Show Frame 0x" + j.ToString("X"));
                     }
 
-                    for (int j = 0; j < Lumen.Sprites[i].Keyframes.Count; j++)
+                    for (int j = 0; j < lumen.Sprites[i].Keyframes.Count; j++)
                     {
                         keyNode.Nodes.Add("Key Frame 0x" + j.ToString("X"));
                     }
@@ -125,7 +118,7 @@ namespace SmashForge
 
                     spritesNode.Nodes.Add(spriteNode);
                 }
-                for (int i = 0; i < Lumen.Texts.Count; i++)
+                for (int i = 0; i < lumen.Texts.Count; i++)
                 {
                     textsNode.Nodes.Add("Text 0x" + i.ToString("X"));
                 }
@@ -143,70 +136,70 @@ namespace SmashForge
             {
                 if (e.Node.Parent.Text == "Symbols")
                 {
-                    tbl.Rows.Add("String", Lumen.Strings[e.Node.Index]);
+                    tbl.Rows.Add("String", lumen.Strings[e.Node.Index]);
                 }
                 else if (e.Node.Parent.Text == "Colors")
                 {
-                    tbl.Rows.Add("Red", Lumen.Colors[e.Node.Index].X * 255);
-                    tbl.Rows.Add("Green", Lumen.Colors[e.Node.Index].Y * 255);
-                    tbl.Rows.Add("Blue", Lumen.Colors[e.Node.Index].Z * 255);
-                    tbl.Rows.Add("Alpha", Lumen.Colors[e.Node.Index].W * 255);
+                    tbl.Rows.Add("Red", lumen.Colors[e.Node.Index].X * 255);
+                    tbl.Rows.Add("Green", lumen.Colors[e.Node.Index].Y * 255);
+                    tbl.Rows.Add("Blue", lumen.Colors[e.Node.Index].Z * 255);
+                    tbl.Rows.Add("Alpha", lumen.Colors[e.Node.Index].W * 255);
                 }
                 else if (e.Node.Parent.Text == "Transforms")
                 {
-                    tbl.Rows.Add("X-Scale", Lumen.Transforms[e.Node.Index].Row0[0]);
-                    tbl.Rows.Add("X-Skew", Lumen.Transforms[e.Node.Index].Row1[0]);
-                    tbl.Rows.Add("X-Transform", Lumen.Transforms[e.Node.Index].Row3[0]);
-                    tbl.Rows.Add("Y-Scale", Lumen.Transforms[e.Node.Index].Row1[1]);
-                    tbl.Rows.Add("Y-Skew", Lumen.Transforms[e.Node.Index].Row0[1]);
-                    tbl.Rows.Add("Y-Transform", Lumen.Transforms[e.Node.Index].Row3[1]);
+                    tbl.Rows.Add("X-Scale", lumen.Transforms[e.Node.Index].Row0[0]);
+                    tbl.Rows.Add("X-Skew", lumen.Transforms[e.Node.Index].Row1[0]);
+                    tbl.Rows.Add("X-Transform", lumen.Transforms[e.Node.Index].Row3[0]);
+                    tbl.Rows.Add("Y-Scale", lumen.Transforms[e.Node.Index].Row1[1]);
+                    tbl.Rows.Add("Y-Skew", lumen.Transforms[e.Node.Index].Row0[1]);
+                    tbl.Rows.Add("Y-Transform", lumen.Transforms[e.Node.Index].Row3[1]);
                 }
                 else if (e.Node.Parent.Text == "Positions")
                 {
-                    tbl.Rows.Add("X", Lumen.Positions[e.Node.Index][0]);
-                    tbl.Rows.Add("Y", Lumen.Positions[e.Node.Index][1]);
+                    tbl.Rows.Add("X", lumen.Positions[e.Node.Index][0]);
+                    tbl.Rows.Add("Y", lumen.Positions[e.Node.Index][1]);
                 }
                 else if (e.Node.Parent.Text == "Bounds")
                 {
-                    tbl.Rows.Add("Top", Lumen.Bounds[e.Node.Index].TopLeft.X);
-                    tbl.Rows.Add("Left", Lumen.Bounds[e.Node.Index].TopLeft.Y);
-                    tbl.Rows.Add("Bottom", Lumen.Bounds[e.Node.Index].BottomRight.X);
-                    tbl.Rows.Add("Right", Lumen.Bounds[e.Node.Index].BottomRight.Y);
+                    tbl.Rows.Add("Top", lumen.Bounds[e.Node.Index].TopLeft.X);
+                    tbl.Rows.Add("Left", lumen.Bounds[e.Node.Index].TopLeft.Y);
+                    tbl.Rows.Add("Bottom", lumen.Bounds[e.Node.Index].BottomRight.X);
+                    tbl.Rows.Add("Right", lumen.Bounds[e.Node.Index].BottomRight.Y);
                 }
                 else if (e.Node.Parent.Text == "Atlases")
                 {
-                    tbl.Rows.Add("Texture ID", Lumen.Atlases[e.Node.Index].id);
-                    tbl.Rows.Add("Name ID", Lumen.Atlases[e.Node.Index].nameId);
-                    tbl.Rows.Add("Width", Lumen.Atlases[e.Node.Index].width);
-                    tbl.Rows.Add("Height", Lumen.Atlases[e.Node.Index].height);
+                    tbl.Rows.Add("Texture ID", lumen.Atlases[e.Node.Index].id);
+                    tbl.Rows.Add("Name ID", lumen.Atlases[e.Node.Index].nameId);
+                    tbl.Rows.Add("Width", lumen.Atlases[e.Node.Index].width);
+                    tbl.Rows.Add("Height", lumen.Atlases[e.Node.Index].height);
                 }
                 else if (e.Node.Text.StartsWith("Graphic 0x"))
                 {
-                    string filename = (Path.GetDirectoryName(Lumen.Filename) + "\\img-" + (e.Node.Index.ToString("00000")) + ".nut");
-                    Nut = new NUT(filename);
-                    Nut.RefreshGlTexturesByHashId();
-                    LMUVViewer UvViewer = new LMUVViewer(Lumen, Nut, e.Node.Parent.Index, e.Node.Index);
-                    UvViewer.Show();
+                    string filename = (Path.GetDirectoryName(lumen.Filename) + "\\img-" + (e.Node.Index.ToString("00000")) + ".nut");
+                    nut = new NUT(filename);
+                    nut.RefreshGlTexturesByHashId();
+                    LmuvViewer uvViewer = new LmuvViewer(lumen, nut, e.Node.Parent.Index, e.Node.Index);
+                    uvViewer.Show();
                 }
                 else if (e.Node.Parent.Text == "Texts")
                 {
-                    tbl.Rows.Add("Character ID", Lumen.Texts[e.Node.Index].CharacterId);
-                    tbl.Rows.Add("unk 1", Lumen.Texts[e.Node.Index].unk1);
-                    tbl.Rows.Add("Placeholder Text ID", Lumen.Texts[e.Node.Index].placeholderTextId);
-                    tbl.Rows.Add("unk 2", Lumen.Texts[e.Node.Index].unk2);
-                    tbl.Rows.Add("Stroke Color ID", Lumen.Texts[e.Node.Index].strokeColorId);
-                    tbl.Rows.Add("unk 3", Lumen.Texts[e.Node.Index].unk3);
-                    tbl.Rows.Add("unk 4", Lumen.Texts[e.Node.Index].unk3);
-                    tbl.Rows.Add("unk 5", Lumen.Texts[e.Node.Index].unk3);
-                    tbl.Rows.Add("Text Alignment", Lumen.Texts[e.Node.Index].alignment);
-                    tbl.Rows.Add("unk 6", Lumen.Texts[e.Node.Index].unk3);
-                    tbl.Rows.Add("unk 7", Lumen.Texts[e.Node.Index].unk3);
-                    tbl.Rows.Add("unk 8", Lumen.Texts[e.Node.Index].unk3);
-                    tbl.Rows.Add("Size", Lumen.Texts[e.Node.Index].size);
-                    tbl.Rows.Add("unk 9", Lumen.Texts[e.Node.Index].unk3);
-                    tbl.Rows.Add("unk 10", Lumen.Texts[e.Node.Index].unk10);
-                    tbl.Rows.Add("unk 11", Lumen.Texts[e.Node.Index].unk11);
-                    tbl.Rows.Add("unk 12", Lumen.Texts[e.Node.Index].unk12);
+                    tbl.Rows.Add("Character ID", lumen.Texts[e.Node.Index].CharacterId);
+                    tbl.Rows.Add("unk 1", lumen.Texts[e.Node.Index].unk1);
+                    tbl.Rows.Add("Placeholder Text ID", lumen.Texts[e.Node.Index].placeholderTextId);
+                    tbl.Rows.Add("unk 2", lumen.Texts[e.Node.Index].unk2);
+                    tbl.Rows.Add("Stroke Color ID", lumen.Texts[e.Node.Index].strokeColorId);
+                    tbl.Rows.Add("unk 3", lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("unk 4", lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("unk 5", lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("Text Alignment", lumen.Texts[e.Node.Index].alignment);
+                    tbl.Rows.Add("unk 6", lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("unk 7", lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("unk 8", lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("Size", lumen.Texts[e.Node.Index].size);
+                    tbl.Rows.Add("unk 9", lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("unk 10", lumen.Texts[e.Node.Index].unk10);
+                    tbl.Rows.Add("unk 11", lumen.Texts[e.Node.Index].unk11);
+                    tbl.Rows.Add("unk 12", lumen.Texts[e.Node.Index].unk12);
                 }
                 else if (e.Node.Parent.Text == "Unk")
                 {
@@ -223,16 +216,16 @@ namespace SmashForge
             {
                 if (treeView1.SelectedNode.Parent.Text == "Symbols")
                 {
-                    Lumen.Strings[indexNum] = tbl.Rows[0][1].ToString();
+                    lumen.Strings[indexNum] = tbl.Rows[0][1].ToString();
                 }
                 else if (treeView1.SelectedNode.Parent.Text == "Colors")
                 {
-                    Lumen.ReplaceColor(new OpenTK.Vector4(float.Parse(tbl.Rows[0][1].ToString()) / 255f, float.Parse(tbl.Rows[1][1].ToString()) / 255f, float.Parse(tbl.Rows[2][1].ToString()) / 255f, float.Parse(tbl.Rows[3][1].ToString()) / 255f), indexNum);
-                    treeView1.SelectedNode.Text = (Lumen.Colors[indexNum] * 255).ToString();
+                    lumen.ReplaceColor(new OpenTK.Vector4(float.Parse(tbl.Rows[0][1].ToString()) / 255f, float.Parse(tbl.Rows[1][1].ToString()) / 255f, float.Parse(tbl.Rows[2][1].ToString()) / 255f, float.Parse(tbl.Rows[3][1].ToString()) / 255f), indexNum);
+                    treeView1.SelectedNode.Text = (lumen.Colors[indexNum] * 255).ToString();
                 }
                 else if (treeView1.SelectedNode.Parent.Text == "Transforms")
                 {
-                    Lumen.ReplaceTransform(new OpenTK.Matrix4(
+                    lumen.ReplaceTransform(new OpenTK.Matrix4(
                         float.Parse(tbl.Rows[0][1].ToString()), float.Parse(tbl.Rows[3][1].ToString()), 0, 0,
                         float.Parse(tbl.Rows[1][1].ToString()), float.Parse(tbl.Rows[4][1].ToString()), 0, 0,
                         0, 0, 1, 0,
@@ -241,11 +234,11 @@ namespace SmashForge
                 }
                 else if (treeView1.SelectedNode.Parent.Text == "Positions")
                 {
-                    Lumen.ReplacePosition(new OpenTK.Vector2(float.Parse(tbl.Rows[0][1].ToString()), float.Parse(tbl.Rows[1][1].ToString())), indexNum);
+                    lumen.ReplacePosition(new OpenTK.Vector2(float.Parse(tbl.Rows[0][1].ToString()), float.Parse(tbl.Rows[1][1].ToString())), indexNum);
                 }
                 else if (treeView1.SelectedNode.Parent.Text == "Bounds")
                 {
-                    Lumen.ReplaceBound(new Lumen.Rect(float.Parse(tbl.Rows[0][1].ToString()), float.Parse(tbl.Rows[1][1].ToString()), float.Parse(tbl.Rows[2][1].ToString()), float.Parse(tbl.Rows[3][1].ToString())), indexNum);
+                    lumen.ReplaceBound(new Lumen.Rect(float.Parse(tbl.Rows[0][1].ToString()), float.Parse(tbl.Rows[1][1].ToString()), float.Parse(tbl.Rows[2][1].ToString()), float.Parse(tbl.Rows[3][1].ToString())), indexNum);
                 }
                 else if (treeView1.SelectedNode.Parent.Text == "Atlases")
                 {
@@ -256,7 +249,7 @@ namespace SmashForge
                     atlas.width = float.Parse(tbl.Rows[2][1].ToString());
                     atlas.height = float.Parse(tbl.Rows[3][1].ToString());
 
-                    Lumen.ReplaceAtlas(atlas, indexNum);
+                    lumen.ReplaceAtlas(atlas, indexNum);
                 }
                 else if (treeView1.SelectedNode.Parent.Text == "Texts")
                 {
@@ -293,9 +286,9 @@ namespace SmashForge
         public override void Save()
         {
             FileOutput o = new FileOutput();
-            byte[] n = Lumen.Rebuild();
-            o.writeBytes(n);
-            o.save(Lumen.Filename);
+            byte[] n = lumen.Rebuild();
+            o.WriteBytes(n);
+            o.Save(lumen.Filename);
             Edited = false;
         }
     }

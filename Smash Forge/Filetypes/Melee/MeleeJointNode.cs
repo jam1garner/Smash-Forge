@@ -1,5 +1,4 @@
 ﻿using MeleeLib.DAT;
-using System;
 
 namespace SmashForge.Filetypes.Melee
 {
@@ -55,7 +54,7 @@ namespace SmashForge.Filetypes.Melee
         public Animation GetAnimation(DatJOBJ Base = null)
         {
             Animation a = new Animation("PathAnimation");
-            a.FrameCount = (int)Path.Duration;
+            a.frameCount = (int)Path.Duration;
 
             string name = ParentBone;// ((MeleeJointNode)Parent).RenderBone.Parent.Text;
 
@@ -70,10 +69,10 @@ namespace SmashForge.Filetypes.Melee
             }
             
             Animation.KeyNode kn = new Animation.KeyNode(name);
-            a.Bones.Add(kn);
-            kn.XPOS = new Animation.KeyGroup();
-            kn.YPOS = new Animation.KeyGroup();
-            kn.ZPOS = new Animation.KeyGroup();
+            a.bones.Add(kn);
+            kn.xpos = new Animation.KeyGroup();
+            kn.ypos = new Animation.KeyGroup();
+            kn.zpos = new Animation.KeyGroup();
 
             for (int i = 0; i < Path.PathPoints.Count; i++)
             {
@@ -81,22 +80,22 @@ namespace SmashForge.Filetypes.Melee
                     Animation.KeyFrame kf = new Animation.KeyFrame();
                     kf.Frame = Path.PathPoints[i].Time * Path.Duration;
                     kf.Value = Path.PathPoints[i].X + (ParentJOBJ != null ? ParentJOBJ.TX : 0) * -1;
-                    kf.InterType = Animation.InterpolationType.LINEAR;
-                    kn.XPOS.Keys.Add(kf);
+                    kf.interType = Animation.InterpolationType.Linear;
+                    kn.xpos.keys.Add(kf);
                 }
                 {
                     Animation.KeyFrame kf = new Animation.KeyFrame();
                     kf.Frame = Path.PathPoints[i].Time * Path.Duration;
                     kf.Value = (ParentJOBJ != null ? ParentJOBJ.TY : 0) * -1 + Path.PathPoints[i].Y;
-                    kf.InterType = Animation.InterpolationType.LINEAR;
-                    kn.YPOS.Keys.Add(kf);
+                    kf.interType = Animation.InterpolationType.Linear;
+                    kn.ypos.keys.Add(kf);
                 }
                 {
                     Animation.KeyFrame kf = new Animation.KeyFrame();
                     kf.Frame = Path.PathPoints[i].Time * Path.Duration;
                     kf.Value = (ParentJOBJ != null ? ParentJOBJ.TZ : 0) + Path.PathPoints[i].Z;
-                    kf.InterType = Animation.InterpolationType.LINEAR;
-                    kn.ZPOS.Keys.Add(kf);
+                    kf.interType = Animation.InterpolationType.Linear;
+                    kn.zpos.keys.Add(kf);
                 }
             }
 

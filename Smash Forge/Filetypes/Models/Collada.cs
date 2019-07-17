@@ -7,7 +7,6 @@ using System.Drawing;
 using System.IO;
 using OpenTK;
 using System.Windows.Forms;
-using System.Diagnostics;
 
 namespace SmashForge
 {
@@ -57,7 +56,7 @@ namespace SmashForge
         {
             nud = new Nud();
             nut = new NUT();
-            Runtime.TextureContainers.Add(nut);
+            Runtime.textureContainers.Add(nut);
 
             Dictionary<string, NutTexture> existingTextures = new Dictionary<string, NutTexture>();
 
@@ -266,12 +265,12 @@ namespace SmashForge
                 NutTexture tex = null;
                 if (image.initref.ToLower().EndsWith(".dds"))
                 {
-                    DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref))));
+                    Dds dds = new Dds(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref))));
                     tex = dds.ToNutTexture();
                 }
                 if (image.initref.ToLower().EndsWith(".png"))
                 {
-                    tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref)), 1);
+                    tex = NutEditor.FromPng(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref)), 1);
                 }
                 if (tex == null)
                     //continue;
@@ -979,7 +978,7 @@ namespace SmashForge
             // images
             Dictionary<Bitmap, string> texbank = new Dictionary<Bitmap, string>();
             int tid = 0;
-            foreach (BNTX bntx in Runtime.BNTXList)
+            foreach (BNTX bntx in Runtime.bntxList)
             {
                 foreach (BRTI tex in bntx.textures)
                 {

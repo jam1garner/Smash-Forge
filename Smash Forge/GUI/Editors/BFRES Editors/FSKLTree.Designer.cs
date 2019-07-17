@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class FSKLTreePanel
+    partial class FsklTreePanel
     {
         /// <summary> 
         /// Required designer variable.
@@ -252,7 +252,7 @@
             this.ClientSize = new System.Drawing.Size(194, 574);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "FSKLTreePanel";
+            this.Name = "FsklTreePanel";
             this.ShowIcon = false;
             this.Text = "Bone Tree";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BoneTreePanel_FormClosing);

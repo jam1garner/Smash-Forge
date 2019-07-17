@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class LVDList
+    partial class LvdList
     {
         /// <summary>
         /// Required designer variable.
@@ -49,7 +49,7 @@
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.Controls.Add(this.treeView1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "LVDList";
+            this.Name = "LvdList";
             this.Text = "LVDList";
             this.ResumeLayout(false);
 

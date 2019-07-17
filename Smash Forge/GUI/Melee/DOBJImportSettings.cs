@@ -70,13 +70,13 @@ namespace SmashForge.Gui.Melee
 
         private void buttonImport_Click(object sender, EventArgs e)
         {
-            SMD smd = new SMD(ModelSrc);
+            Smd smd = new Smd(ModelSrc);
 
             DatJOBJ[] Bones = DOBJ.GetRoot().Root.GetJOBJinOrder();
             VBN RenderBones = DOBJ.GetRoot().RenderBones;
             RenderBones.reset();
             RenderBones.update();
-            VBN ImportedBones = smd.Bones;
+            VBN ImportedBones = smd.bones;
 
             GXAttribGroup AttrGroup = null;
             if (listBox1.SelectedIndex != -1)
@@ -114,21 +114,21 @@ namespace SmashForge.Gui.Melee
 
             if (comboBoxBoneType.SelectedIndex == 1)
                 ImportedBones = RenderBones;
-            foreach (SMDTriangle t in smd.Triangles)
+            foreach (SmdTriangle t in smd.triangles)
             {
                 if(comboBoxBoneType.SelectedIndex == 1)
                 {
                     // single bind
-                    t.v1.Bones = new int[] { CBBone.SelectedIndex };
-                    t.v1.Weights = new float[] { 1 };
-                    t.v2.Bones = new int[] { CBBone.SelectedIndex };
-                    t.v2.Weights = new float[] { 1 };
-                    t.v3.Bones = new int[] { CBBone.SelectedIndex };
-                    t.v3.Weights = new float[] { 1 };
+                    t.v1.bones = new int[] { CBBone.SelectedIndex };
+                    t.v1.weights = new float[] { 1 };
+                    t.v2.bones = new int[] { CBBone.SelectedIndex };
+                    t.v2.weights = new float[] { 1 };
+                    t.v3.bones = new int[] { CBBone.SelectedIndex };
+                    t.v3.weights = new float[] { 1 };
                 }
-                List<DatBoneWeight> bwl1 = CreateWeightList(t.v1.Bones, t.v1.Weights, Bones, ImportedBones);
-                List<DatBoneWeight> bwl2 = CreateWeightList(t.v2.Bones, t.v2.Weights, Bones, ImportedBones);
-                List<DatBoneWeight> bwl3 = CreateWeightList(t.v3.Bones, t.v3.Weights, Bones, ImportedBones);
+                List<DatBoneWeight> bwl1 = CreateWeightList(t.v1.bones, t.v1.weights, Bones, ImportedBones);
+                List<DatBoneWeight> bwl2 = CreateWeightList(t.v2.bones, t.v2.weights, Bones, ImportedBones);
+                List<DatBoneWeight> bwl3 = CreateWeightList(t.v3.bones, t.v3.weights, Bones, ImportedBones);
                 int bid1 = GetWeightListIndex(p.BoneWeightList, bwl1);
                 int bid2 = GetWeightListIndex(p.BoneWeightList, bwl2);
                 int bid3 = GetWeightListIndex(p.BoneWeightList, bwl3);
@@ -162,11 +162,11 @@ namespace SmashForge.Gui.Melee
                 RigVertex(ref v, RenderBones, p.BoneWeightList[v.PMXID/3], Bones, parent);
                
                 GXVertex v2 = SMDVertexToGXVertex(t.v2);
-                v2.PMXID = GetWeightListIndex(p.BoneWeightList, CreateWeightList(t.v2.Bones, t.v2.Weights, Bones, ImportedBones));
+                v2.PMXID = GetWeightListIndex(p.BoneWeightList, CreateWeightList(t.v2.bones, t.v2.weights, Bones, ImportedBones));
                 RigVertex(ref v2, RenderBones, p.BoneWeightList[v2.PMXID / 3], Bones, parent);
                 
                 GXVertex v3 = SMDVertexToGXVertex(t.v3);
-                v3.PMXID = GetWeightListIndex(p.BoneWeightList, CreateWeightList(t.v3.Bones, t.v3.Weights, Bones, ImportedBones));
+                v3.PMXID = GetWeightListIndex(p.BoneWeightList, CreateWeightList(t.v3.bones, t.v3.weights, Bones, ImportedBones));
                 RigVertex(ref v3, RenderBones, p.BoneWeightList[v3.PMXID / 3], Bones, parent);
                
                 vert.Add(v);
@@ -262,13 +262,13 @@ namespace SmashForge.Gui.Melee
             return null;
         }
 
-        private GXVertex SMDVertexToGXVertex(SMDVertex v)
+        private GXVertex SMDVertexToGXVertex(SmdVertex v)
         {
             GXVertex o = new GXVertex()
             {
-                Pos = new GXVector3(v.P.X, v.P.Y, v.P.Z),
-                Nrm = new GXVector3(v.N.X, v.N.Y, v.N.Z),
-                TX0 = new GXVector2(v.UV.X, v.UV.Y),
+                Pos = new GXVector3(v.p.X, v.p.Y, v.p.Z),
+                Nrm = new GXVector3(v.n.X, v.n.Y, v.n.Z),
+                TX0 = new GXVector2(v.uv.X, v.uv.Y),
             };
             return o;
         }

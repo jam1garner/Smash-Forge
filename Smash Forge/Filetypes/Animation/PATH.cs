@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmashForge
 {
@@ -37,57 +33,57 @@ namespace SmashForge
         public override void Read(string filename)
         {
             FileData f = new FileData(filename);
-            f.Endian = Endianness.Big;
-            f.seek(4);
-            if (f.readUInt() != Magic)
+            f.endian = Endianness.Big;
+            f.Seek(4);
+            if (f.ReadUInt() != Magic)
                 return;
 
-            f.seek(0);
-            uint bom = f.readUInt();
+            f.Seek(0);
+            uint bom = f.ReadUInt();
             if (bom == 0xFFFE0000)
                 Endian = Endianness.Little;
             else if (bom == 0x0000FEFF)
                 Endian = Endianness.Big;
             else
                 return;
-            f.Endian = Endian;
+            f.endian = Endian;
 
-            f.seek(8);
-            f.readInt(); // Always 0
-            int frameCount = f.readInt();
+            f.Seek(8);
+            f.ReadInt(); // Always 0
+            int frameCount = f.ReadInt();
             for (int i = 0; i < frameCount; i++)
             {
                 pathFrame temp;
-                temp.qx = f.readFloat();
-                temp.qy = f.readFloat();
-                temp.qz = f.readFloat();
-                temp.qw = f.readFloat();
-                temp.x = f.readFloat();
-                temp.y = f.readFloat();
-                temp.z = f.readFloat();
+                temp.qx = f.ReadFloat();
+                temp.qy = f.ReadFloat();
+                temp.qz = f.ReadFloat();
+                temp.qw = f.ReadFloat();
+                temp.x = f.ReadFloat();
+                temp.y = f.ReadFloat();
+                temp.z = f.ReadFloat();
                 Frames.Add(temp);
             }
         }
         public override byte[] Rebuild()
         {
             FileOutput f = new FileOutput();
-            f.Endian = Endian;
-            f.writeUInt(0x0000FEFF);
-            f.Endian = Endianness.Big;
-            f.writeUInt(Magic);
+            f.endian = Endian;
+            f.WriteUInt(0x0000FEFF);
+            f.endian = Endianness.Big;
+            f.WriteUInt(Magic);
 
-            f.Endian = Endian;
-            f.writeInt(0); // Always 0
-            f.writeInt(Frames.Count);
+            f.endian = Endian;
+            f.WriteInt(0); // Always 0
+            f.WriteInt(Frames.Count);
             for (int i = 0; i < Frames.Count; i++)
             {
-                f.writeFloat(Frames[i].qx);
-                f.writeFloat(Frames[i].qy);
-                f.writeFloat(Frames[i].qz);
-                f.writeFloat(Frames[i].qw);
-                f.writeFloat(Frames[i].x);
-                f.writeFloat(Frames[i].y);
-                f.writeFloat(Frames[i].z);
+                f.WriteFloat(Frames[i].qx);
+                f.WriteFloat(Frames[i].qy);
+                f.WriteFloat(Frames[i].qz);
+                f.WriteFloat(Frames[i].qw);
+                f.WriteFloat(Frames[i].x);
+                f.WriteFloat(Frames[i].y);
+                f.WriteFloat(Frames[i].z);
             }
 
             return f.GetBytes();

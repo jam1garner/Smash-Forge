@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
@@ -31,7 +25,7 @@ namespace SmashForge
 
         private string acmdDirectory;
 
-        public void PopulateTreeView(string root, bool ImportFromExisting = false)
+        public void PopulateTreeView(string root, bool importFromExisting = false)
         {
             treeView1.BeginUpdate();
 
@@ -78,13 +72,13 @@ namespace SmashForge
                 switch (fileinfo.Extension.ToLower())
                 {
                     case ".nud":
-                        child = new NUDNode(fileinfo.FullName);
+                        child = new NudNode(fileinfo.FullName);
                         break;
                     case ".nut":
-                        child = new NUTNode(fileinfo.FullName);
+                        child = new NutNode(fileinfo.FullName);
                         break;
                     case ".vbn":
-                        child = new VBNNode(fileinfo.FullName);
+                        child = new VbnNode(fileinfo.FullName);
                         break;
                     default:
                         child = new BaseNode(fileinfo.FullName);
@@ -94,7 +88,7 @@ namespace SmashForge
                 nodeToAddTo.Nodes.Add(child);
             }
         }
-        public void fillTree()
+        public void FillTree()
         {
             /*if (!Directory.Exists(Path.Combine(Application.StartupPath, "workspace/animcmd/")))
                 Directory.CreateDirectory(Path.Combine(Application.StartupPath, "workspace/animcmd/"));
@@ -109,7 +103,7 @@ namespace SmashForge
 
         }
 
-        public void openACMD(string file)
+        public void OpenAcmd(string file)
         {
             string filename = Path.GetFullPath(file);
             acmdDirectory = Path.GetDirectoryName(filename);
@@ -126,10 +120,10 @@ namespace SmashForge
                 proc.WaitForExit();
                 exit = proc.ExitCode;
             }
-            fillTree();
+            FillTree();
         }
 
-        public void openACMD(string filename, string motionPath)
+        public void OpenAcmd(string filename, string motionPath)
         {
             acmdDirectory = Path.GetDirectoryName(filename);
             if (Directory.Exists(Path.Combine(Application.StartupPath, "workspace/")))
@@ -146,10 +140,10 @@ namespace SmashForge
                 proc.WaitForExit();
                 exit = proc.ExitCode;
             }
-            fillTree();
+            FillTree();
         }//"C:\Users\jam1garner\Source\Repos\Smash-Forge\Smash Forge\bin\Debug\lib\FITD.exe" -m "C:\Smash\Sm4shExplorer\extract\data\fighter\captain\motion\" -o "C:\Users\jam1garner\Source\Repos\Smash-Forge\Smash Forge\bin\Debug\workspace" "C:\Smash\Sm4shExplorer\extract\data\fighter\captain\script\animcmd\body\motion.mtable"
 
-        public void build()
+        public void Build()
         {
             ProcessStartInfo start = new ProcessStartInfo();
             start.Arguments = "-o \"" + acmdDirectory + "\" workspace/fighter.mlist";
@@ -164,9 +158,9 @@ namespace SmashForge
             }
         }
 
-        private void openFile(object sender, TreeNodeMouseClickEventArgs e)
+        private void OpenFile(object sender, TreeNodeMouseClickEventArgs e)
         {
-            foreach (ACMDEditor a in MainForm.Instance.acmdEditors)
+            foreach (AcmdEditor a in MainForm.Instance.acmdEditors)
             {
                 if (a.fname.Equals("workspace/animcmd/" + e.Node.Text))
                 {
@@ -179,7 +173,7 @@ namespace SmashForge
             {
                 if (e.Node.Parent.Text.Equals("ACMD"))
                 {
-                    ACMDEditor temp = new ACMDEditor(Path.Combine(Application.StartupPath, "workspace/animcmd/") + e.Node.Text, this);
+                    AcmdEditor temp = new AcmdEditor(Path.Combine(Application.StartupPath, "workspace/animcmd/") + e.Node.Text, this);
                     MainForm.Instance.acmdEditors.Add(temp);
                     MainForm.Instance.AddDockedControl(temp);
                 }

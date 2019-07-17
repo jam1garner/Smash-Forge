@@ -1,7 +1,7 @@
 ﻿using SmashForge.Gui;
 
 namespace SmashForge {
-    partial class MTAEditorGUI
+    partial class MtaEditorGui
     {
         /// <summary>
         /// Required designer variable.
@@ -93,7 +93,7 @@ namespace SmashForge {
             this.ClientSize = new System.Drawing.Size(245, 560);
             this.Controls.Add(this.splitContainer1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "MTAEditorGUI";
+            this.Name = "MtaEditorGui";
             this.Text = "MTAEditorGUI";
             this.Load += new System.EventHandler(this.MTAEditorGUI_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);

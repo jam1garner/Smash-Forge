@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using Syroot.NintenTools.Bfres;
-using System.IO;
-using Syroot.NintenTools.Yaz0;
+﻿using System.Windows.Forms;
 
 
 namespace SmashForge

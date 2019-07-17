@@ -12,7 +12,7 @@ namespace SmashForge
 {
     public class NudRenderMesh : GenericMesh<Nud.DisplayVertex>
     {
-        private readonly UniformBlock uniformBlock = new UniformBlock(OpenTKSharedResources.shaders["Nud"], "MaterialProperties") { BlockBinding = 1 };
+        private readonly UniformBlock uniformBlock = new UniformBlock(OpenTkSharedResources.shaders["Nud"], "MaterialProperties") { BlockBinding = 1 };
 
         private RenderSettings renderSettings = new RenderSettings();
 

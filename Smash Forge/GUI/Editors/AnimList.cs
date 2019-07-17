@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using System.Text.RegularExpressions;
@@ -36,21 +31,21 @@ namespace SmashForge
             exportAll.Click += exportAllAsOMOToolStripMenuItem_Click;
             m.MenuItems.Add(exportAll);
 
-            MenuItem exportAllSMD = new MenuItem("Export All as SMD");
-            exportAllSMD.Click += exportAllAsSMDToolStripMenuItem_Click;
-            m.MenuItems.Add(exportAllSMD);
+            MenuItem exportAllSmd = new MenuItem("Export All as SMD");
+            exportAllSmd.Click += exportAllAsSMDToolStripMenuItem_Click;
+            m.MenuItems.Add(exportAllSmd);
 
             MenuItem exportAllAnim = new MenuItem("Export All as ANIM");
             exportAllAnim.Click += exportAllAsANIMToolStripMenuItem_Click;
             m.MenuItems.Add(exportAllAnim);
 
-            MenuItem createAG = new MenuItem("Create Animation Group");
-            createAG.Click += createAnimationGroupToolStripMenuItem_Click;
-            m.MenuItems.Add(createAG);
+            MenuItem createAg = new MenuItem("Create Animation Group");
+            createAg.Click += createAnimationGroupToolStripMenuItem_Click;
+            m.MenuItems.Add(createAg);
 
-            MenuItem importPAC = new MenuItem("Import PAC");
-            importPAC.Click += importPAC_Click;
-            m.MenuItems.Add(importPAC);
+            MenuItem importPac = new MenuItem("Import PAC");
+            importPac.Click += importPAC_Click;
+            m.MenuItems.Add(importPac);
 
             treeView1.ContextMenu = m;
         }
@@ -61,7 +56,7 @@ namespace SmashForge
             //Runtime.TargetAnimString = lstAnims.SelectedItem.ToString();
         }
 
-        private void selectItem(object sender, TreeNodeMouseClickEventArgs e)
+        private void SelectItem(object sender, TreeNodeMouseClickEventArgs e)
         {
             //Runtime.TargetMTA.Clear();
             //Runtime.TargetAnim = null;
@@ -70,48 +65,48 @@ namespace SmashForge
             {
                 //Runtime.TargetAnimString = e.Node.Text;
 
-                string AnimName = e.Node.Text;
-                AnimName = Regex.Match(AnimName, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
-                if (AnimName.Length > 3)
-                    AnimName = AnimName.Substring(3);
+                string animName = e.Node.Text;
+                animName = Regex.Match(animName, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+                if (animName.Length > 3)
+                    animName = animName.Substring(3);
 
-                Animation running = new Animation(AnimName);
+                Animation running = new Animation(animName);
                 running.ReplaceMe((Animation)e.Node);
                 running.Tag = e.Node;
 
                 List<MTA> display = new List<MTA>();
                 List<MTA> def = new List<MTA>();
 
-                Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
+                Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
                 foreach (TreeNode n in treeView1.Nodes)
                 {
-                    NodeQueue.Enqueue(n);
+                    nodeQueue.Enqueue(n);
                 }
-                while (NodeQueue.Count > 0)
+                while (nodeQueue.Count > 0)
                 {
                     try
                     {
-                        TreeNode n = NodeQueue.Dequeue();
-                        string NodeName = Regex.Match(n.Text, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
-                        if (NodeName.Length <= 3)
-                            Console.WriteLine(NodeName);
+                        TreeNode n = nodeQueue.Dequeue();
+                        string nodeName = Regex.Match(n.Text, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+                        if (nodeName.Length <= 3)
+                            Console.WriteLine(nodeName);
                         else
-                            NodeName = NodeName.Substring(3);
+                            nodeName = nodeName.Substring(3);
                         if (n is Animation)
                         {
                             if (n == e.Node)
                                 continue;
-                            if (matchAnim.Checked && NodeName.Equals(AnimName))
+                            if (matchAnim.Checked && nodeName.Equals(animName))
                             {
-                                running.Children.Add(n);
+                                running.children.Add(n);
                             }
                         }
                         if (n is MTA)
                         {
                             if (n == e.Node)
                                 continue;
-                            if (NodeName.Contains(AnimName.Replace(".omo", ".")))
-                                running.Children.Add(n);
+                            if (nodeName.Contains(animName.Replace(".omo", ".")))
+                                running.children.Add(n);
                             if (n.Text.Contains("display"))
                                 display.Add((MTA)n);
                             if (n.Text.Contains("default.mta"))
@@ -120,7 +115,7 @@ namespace SmashForge
                         if (n is AnimationGroupNode)
                         {
                             foreach (TreeNode tn in n.Nodes)
-                                NodeQueue.Enqueue(tn);
+                                nodeQueue.Enqueue(tn);
                         }
                     }
                     catch
@@ -184,15 +179,15 @@ namespace SmashForge
                 //Runtime.TargetMTAString = e.Node.Text;
                 ((ModelViewport)Parent).CurrentMaterialAnimation = (MTA)e.Node;
 
-                Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
+                Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
                 foreach (TreeNode n in treeView1.Nodes)
                 {
-                    NodeQueue.Enqueue(n);
+                    nodeQueue.Enqueue(n);
                 }
                 List<MTA> display = new List<MTA>();
-                while (NodeQueue.Count > 0)
+                while (nodeQueue.Count > 0)
                 {
-                    TreeNode n = NodeQueue.Dequeue();
+                    TreeNode n = nodeQueue.Dequeue();
                     if (n is Animation || n is MTA)
                     {
                         if (n == e.Node)
@@ -203,7 +198,7 @@ namespace SmashForge
                     if (n is AnimationGroupNode)
                     {
                         foreach (TreeNode tn in n.Nodes)
-                            NodeQueue.Enqueue(tn);
+                            nodeQueue.Enqueue(tn);
                     }
                 }
 
@@ -236,19 +231,19 @@ namespace SmashForge
             {
                 ((ModelViewport)Parent).CurrentBfresMaterialAnimation = (BFRES.MTA)e.Node;
 
-                Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
+                Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
                 foreach (TreeNode n in treeView1.Nodes)
                 {
-                    NodeQueue.Enqueue(n);
+                    nodeQueue.Enqueue(n);
                 }
-                while (NodeQueue.Count > 0)
+                while (nodeQueue.Count > 0)
                 {
-                    TreeNode n = NodeQueue.Dequeue();
+                    TreeNode n = nodeQueue.Dequeue();
 
                     if (n is AnimationGroupNode)
                     {
                         foreach (TreeNode tn in n.Nodes)
-                            NodeQueue.Enqueue(tn);
+                            nodeQueue.Enqueue(tn);
                     }
                 }
                 foreach (TreeNode node in ((ModelViewport)Parent).draw)
@@ -321,7 +316,7 @@ namespace SmashForge
                         foreach (TreeNode a in v.Nodes)
                         {
                             if (a is Animation)
-                                OMOOld.createOMO(((Animation)a), Runtime.TargetVBN, path + "\\" + a.Text + ".omo");
+                                OMOOld.createOMO(((Animation)a), Runtime.TargetVbn, path + "\\" + a.Text + ".omo");
                         }        
                     }
                 }
@@ -345,7 +340,7 @@ namespace SmashForge
                                 {
                                     if (a is Animation)
                                     {
-                                        SMD.Save(((Animation)a), Runtime.TargetVBN, path + "\\" + a.Text + ".smd");
+                                        Smd.Save(((Animation)a), Runtime.TargetVbn, path + "\\" + a.Text + ".smd");
                                     }
                                 }
                             }
@@ -372,7 +367,7 @@ namespace SmashForge
                                 foreach (TreeNode a in f.Nodes)
                                 {
                                     if (a is Animation)
-                                        ANIM.CreateANIM(path + "\\" + a.Text + ".anim", ((Animation)a), Runtime.TargetVBN);
+                                        ANIM.CreateANIM(path + "\\" + a.Text + ".anim", ((Animation)a), Runtime.TargetVbn);
                                 }
                             }
                         }
@@ -418,13 +413,13 @@ namespace SmashForge
                     {
                         var anim = OMOOld.read(new FileData(pair.Value));
                         animGroup.Nodes.Add(anim);
-                        string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+                        string animName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
 
-                        if (!string.IsNullOrEmpty(AnimName))
+                        if (!string.IsNullOrEmpty(animName))
                         {
                             if (groupname == null)
-                                groupname = pair.Key.Replace(AnimName, "");
-                            anim.Text = AnimName;
+                                groupname = pair.Key.Replace(animName, "");
+                            anim.Text = animName;
                         }
                         //Runtime.acmdEditor.updateCrcList();
                     }
@@ -439,7 +434,7 @@ namespace SmashForge
 
                 if (groupname != null && !groupname.Equals(""))
                 {
-                    animGroup.UseGroupName = true;
+                    animGroup.useGroupName = true;
                     animGroup.Text = groupname;
                 }
 

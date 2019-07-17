@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
@@ -24,7 +19,7 @@ namespace SmashForge.Gui.Menus
         {
             InitializeComponent();
 
-            if (Runtime.MarioOdysseyGamePath == "")
+            if (Runtime.marioOdysseyGamePath == "")
             {
                 MessageBox.Show("Game path not configured!");
 
@@ -33,12 +28,12 @@ namespace SmashForge.Gui.Menus
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     string folderPath = ofd.SelectedPath;
-                    Runtime.MarioOdysseyGamePath = folderPath;
+                    Runtime.marioOdysseyGamePath = folderPath;
                     Config.Save();
                 }
             }
 
-            string[] dirs = Directory.GetFiles($"{Runtime.MarioOdysseyGamePath}\\ObjectData", "Mario*");
+            string[] dirs = Directory.GetFiles($"{Runtime.marioOdysseyGamePath}\\ObjectData", "Mario*");
 
             foreach (string dir in dirs)
             {

@@ -7,35 +7,35 @@ using System.Text;
 
 namespace SmashForge
 {
-    public struct SMDVertex
+    public struct SmdVertex
     {
-        public int Parent;
-        public Vector3 P;
-        public Vector3 N;
-        public Vector2 UV;
-        public int[] Bones;
-        public float[] Weights;
+        public int parent;
+        public Vector3 p;
+        public Vector3 n;
+        public Vector2 uv;
+        public int[] bones;
+        public float[] weights;
     }
 
-    public class SMDTriangle
+    public class SmdTriangle
     {
-        public string Material;
-        public SMDVertex v1, v2, v3;
+        public string material;
+        public SmdVertex v1, v2, v3;
     }
 
-    public class SMD
+    public class Smd
     {
-        public VBN Bones;
-        public Animation Animation; // todo
-        public List<SMDTriangle> Triangles;
+        public VBN bones;
+        public Animation animation; // todo
+        public List<SmdTriangle> triangles;
 
-        public SMD()
+        public Smd()
         {
-            Bones = new VBN();
-            Triangles = new List<SMDTriangle>();
+            bones = new VBN();
+            triangles = new List<SmdTriangle>();
         }
 
-        public SMD(string fname)
+        public Smd(string fname)
         {
             Read(fname);
         }
@@ -47,9 +47,9 @@ namespace SmashForge
 
             string current = "";
 
-            Bones = new VBN();
-            Triangles = new List<SMDTriangle>();
-            Dictionary<int, Bone> BoneList = new Dictionary<int, Bone>();
+            bones = new VBN();
+            triangles = new List<SmdTriangle>();
+            Dictionary<int, Bone> boneList = new Dictionary<int, Bone>();
 
             int time = 0;
             while ((line = reader.ReadLine()) != null)
@@ -66,13 +66,13 @@ namespace SmashForge
                 if (current.Equals("nodes"))
                 {
                     int id = int.Parse(args[0]);
-                    Bone b = new Bone(Bones);
+                    Bone b = new Bone(bones);
                     b.Text = args[1].Replace('"', ' ').Trim();
                     int s = 2;
                     while (args[s].Contains("\""))
                         b.Text += args[s++];
                     b.parentIndex = int.Parse(args[s]);
-                    BoneList.Add(id, b);
+                    boneList.Add(id, b);
                 }
 
                 if (current.Equals("skeleton"))
@@ -83,7 +83,7 @@ namespace SmashForge
                     {
                         if(time == 0)
                         {
-                            Bone b = BoneList[int.Parse(args[0])];
+                            Bone b = boneList[int.Parse(args[0])];
                             b.position = new float[3];
                             b.rotation = new float[3];
                             b.scale = new float[3];
@@ -100,10 +100,10 @@ namespace SmashForge
                             b.pos = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
                             b.rot = VBN.FromEulerAngles(float.Parse(args[6]), float.Parse(args[5]), float.Parse(args[4]));
 
-                            Bones.bones.Add(b);
+                            bones.bones.Add(b);
 
                             if(b.parentIndex != -1)
-                                b.parentIndex = Bones.bones.IndexOf(BoneList[b.parentIndex]);
+                                b.parentIndex = bones.bones.IndexOf(boneList[b.parentIndex]);
                         }
                     }
                 }
@@ -114,9 +114,9 @@ namespace SmashForge
                     if (args[0].Equals(""))
                         continue;
 
-                    SMDTriangle t = new SMDTriangle();
-                    Triangles.Add(t);
-                    t.Material = meshName;
+                    SmdTriangle t = new SmdTriangle();
+                    triangles.Add(t);
+                    t.material = meshName;
 
                     for (int j = 0; j < 3; j++)
                     {
@@ -125,22 +125,22 @@ namespace SmashForge
                         args = line.Replace(";", "").TrimStart().Split(' ');
 
                         int parent = int.Parse(args[0]);
-                        SMDVertex vert = new SMDVertex();
-                        vert.P = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
-                        vert.N = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
-                        vert.UV = new Vector2(float.Parse(args[7]), float.Parse(args[8]));
-                        vert.Bones = new int[0];
-                        vert.Weights = new float[0];
+                        SmdVertex vert = new SmdVertex();
+                        vert.p = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
+                        vert.n = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
+                        vert.uv = new Vector2(float.Parse(args[7]), float.Parse(args[8]));
+                        vert.bones = new int[0];
+                        vert.weights = new float[0];
                         if (args.Length > 9)
                         {
                             int wCount = int.Parse(args[9]);
                             int w = 10;
-                            vert.Bones = new int[wCount];
-                            vert.Weights = new float[wCount];
+                            vert.bones = new int[wCount];
+                            vert.weights = new float[wCount];
                             for (int i = 0; i < wCount; i++)
                             {
-                                vert.Bones[i] = (int.Parse(args[w++]));
-                                vert.Weights[i] = (float.Parse(args[w++]));
+                                vert.bones[i] = (int.Parse(args[w++]));
+                                vert.weights[i] = (float.Parse(args[w++]));
                             }
                         }
                         switch (j)
@@ -152,38 +152,38 @@ namespace SmashForge
                     }
                 }
             }
-            Bones.reset();
+            bones.reset();
         }
 
-        public void Save(string FileName)
+        public void Save(string fileName)
         {
             StringBuilder o = new StringBuilder();
 
             o.AppendLine("version 1");
 
-            if(Bones != null)
+            if(bones != null)
             {
                 o.AppendLine("nodes");
-                for(int i = 0; i < Bones.bones.Count; i++)
-                    o.AppendLine("  " + i + " \"" + Bones.bones[i].Text + "\" " + Bones.bones[i].parentIndex);
+                for(int i = 0; i < bones.bones.Count; i++)
+                    o.AppendLine("  " + i + " \"" + bones.bones[i].Text + "\" " + bones.bones[i].parentIndex);
                 o.AppendLine("end");
 
                 o.AppendLine("skeleton");
                 o.AppendLine("time 0");
-                for (int i = 0; i < Bones.bones.Count; i++)
+                for (int i = 0; i < bones.bones.Count; i++)
                 {
-                    Bone b = Bones.bones[i];
+                    Bone b = bones.bones[i];
                     o.AppendFormat("{0} {1} {2} {3} {4} {5} {6}\n", i, b.position[0], b.position[1], b.position[2], b.rotation[0], b.rotation[1], b.rotation[2]);
                 }
                 o.AppendLine("end");
             }
 
-            if(Triangles != null)
+            if(triangles != null)
             {
                 o.AppendLine("triangles");
-                foreach(SMDTriangle tri in Triangles)
+                foreach(SmdTriangle tri in triangles)
                 {
-                    o.AppendLine(tri.Material);
+                    o.AppendLine(tri.material);
                     WriteVertex(o, tri.v1);
                     WriteVertex(o, tri.v2);
                     WriteVertex(o, tri.v3);
@@ -191,39 +191,39 @@ namespace SmashForge
                 o.AppendLine("end");
             }
 
-            File.WriteAllText(FileName, o.ToString());
+            File.WriteAllText(fileName, o.ToString());
         }
 
-        private void WriteVertex(StringBuilder o, SMDVertex v)
+        private void WriteVertex(StringBuilder o, SmdVertex v)
         {
             o.AppendFormat("{0} {1} {2} {3} {4} {5} {6} {7} {8} ",
-                        v.Parent,
-                        v.P.X, v.P.Y, v.P.Z,
-                        v.N.X, v.N.Y, v.N.Z,
-                        v.UV.X, v.UV.Y);
-            if(v.Weights == null)
+                        v.parent,
+                        v.p.X, v.p.Y, v.p.Z,
+                        v.n.X, v.n.Y, v.n.Z,
+                        v.uv.X, v.uv.Y);
+            if(v.weights == null)
             {
                 o.AppendLine("0");
             }
             else
             {
-                string weights = v.Weights.Length + "";
-                for (int i = 0; i < v.Weights.Length; i++)
+                string weights = v.weights.Length + "";
+                for (int i = 0; i < v.weights.Length; i++)
                 {
-                    weights += " " + v.Bones[i] + " " + v.Weights[i];
+                    weights += " " + v.bones[i] + " " + v.weights[i];
                 }
                 o.AppendLine(weights);
             }
         }
 
-        public static void toBFRES(string fname)
+        public static void ToBfres(string fname)
         {
             StreamReader reader = File.OpenText(fname);
             string line;
             string current = "";
             bool readBones = false;
             int frame = 0, prevframe = 0;
-            string Text = "";
+            string text = "";
 
             readBones = true;
 
@@ -244,7 +244,7 @@ namespace SmashForge
                 }
                 if (current.Equals("nodes"))
                 {
-                    Text = args[1].Replace("\"", "");
+                    text = args[1].Replace("\"", "");
                 }
                 if (current.Equals("time"))
                 {
@@ -253,7 +253,7 @@ namespace SmashForge
             }
         }
 
-        public static void read(string fname, Animation a, VBN v)
+        public static void Read(string fname, Animation a, VBN v)
         {
             StreamReader reader = File.OpenText(fname);
             string line;
@@ -304,7 +304,7 @@ namespace SmashForge
                     vbn.totalBoneCount++;
                     vbn.bones.Add(b);
                     Animation.KeyNode node = new Animation.KeyNode(b.Text);
-                    a.Bones.Add(node);
+                    a.bones.Add(node);
                 }
 
                 if (current.Equals("time"))
@@ -345,65 +345,65 @@ namespace SmashForge
                         	vbn.bones [b.parentIndex].Nodes.Add (b);
                     }
                     Animation.KeyNode bone = a.GetBone(vbn.bones[int.Parse(args[0])].Text);
-                    bone.RotType = Animation.RotationType.EULER;
+                    bone.rotType = Animation.RotationType.Euler;
 
                     Animation.KeyFrame n = new Animation.KeyFrame();
                     n.Value = float.Parse(args[1]);
                     n.Frame = frame;
-                    bone.XPOS.Keys.Add(n);
+                    bone.xpos.keys.Add(n);
 
                     n = new Animation.KeyFrame();
                     n.Value = float.Parse(args[2]);
                     n.Frame = frame;
-                    bone.YPOS.Keys.Add(n);
+                    bone.ypos.keys.Add(n);
 
                     n = new Animation.KeyFrame();
                     n.Value = float.Parse(args[3]);
                     n.Frame = frame;
-                    bone.ZPOS.Keys.Add(n);
+                    bone.zpos.keys.Add(n);
 
                     n = new Animation.KeyFrame();
                     n.Value = float.Parse(args[4]);
                     n.Frame = frame;
-                    bone.XROT.Keys.Add(n);
+                    bone.xrot.keys.Add(n);
 
                     n = new Animation.KeyFrame();
                     n.Value = float.Parse(args[5]);
                     n.Frame = frame;
-                    bone.YROT.Keys.Add(n);
+                    bone.yrot.keys.Add(n);
 
                     n = new Animation.KeyFrame();
                     n.Value = float.Parse(args[6]);
                     n.Frame = frame;
-                    bone.ZROT.Keys.Add(n);
+                    bone.zrot.keys.Add(n);
 
                     if(args.Length > 7)
                     {
                         n = new Animation.KeyFrame();
                         n.Value = float.Parse(args[7]);
                         n.Frame = frame;
-                        bone.XSCA.Keys.Add(n);
+                        bone.xsca.keys.Add(n);
 
                         n = new Animation.KeyFrame();
                         n.Value = float.Parse(args[8]);
                         n.Frame = frame;
-                        bone.YSCA.Keys.Add(n);
+                        bone.ysca.keys.Add(n);
 
                         n = new Animation.KeyFrame();
                         n.Value = float.Parse(args[9]);
                         n.Frame = frame;
-                        bone.ZSCA.Keys.Add(n);
+                        bone.zsca.keys.Add(n);
                     }
                 }
             }
 
-            a.FrameCount = frame;
+            a.frameCount = frame;
 
             vbn.boneCountPerType[0] = (uint)vbn.bones.Count;
             vbn.update();
         }
 
-        public static Nud toNUD(string fname)
+        public static Nud ToNud(string fname)
         {
             StreamReader reader = File.OpenText(fname);
             string line;
@@ -480,33 +480,33 @@ namespace SmashForge
             return nud;
         }
 
-        public static void Save(Animation anim, VBN Skeleton, String Fname)
+        public static void Save(Animation anim, VBN skeleton, String fname)
         {
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@Fname))
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fname))
             {
                 file.WriteLine("version 1");
 
                 file.WriteLine("nodes");
-                foreach(Bone b in Skeleton.bones)
+                foreach(Bone b in skeleton.bones)
                 {
-                    file.WriteLine(Skeleton.bones.IndexOf(b) + " \"" + b.Text + "\" " + b.parentIndex);
+                    file.WriteLine(skeleton.bones.IndexOf(b) + " \"" + b.Text + "\" " + b.parentIndex);
                 }
                 file.WriteLine("end");
                 
                 file.WriteLine("skeleton");
                 anim.SetFrame(0);
-                for(int i = 0; i <= anim.FrameCount; i++)
+                for(int i = 0; i <= anim.frameCount; i++)
                 {
-                    anim.NextFrame(Skeleton);
+                    anim.NextFrame(skeleton);
                     
                     file.WriteLine("time " + i);
 
-                    foreach (Animation.KeyNode sb in anim.Bones)
+                    foreach (Animation.KeyNode sb in anim.bones)
                     {
-                        Bone b = Skeleton.getBone(sb.Text);
+                        Bone b = skeleton.getBone(sb.Text);
                         if (b == null) continue;
                         Vector3 eul = ANIM.quattoeul(b.rot);
-                        file.WriteLine(Skeleton.bones.IndexOf(b) + " " + b.pos.X + " " + b.pos.Y + " " + b.pos.Z + " " + eul.X + " " + eul.Y + " " + eul.Z);
+                        file.WriteLine(skeleton.bones.IndexOf(b) + " " + b.pos.X + " " + b.pos.Y + " " + b.pos.Z + " " + eul.X + " " + eul.Y + " " + eul.Z);
                     }
 
                 }

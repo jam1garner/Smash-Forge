@@ -1,22 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
-using System.IO;
 
 namespace SmashForge
 {
-    public partial class MTAEditor : EditorBase
+    public partial class MtaEditor : EditorBase
     {
         public MTA mta;
 
-        public MTAEditor(MTA mta)
+        public MtaEditor(MTA mta)
         {
             InitializeComponent();
             this.mta = mta;
@@ -37,8 +29,8 @@ namespace SmashForge
             FileOutput o = new FileOutput();
             mta.Compile(new List<string>(richTextBox1.Text.Split('\n')));
             byte[] n = mta.Rebuild();
-            o.writeBytes(n);
-            o.save(FilePath);
+            o.WriteBytes(n);
+            o.Save(FilePath);
             Edited = false;
         }
 

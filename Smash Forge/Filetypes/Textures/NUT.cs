@@ -56,7 +56,7 @@ namespace SmashForge
             get
             {
                 if (surfaces.Count == 6)
-                    return (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES;
+                    return (uint)Dds.Ddscaps2.CubemapAllfaces;
                 else
                     return (uint)0;
             }
@@ -265,7 +265,7 @@ namespace SmashForge
         }
 
         #region Functions
-        NUTEditor Editor;
+        NutEditor Editor;
 
         public void ConvertToDdsNut(bool regenerateMipMaps = true)
         {
@@ -275,7 +275,7 @@ namespace SmashForge
 
                 // Reading/writing mipmaps is only supported for DDS textures,
                 // so we will need to convert all the textures.
-                DDS dds = new DDS(originalTexture);
+                Dds dds = new Dds(originalTexture);
                 NutTexture ddsTexture = dds.ToNutTexture();
                 ddsTexture.HashId = originalTexture.HashId;
 
@@ -290,7 +290,7 @@ namespace SmashForge
         {
             if (Editor == null || Editor.IsDisposed)
             {
-                Editor = new NUTEditor(this);
+                Editor = new NutEditor(this);
                 Editor.Text = Parent.Text + "\\" + Text;
                 //Editor.ShowDialog();
                 MainForm.Instance.AddDockedControl(Editor);
@@ -310,7 +310,7 @@ namespace SmashForge
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    NUTEditor.ShowGtxMipmapWarning(this);
+                    NutEditor.ShowGtxMipmapWarning(this);
                     File.WriteAllBytes(sfd.FileName, Rebuild());
                 }
             }
@@ -323,30 +323,30 @@ namespace SmashForge
             FileOutput data = new FileOutput();
 
             //We always want BE for the first six bytes
-            o.Endian = Endianness.Big;
-            data.Endian = Endianness.Big;
+            o.endian = Endianness.Big;
+            data.endian = Endianness.Big;
 
             if (Endian == Endianness.Big)
             {
-                o.writeUInt(0x4E545033); //NTP3
+                o.WriteUInt(0x4E545033); //NTP3
             }
             else if (Endian == Endianness.Little)
             {
-                o.writeUInt(0x4E545744); //NTWD
+                o.WriteUInt(0x4E545744); //NTWD
             }
 
             //Most NTWU NUTs are 0x020E, which isn't valid for NTP3/NTWD
             if (Version > 0x0200)
                 Version = 0x0200;
-            o.writeUShort(Version);
+            o.WriteUShort(Version);
 
             //After that, endian is used appropriately
-            o.Endian = Endian;
-            data.Endian = Endian;
+            o.endian = Endian;
+            data.endian = Endian;
 
-            o.writeUShort((ushort)Nodes.Count);
-            o.writeInt(0);
-            o.writeInt(0);
+            o.WriteUShort((ushort)Nodes.Count);
+            o.WriteInt(0);
+            o.WriteInt(0);
 
             //calculate total header size
             uint headerLength = 0;
@@ -404,40 +404,40 @@ namespace SmashForge
                         headerSize += 1;
                 }
 
-                o.writeUInt(dataSize + headerSize);
-                o.writeUInt(0);
-                o.writeUInt(dataSize);
-                o.writeUShort(headerSize);
-                o.writeUShort(0);
+                o.WriteUInt(dataSize + headerSize);
+                o.WriteUInt(0);
+                o.WriteUInt(dataSize);
+                o.WriteUShort(headerSize);
+                o.WriteUShort(0);
 
-                o.writeByte(0);
-                o.writeByte(mipmapCount);
-                o.writeByte(0);
-                o.writeByte(texture.getNutFormat());
-                o.writeShort(texture.Width);
-                o.writeShort(texture.Height);
-                o.writeInt(0);
-                o.writeUInt(texture.DdsCaps2);
+                o.WriteByte(0);
+                o.WriteByte(mipmapCount);
+                o.WriteByte(0);
+                o.WriteByte(texture.getNutFormat());
+                o.WriteShort(texture.Width);
+                o.WriteShort(texture.Height);
+                o.WriteInt(0);
+                o.WriteUInt(texture.DdsCaps2);
 
                 if (Version < 0x0200)
                 {
-                    o.writeUInt(0);
+                    o.WriteUInt(0);
                 }
                 else if (Version >= 0x0200)
                 {
-                    o.writeUInt((uint)(headerLength + data.Size()));
+                    o.WriteUInt((uint)(headerLength + data.Size()));
                 }
                 headerLength -= headerSize;
-                o.writeInt(0);
-                o.writeInt(0);
-                o.writeInt(0);
+                o.WriteInt(0);
+                o.WriteInt(0);
+                o.WriteInt(0);
 
                 if (isCubemap)
                 {
-                    o.writeInt(texture.surfaces[0].mipmaps[0].Length);
-                    o.writeInt(texture.surfaces[0].mipmaps[0].Length);
-                    o.writeInt(0);
-                    o.writeInt(0);
+                    o.WriteInt(texture.surfaces[0].mipmaps[0].Length);
+                    o.WriteInt(texture.surfaces[0].mipmaps[0].Length);
+                    o.WriteInt(0);
+                    o.WriteInt(0);
                 }
 
                 if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
@@ -450,28 +450,28 @@ namespace SmashForge
                     for (byte mipLevel = 0; mipLevel < mipmapCount; ++mipLevel)
                     {
                         int ds = data.Size();
-                        data.writeBytes(texture.surfaces[surfaceLevel].mipmaps[mipLevel]);
-                        data.align(0x10);
+                        data.WriteBytes(texture.surfaces[surfaceLevel].mipmaps[mipLevel]);
+                        data.Align(0x10);
                         if (mipmapCount > 1 && surfaceLevel == 0)
-                            o.writeInt(data.Size() - ds);
+                            o.WriteInt(data.Size() - ds);
                     }
                 }
-                o.align(0x10);
+                o.Align(0x10);
 
                 if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
                 {
                     texture.SwapChannelOrderUp();
                 }
 
-                o.writeBytes(new byte[] {0x65,0x58,0x74,0x00}); // "eXt\0"
-                o.writeInt(0x20);
-                o.writeInt(0x10);
-                o.writeInt(0x00);
+                o.WriteBytes(new byte[] {0x65,0x58,0x74,0x00}); // "eXt\0"
+                o.WriteInt(0x20);
+                o.WriteInt(0x10);
+                o.WriteInt(0x00);
 
-                o.writeBytes(new byte[] {0x47,0x49,0x44,0x58}); // "GIDX"
-                o.writeInt(0x10);
-                o.writeInt(texture.HashId);
-                o.writeInt(0);
+                o.WriteBytes(new byte[] {0x47,0x49,0x44,0x58}); // "GIDX"
+                o.WriteInt(0x10);
+                o.WriteInt(texture.HashId);
+                o.WriteInt(0);
 
                 if (Version < 0x0200)
                 {
@@ -494,10 +494,10 @@ namespace SmashForge
         public void Read(FileData d)
         {
             Endian = Endianness.Big;
-            d.Endian = Endian;
+            d.endian = Endian;
 
-            uint magic = d.readUInt();
-            Version = d.readUShort();
+            uint magic = d.ReadUInt();
+            Version = d.ReadUShort();
 
             if (magic == 0x4E545033) //NTP3
             {
@@ -510,50 +510,50 @@ namespace SmashForge
             else if (magic == 0x4E545744) //NTWD
             {
                 Endian = Endianness.Little;
-                d.Endian = Endian;
+                d.endian = Endian;
                 ReadNTP3(d);
             }
         }
 
         public void ReadNTP3(FileData d)
         {
-            d.seek(0x6);
+            d.Seek(0x6);
 
-            ushort count = d.readUShort();
+            ushort count = d.ReadUShort();
 
-            d.skip(0x8);
+            d.Skip(0x8);
             int headerPtr = 0x10;
 
             for (ushort i = 0; i < count; ++i)
             {
-                d.seek(headerPtr);
+                d.Seek(headerPtr);
 
                 NutTexture tex = new NutTexture();
                 tex.isDds = true;
                 tex.pixelInternalFormat = PixelInternalFormat.Rgba32ui;
 
-                int totalSize = d.readInt();
-                d.skip(4);
-                int dataSize = d.readInt();
-                int headerSize = d.readUShort();
-                d.skip(2);
+                int totalSize = d.ReadInt();
+                d.Skip(4);
+                int dataSize = d.ReadInt();
+                int headerSize = d.ReadUShort();
+                d.Skip(2);
 
                 //It might seem that mipmapCount and pixelFormat would be shorts, but they're bytes because they stay in the same place regardless of endianness
-                d.skip(1);
-                byte mipmapCount = d.readByte();
-                d.skip(1);
-                tex.setPixelFormatFromNutFormat(d.readByte());
-                tex.Width = d.readUShort();
-                tex.Height = d.readUShort();
-                d.skip(4); //0 in dds nuts (like NTP3) and 1 in gtx nuts; texture type?
-                uint caps2 = d.readUInt();
+                d.Skip(1);
+                byte mipmapCount = d.ReadByte();
+                d.Skip(1);
+                tex.setPixelFormatFromNutFormat(d.ReadByte());
+                tex.Width = d.ReadUShort();
+                tex.Height = d.ReadUShort();
+                d.Skip(4); //0 in dds nuts (like NTP3) and 1 in gtx nuts; texture type?
+                uint caps2 = d.ReadUInt();
 
                 bool isCubemap = false;
                 byte surfaceCount = 1;
-                if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP) == (uint)DDS.DDSCAPS2.CUBEMAP)
+                if ((caps2 & (uint)Dds.Ddscaps2.Cubemap) == (uint)Dds.Ddscaps2.Cubemap)
                 {
                     //Only supporting all six faces
-                    if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES) == (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES)
+                    if ((caps2 & (uint)Dds.Ddscaps2.CubemapAllfaces) == (uint)Dds.Ddscaps2.CubemapAllfaces)
                     {
                         isCubemap = true;
                         surfaceCount = 6;
@@ -568,24 +568,24 @@ namespace SmashForge
                 if (Version < 0x0200)
                 {
                     dataOffset = headerPtr + headerSize;
-                    d.readInt();
+                    d.ReadInt();
                 }
                 else if (Version >= 0x0200)
                 {
-                    dataOffset = d.readInt() + headerPtr;
+                    dataOffset = d.ReadInt() + headerPtr;
                 }
-                d.readInt();
-                d.readInt();
-                d.readInt();
+                d.ReadInt();
+                d.ReadInt();
+                d.ReadInt();
 
                 //The size of a single cubemap face (discounting mipmaps). I don't know why it is repeated. If mipmaps are present, this is also specified in the mipSize section anyway.
                 int cmapSize1 = 0;
                 int cmapSize2 = 0;
                 if (isCubemap)
                 {
-                    cmapSize1 = d.readInt();
-                    cmapSize2 = d.readInt();
-                    d.skip(8);
+                    cmapSize1 = d.ReadInt();
+                    cmapSize2 = d.ReadInt();
+                    d.Skip(8);
                 }
 
                 int[] mipSizes = new int[mipmapCount];
@@ -600,24 +600,24 @@ namespace SmashForge
                 {
                     for (byte mipLevel = 0; mipLevel < mipmapCount; ++mipLevel)
                     {
-                        mipSizes[mipLevel] = d.readInt();
+                        mipSizes[mipLevel] = d.ReadInt();
                     }
-                    d.align(0x10);
+                    d.Align(0x10);
                 }
 
-                d.skip(0x10); //eXt data - always the same
+                d.Skip(0x10); //eXt data - always the same
 
-                d.skip(4); //GIDX
-                d.readInt(); //Always 0x10
-                tex.HashId = d.readInt();
-                d.skip(4); // padding align 8
+                d.Skip(4); //GIDX
+                d.ReadInt(); //Always 0x10
+                tex.HashId = d.ReadInt();
+                d.Skip(4); // padding align 8
 
                 for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
                 {
                     TextureSurface surface = new TextureSurface();
                     for (byte mipLevel = 0; mipLevel < mipmapCount; ++mipLevel)
                     {
-                        byte[] texArray = d.getSection(dataOffset, mipSizes[mipLevel]);
+                        byte[] texArray = d.GetSection(dataOffset, mipSizes[mipLevel]);
                         surface.mipmaps.Add(texArray);
                         dataOffset += mipSizes[mipLevel];
                     }
@@ -640,41 +640,41 @@ namespace SmashForge
 
         public void ReadNTWU(FileData d)
         {
-            d.seek(0x6);
+            d.Seek(0x6);
 
-            ushort count = d.readUShort();
+            ushort count = d.ReadUShort();
 
-            d.skip(0x8);
+            d.Skip(0x8);
             int headerPtr = 0x10;
 
             for (ushort i = 0; i < count; ++i)
             {
-                d.seek(headerPtr);
+                d.Seek(headerPtr);
 
                 NutTexture tex = new NutTexture();
                 tex.pixelInternalFormat = PixelInternalFormat.Rgba32ui;
 
-                int totalSize = d.readInt();
-                d.skip(4);
-                int dataSize = d.readInt();
-                int headerSize = d.readUShort();
-                d.skip(2);
+                int totalSize = d.ReadInt();
+                d.Skip(4);
+                int dataSize = d.ReadInt();
+                int headerSize = d.ReadUShort();
+                d.Skip(2);
 
-                d.skip(1);
-                byte mipmapCount = d.readByte();
-                d.skip(1);
-                tex.setPixelFormatFromNutFormat(d.readByte());
-                tex.Width = d.readUShort();
-                tex.Height = d.readUShort();
-                d.readInt(); //Always 1?
-                uint caps2 = d.readUInt();
+                d.Skip(1);
+                byte mipmapCount = d.ReadByte();
+                d.Skip(1);
+                tex.setPixelFormatFromNutFormat(d.ReadByte());
+                tex.Width = d.ReadUShort();
+                tex.Height = d.ReadUShort();
+                d.ReadInt(); //Always 1?
+                uint caps2 = d.ReadUInt();
 
                 bool isCubemap = false;
                 byte surfaceCount = 1;
-                if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP) == (uint)DDS.DDSCAPS2.CUBEMAP)
+                if ((caps2 & (uint)Dds.Ddscaps2.Cubemap) == (uint)Dds.Ddscaps2.Cubemap)
                 {
                     //Only supporting all six faces
-                    if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES) == (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES)
+                    if ((caps2 & (uint)Dds.Ddscaps2.CubemapAllfaces) == (uint)Dds.Ddscaps2.CubemapAllfaces)
                     {
                         isCubemap = true;
                         surfaceCount = 6;
@@ -685,18 +685,18 @@ namespace SmashForge
                     }
                 }
 
-                int dataOffset = d.readInt() + headerPtr;
-                int mipDataOffset = d.readInt() + headerPtr;
-                int gtxHeaderOffset = d.readInt() + headerPtr;
-                d.readInt();
+                int dataOffset = d.ReadInt() + headerPtr;
+                int mipDataOffset = d.ReadInt() + headerPtr;
+                int gtxHeaderOffset = d.ReadInt() + headerPtr;
+                d.ReadInt();
 
                 int cmapSize1 = 0;
                 int cmapSize2 = 0;
                 if (isCubemap)
                 {
-                    cmapSize1 = d.readInt();
-                    cmapSize2 = d.readInt();
-                    d.skip(8);
+                    cmapSize1 = d.ReadInt();
+                    cmapSize2 = d.ReadInt();
+                    d.Skip(8);
                 }
 
                 int imageSize = 0; //Total size of first mipmap of every surface
@@ -710,38 +710,38 @@ namespace SmashForge
                 }
                 else
                 {
-                    imageSize = d.readInt();
-                    mipSize = d.readInt();
-                    d.skip((mipmapCount - 2) * 4);
-                    d.align(0x10);
+                    imageSize = d.ReadInt();
+                    mipSize = d.ReadInt();
+                    d.Skip((mipmapCount - 2) * 4);
+                    d.Align(0x10);
                 }
 
-                d.skip(0x10); //eXt data - always the same
+                d.Skip(0x10); //eXt data - always the same
 
-                d.skip(4); //GIDX
-                d.readInt(); //Always 0x10
-                tex.HashId = d.readInt();
-                d.skip(4); // padding align 8
+                d.Skip(4); //GIDX
+                d.ReadInt(); //Always 0x10
+                tex.HashId = d.ReadInt();
+                d.Skip(4); // padding align 8
 
-                d.seek(gtxHeaderOffset);
-                GTX.GX2Surface gtxHeader = new GTX.GX2Surface();
+                d.Seek(gtxHeaderOffset);
+                Gtx.Gx2Surface gtxHeader = new Gtx.Gx2Surface();
 
-                gtxHeader.dim = d.readInt();
-                gtxHeader.width = d.readInt();
-                gtxHeader.height = d.readInt();
-                gtxHeader.depth = d.readInt();
-                gtxHeader.numMips = d.readInt();
-                gtxHeader.format = d.readInt();
-                gtxHeader.aa = d.readInt();
-                gtxHeader.use = d.readInt();
-                gtxHeader.imageSize = d.readInt();
-                gtxHeader.imagePtr = d.readInt();
-                gtxHeader.mipSize = d.readInt();
-                gtxHeader.mipPtr = d.readInt();
-                gtxHeader.tileMode = d.readInt();
-                gtxHeader.swizzle = d.readInt();
-                gtxHeader.alignment = d.readInt();
-                gtxHeader.pitch = d.readInt();
+                gtxHeader.dim = d.ReadInt();
+                gtxHeader.width = d.ReadInt();
+                gtxHeader.height = d.ReadInt();
+                gtxHeader.depth = d.ReadInt();
+                gtxHeader.numMips = d.ReadInt();
+                gtxHeader.format = d.ReadInt();
+                gtxHeader.aa = d.ReadInt();
+                gtxHeader.use = d.ReadInt();
+                gtxHeader.imageSize = d.ReadInt();
+                gtxHeader.imagePtr = d.ReadInt();
+                gtxHeader.mipSize = d.ReadInt();
+                gtxHeader.mipPtr = d.ReadInt();
+                gtxHeader.tileMode = d.ReadInt();
+                gtxHeader.swizzle = d.ReadInt();
+                gtxHeader.alignment = d.ReadInt();
+                gtxHeader.pitch = d.ReadInt();
 
                 //mipOffsets[0] is not in this list and is simply the start of the data (dataOffset)
                 //mipOffsets[1] is relative to the start of the data (dataOffset + mipOffsets[1])
@@ -751,7 +751,7 @@ namespace SmashForge
                 for (byte mipLevel = 1; mipLevel < mipmapCount; ++mipLevel)
                 {
                     mipOffsets[mipLevel] = 0;
-                    mipOffsets[mipLevel] = mipOffsets[1] + d.readInt();
+                    mipOffsets[mipLevel] = mipOffsets[1] + d.ReadInt();
                 }
 
                 for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
@@ -776,15 +776,15 @@ namespace SmashForge
 
                     for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
                     {
-                        gtxHeader.data = d.getSection(dataOffset + mipOffsets[mipLevel] + (size * surfaceLevel), size);
+                        gtxHeader.data = d.GetSection(dataOffset + mipOffsets[mipLevel] + (size * surfaceLevel), size);
 
                         //Real size
                         //Leave the below line commented for now because it breaks RGBA textures
                         //size = ((w + 3) >> 2) * ((h + 3) >> 2) * (GTX.getBPP(gtxHeader.format) / 8);
-                        if (size < (GTX.getBPP(gtxHeader.format) / 8))
-                            size = (GTX.getBPP(gtxHeader.format) / 8);
+                        if (size < (Gtx.GetBpp(gtxHeader.format) / 8))
+                            size = (Gtx.GetBpp(gtxHeader.format) / 8);
 
-                        byte[] deswiz = GTX.swizzleBC(
+                        byte[] deswiz = Gtx.SwizzleBc(
                             gtxHeader.data,
                             w,
                             h,
@@ -793,7 +793,7 @@ namespace SmashForge
                             p,
                             gtxHeader.swizzle
                         );
-                        tex.surfaces[surfaceLevel].mipmaps.Add(new FileData(deswiz).getSection(0, size));
+                        tex.surfaces[surfaceLevel].mipmaps.Add(new FileData(deswiz).GetSection(0, size));
                     }
 
                     w /= 2;
@@ -833,7 +833,7 @@ namespace SmashForge
             if (!TextureFormatTools.IsCompressed(tex.pixelInternalFormat))
                 return;
 
-            Rendering.OpenTKSharedResources.dummyResourceWindow.MakeCurrent();
+            Rendering.OpenTkSharedResources.dummyResourceWindow.MakeCurrent();
 
             // Create an OpenGL texture with generated mipmaps.
             Texture2D texture2D = new Texture2D();
@@ -858,7 +858,7 @@ namespace SmashForge
 
         public static bool texIdUsed(int texId)
         {
-            foreach (var nut in Runtime.TextureContainers)
+            foreach (var nut in Runtime.textureContainers)
                 foreach(NutTexture tex in nut.Nodes)
                     if (tex.HashId == texId)
                         return true;

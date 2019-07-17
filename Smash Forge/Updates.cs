@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Octokit;
-using System.Threading;
 using System.IO;
 using System.Diagnostics;
-using System.Windows.Forms.DataVisualization.Charting;
 using System.Security.Cryptography;
 
 namespace SmashForge

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 
 namespace SmashForge
@@ -109,72 +106,72 @@ namespace SmashForge
 
         public void Read(FileData d)
         {
-            d.Endian = System.IO.Endianness.Big;
-            d.seek(4); // skip filesize
-            int dataSize = d.readInt();
-            int offsetTableCount = d.readInt();
-            int rootA = d.readInt();
+            d.endian = System.IO.Endianness.Big;
+            d.Seek(4); // skip filesize
+            int dataSize = d.ReadInt();
+            int offsetTableCount = d.ReadInt();
+            int rootA = d.ReadInt();
             int headerSize = 0x20;
 
             int rootOffset = headerSize + dataSize + offsetTableCount * 4;
-            d.seek(rootOffset);
-            int figtree = d.readInt() + headerSize;
-            d.skip(4);
-            String name = d.readString(d.pos(), -1);
+            d.Seek(rootOffset);
+            int figtree = d.ReadInt() + headerSize;
+            d.Skip(4);
+            String name = d.ReadString(d.Pos(), -1);
             this.Name = name;
 
-            d.seek(figtree);
-            d.skip(8);
-            float frameCount = d.readFloat();
-            int keyOffset = d.readInt();
+            d.Seek(figtree);
+            d.Skip(8);
+            float frameCount = d.ReadFloat();
+            int keyOffset = d.ReadInt();
 
             if(Debug)
                 Console.WriteLine(name + "\tCount: " + frameCount);
             this.frameCount = (int)frameCount;
 
-            int temp = d.pos();
+            int temp = d.Pos();
 
-            d.seek(keyOffset + 0x20);
+            d.Seek(keyOffset + 0x20);
             //int boneCount = 0x2E; // TODO: Use actual bone count 0x35
             List<int> keyFrameCount = new List<int>();
-            int bid = d.readByte();
+            int bid = d.ReadByte();
             while(bid != 0xFF)
             {
                 keyFrameCount.Add(bid);
-                bid = d.readByte();
+                bid = d.ReadByte();
                 nodes.Add(new List<DATAnimTrack>());
             }
             int boneCount = keyFrameCount.Count;
             if (Debug)
                 Console.WriteLine(boneCount);
 
-            d.seek(temp);
+            d.Seek(temp);
 
             int animDataOffset = 0;
             int[] trackcount = new int[offsetTableCount];
             for (int i = 0; i < offsetTableCount; i++)
             {
-                trackcount[i] = d.readInt();
+                trackcount[i] = d.ReadInt();
                 if (i == 0)
                     animDataOffset = trackcount[i];
             }
 
-            d.seek(animDataOffset + 0x20);
+            d.Seek(animDataOffset + 0x20);
             for (int i = 0; i < boneCount; i++)
             { // bonecount
 
                 if(Debug)
-                Console.WriteLine("Bone " + i + ": " + keyFrameCount[i] + "\t" + d.pos().ToString("x"));
+                Console.WriteLine("Bone " + i + ": " + keyFrameCount[i] + "\t" + d.Pos().ToString("x"));
 
                 for (int j = 0; j < keyFrameCount[i]; j++)
                 {
-                    int length = d.readShort();
-                    d.skip(2);
-                    int trackType = d.readByte();
-                    int valueFormat = d.readByte();
-                    int tanFormat = d.readByte();
-                    d.skip(1);
-                    int dataoff = d.readInt() + 0x20;
+                    int length = d.ReadShort();
+                    d.Skip(2);
+                    int trackType = d.ReadByte();
+                    int valueFormat = d.ReadByte();
+                    int tanFormat = d.ReadByte();
+                    d.Skip(1);
+                    int dataoff = d.ReadInt() + 0x20;
 
                     if (Debug)
                         Console.WriteLine((AnimType)trackType + "\tLength: " + length + "\tOffset: " + dataoff.ToString("x") + " " + valueFormat.ToString("x") + " " + tanFormat.ToString("x"));
@@ -195,17 +192,17 @@ namespace SmashForge
 
         public void readKeyFrame(FileData d, int length, int dataoff, int valueFormat, int tanFormat, int keyframeCount, int boneId, int trackType)
         {
-            int temp = d.pos();
-            d.seek(dataoff);
+            int temp = d.Pos();
+            d.Seek(dataoff);
 
             if (Debug)
-                Console.WriteLine("Start 0x" + d.pos() + " " + keyframeCount);
+                Console.WriteLine("Start 0x" + d.Pos() + " " + keyframeCount);
 
             DATAnimTrack track = new DATAnimTrack();
             track.type = (AnimType)trackType;
             nodes[boneId].Add(track);
 
-            while (d.pos() < dataoff + length)
+            while (d.Pos() < dataoff + length)
             {
                 int type = readExtendedByte(d);
 
@@ -269,21 +266,21 @@ namespace SmashForge
                     track.keys.Add(node);
                     //node.boneID = boneId;
                 }
-                d.Endian = System.IO.Endianness.Big;
+                d.endian = System.IO.Endianness.Big;
 
             }
             //Console.WriteLine("Ends at: " + (d.pos() + 8 - (d.pos() % 8)).ToString("x"));
 
-            d.seek(temp);
+            d.Seek(temp);
         }
 
         public static int readExtendedByte(FileData d)
         {
-            int type = d.readByte(); 
+            int type = d.ReadByte(); 
             int i = type;
             if ((i & 0x80) != 0) // max 16 bit I think
             {
-                i = d.readByte();
+                i = d.ReadByte();
                 type = (type & 0x7F) | (i << 7);
             }
             return type;
@@ -294,20 +291,20 @@ namespace SmashForge
         {
             int scale = (int)Math.Pow(2, valueFormat & 0x1F);
 
-            d.Endian = System.IO.Endianness.Little;
+            d.endian = System.IO.Endianness.Little;
 
             switch (valueFormat & 0xF0)
             {
                 case 0x00:
-                    return d.readFloat();
+                    return d.ReadFloat();
                 case 0x20:
-                    return d.readShort() / (double)scale;
+                    return d.ReadShort() / (double)scale;
                 case 0x40:
-                    return d.readUShort() / (double)scale;
+                    return d.ReadUShort() / (double)scale;
                 case 0x60:
-                    return d.readSByte() / (double)scale;
+                    return d.ReadSByte() / (double)scale;
                 case 0x80:
-                    return d.readByte() / (double)scale;
+                    return d.ReadByte() / (double)scale;
                 default:
                     return 0;
             }
@@ -320,26 +317,26 @@ namespace SmashForge
             // a note, I know that the main player file has the offsets for
             // animations, this is just for viewing
             FileData f = new FileData(fname);
-            f.Endian = System.IO.Endianness.Big;
+            f.endian = System.IO.Endianness.Big;
 
             int pos = 0;
 
             Dictionary<string, SkelAnimation> animations = new Dictionary<string, SkelAnimation>();
             AnimationGroupNode group = new AnimationGroupNode() { Text = fname};
             MainForm.Instance.animList.treeView1.Nodes.Add(group);
-            while (pos < f.size())
+            while (pos < f.Size())
             {
                 Console.WriteLine(pos.ToString("x"));
-                int len = f.readInt();
+                int len = f.ReadInt();
                 DAT_Animation anim = new DAT_Animation();
-                anim.Read(new FileData(f.getSection(pos, len)));
+                anim.Read(new FileData(f.GetSection(pos, len)));
                 AnimTrack track = new AnimTrack(anim);
 
                 if (pos == 0)
                 {
                     //track.Show();
                 }
-                group.Nodes.Add(track.toAnimation(vbn));
+                group.Nodes.Add(track.ToAnimation(vbn));
                 SkelAnimation sa = track.BakeToSkel(vbn);
                 //sa.Tag = track;
                 //Runtime.Animations.Add(anim.Name, sa);
@@ -352,9 +349,9 @@ namespace SmashForge
                     track.Close();
                 }
 
-                f.skip(len - 4);
-                f.align(32);
-                pos = f.pos();
+                f.Skip(len - 4);
+                f.Align(32);
+                pos = f.Pos();
             }
 
             return animations;
@@ -365,30 +362,30 @@ namespace SmashForge
             // a note, I know that the main player file has the offsets for
             // animations, this is just for viewing
             FileData f = new FileData(fname);
-            f.Endian = System.IO.Endianness.Big;
+            f.endian = System.IO.Endianness.Big;
 
             int pos = 0;
 
             Dictionary<string, Animation> animations = new Dictionary<string, Animation>();
             AnimationGroupNode group = new AnimationGroupNode() { Text = fname };
             MainForm.Instance.animList.treeView1.Nodes.Add(group);
-            while (pos < f.size())
+            while (pos < f.Size())
             {
                 Console.WriteLine(pos.ToString("x"));
-                int len = f.readInt();
+                int len = f.ReadInt();
                 DAT_Animation anim = new DAT_Animation();
-                anim.Read(new FileData(f.getSection(pos, len)));
+                anim.Read(new FileData(f.GetSection(pos, len)));
                 AnimTrack track = new AnimTrack(anim);
 
                 if (pos == 0)
                 {
                     //track.Show();
                 }
-                group.Nodes.Add(track.toAnimation(vbn));
+                group.Nodes.Add(track.ToAnimation(vbn));
                 //sa.Tag = track;
                 //Runtime.Animations.Add(anim.Name, sa);
                 // MainForm.Instance.animList.treeView1.Nodes.Add(anim.Name);
-                animations.Add(anim.Name, track.toAnimation(vbn));
+                animations.Add(anim.Name, track.ToAnimation(vbn));
 
                 if (pos != 0)
                 {
@@ -396,9 +393,9 @@ namespace SmashForge
                     track.Close();
                 }
 
-                f.skip(len - 4);
-                f.align(32);
-                pos = f.pos();
+                f.Skip(len - 4);
+                f.Align(32);
+                pos = f.Pos();
             }
 
             return animations;
@@ -410,17 +407,17 @@ namespace SmashForge
         public void Save(string fname)
         {
             FileOutput f = new FileOutput();
-            f.Endian = System.IO.Endianness.Big;
+            f.endian = System.IO.Endianness.Big;
 
             // header
             FileOutput header = new FileOutput();
-            header.Endian = System.IO.Endianness.Big;
+            header.endian = System.IO.Endianness.Big;
 
             FileOutput data = new FileOutput();
-            data.Endian = System.IO.Endianness.Big;
+            data.endian = System.IO.Endianness.Big;
 
 
-            f.save(fname);
+            f.Save(fname);
         }
 
     }

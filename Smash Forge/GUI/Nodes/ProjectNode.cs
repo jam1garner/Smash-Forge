@@ -1,24 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SmashForge
 {
     public class ProjectExplorerNode : TreeNode
     {
-        public static ContextMenuStrip _menu;
+        public static ContextMenuStrip menu;
         static ProjectExplorerNode()
         {
-            _menu = new ContextMenuStrip();
-            _menu.Items.Add("Delete", null, DeleteAction);
+            menu = new ContextMenuStrip();
+            menu.Items.Add("Delete", null, DeleteAction);
         }
         public ProjectExplorerNode()
         {
-            this.ContextMenuStrip = _menu;
+            this.ContextMenuStrip = menu;
         }
 
         public virtual void DeleteFileOrFolder()
@@ -82,7 +78,7 @@ namespace SmashForge
     {
         static ProjectFolderNode()
         {
-            _menu.Items.Add(new ToolStripMenuItem("Add", null,
+            menu.Items.Add(new ToolStripMenuItem("Add", null,
                                                  new ToolStripMenuItem("New Item", null, NewFileAction),
                                                  new ToolStripMenuItem("New Folder", null, AddFolderAction),
                                                  new ToolStripMenuItem("Existing Item", null, ImportFileAction))
@@ -169,7 +165,7 @@ namespace SmashForge
         {
             this.Project = p;
             this.Text = p.ProjName;
-            this.ContextMenuStrip = _menu;
+            this.ContextMenuStrip = menu;
             this.ImageIndex = this.SelectedImageIndex = 3;
         }
 

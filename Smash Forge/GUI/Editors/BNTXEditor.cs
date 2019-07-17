@@ -14,10 +14,10 @@ using SmashForge.Rendering.Meshes;
 
 namespace SmashForge
 {
-    public partial class BNTXEditor : EditorBase
+    public partial class BntxEditor : EditorBase
     {
-        private BNTX BNTX;
-        private BRTI SelectedTexture;
+        private BNTX bntx;
+        private BRTI selectedTexture;
 
         private Texture textureToRender = null;
         Framebuffer pngExportFramebuffer;
@@ -32,9 +32,9 @@ namespace SmashForge
 
         private FileSystemWatcher fw;
 
-        ContextMenu TextureMenu = new ContextMenu();
+        ContextMenu textureMenu = new ContextMenu();
 
-        public BNTXEditor()
+        public BntxEditor()
         {
             InitializeComponent();
             FilePath = "";
@@ -49,38 +49,38 @@ namespace SmashForge
 
             MenuItem export = new MenuItem("Export");
             export.Click += exportTextureToolStripMenuItem_Click;
-            TextureMenu.MenuItems.Add(export);
+            textureMenu.MenuItems.Add(export);
 
             MenuItem replace = new MenuItem("Replace");
             replace.Click += replaceTextureToolStripMenuItem_Click;
-            TextureMenu.MenuItems.Add(replace);
+            textureMenu.MenuItems.Add(replace);
 
-            OpenTKSharedResources.InitializeSharedResources();
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            OpenTkSharedResources.InitializeSharedResources();
+            if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Initialized)
             {
                 screenTriangle = ScreenDrawing.CreateScreenTriangle();
             }
         }
 
-        public void SelectBNTX(BNTX b)
+        public void SelectBntx(BNTX b)
         {
-            BNTX = b;
+            bntx = b;
             FillForm();
         }
 
-        public BNTXEditor(BNTX bntx) : this()
+        public BntxEditor(BNTX bntx) : this()
         {
-            SelectBNTX(bntx);
+            SelectBntx(bntx);
         }
 
-        public BNTXEditor(byte[] data) : this()
+        public BntxEditor(byte[] data) : this()
         {
             BNTX b = new BNTX();
             b.ReadBNTXFile(data);
             FilePath = "";
-            OpenBNTX(data);
+            OpenBntx(data);
             Edited = false;
-            SelectBNTX(b);
+            SelectBntx(b);
         }
 
         public override void Save()
@@ -90,7 +90,7 @@ namespace SmashForge
                 SaveAs();
                 return;
             }
-            ExportBNTX(FilePath);
+            ExportBntx(FilePath);
             Edited = false;
         }
 
@@ -121,7 +121,7 @@ namespace SmashForge
         public void FillForm()
         {
             textureListBox.Items.Clear();
-            foreach (BRTI tex in BNTX.textures)
+            foreach (BRTI tex in bntx.textures)
             {
                 textureListBox.Items.Add(tex);
             }
@@ -136,26 +136,26 @@ namespace SmashForge
         {
 
         }
-        public void OpenBNTX(byte[] fname)
+        public void OpenBntx(byte[] fname)
         {
             Edited = true;
 
-            foreach (BRTI tex in BNTX.textures)
+            foreach (BRTI tex in bntx.textures)
             {
                 textureListBox.Items.Add(tex);
             }
         }
 
-        public static BRTI.BRTI_Texture fromPNG(string filename, int mipcount)
+        public static BRTI.BRTI_Texture FromPng(string filename, int mipcount)
         {
             Bitmap bmp = new Bitmap(filename);
             BRTI.BRTI_Texture tex = new BRTI.BRTI_Texture();
 
-            tex.mipmaps.Add(fromPNG(bmp));
+            tex.mipmaps.Add(FromPng(bmp));
             for (int i = 0; i < mipcount; i++)
             {
                 if (bmp.Width / (int)Math.Pow(2, i) < 4 || bmp.Height / (int)Math.Pow(2, i) < 4) break;
-                tex.mipmaps.Add(fromPNG(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
+                tex.mipmaps.Add(FromPng(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
                 tex.mipmaps[0] = tex.mipmaps[0];
             }
             tex.width = bmp.Width;
@@ -166,7 +166,7 @@ namespace SmashForge
             return tex;
         }
 
-        private static byte[] fromPNG(Bitmap bmp)
+        private static byte[] FromPng(Bitmap bmp)
         {
             BitmapData bmpData =
                 bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
@@ -217,12 +217,12 @@ namespace SmashForge
             }
         }
 
-        public void ExportBNTX(string filename)
+        public void ExportBntx(string filename)
         {
             FileOutput o = new FileOutput();
-            o.Endian = Endianness.Little;
+            o.endian = Endianness.Little;
 
-            o.save(filename);
+            o.Save(filename);
         }
 
         private void replaceTextureToolStripMenuItem_Click(object sender, EventArgs e)
@@ -240,12 +240,12 @@ namespace SmashForge
                     BRTI.BRTI_Texture newTexture = null;
                     if (Path.GetExtension(ofd.FileName).ToLower().Equals(".png"))
                     {
-                        newTexture = fromPNG(ofd.FileName, 1);
+                        newTexture = FromPng(ofd.FileName, 1);
                     }
                     if (Path.GetExtension(ofd.FileName).ToLower().Equals(".dds"))
                     {
-                        DDS dds = new DDS(new FileData(ofd.FileName));
-                        newTexture = dds.toBRTITexture();
+                        Dds dds = new Dds(new FileData(ofd.FileName));
+                        newTexture = dds.ToBrtiTexture();
                     }
 
                     t.texture.height = newTexture.height;
@@ -255,7 +255,7 @@ namespace SmashForge
                     t.texture.pixelFormat = newTexture.pixelFormat;
                     newTexture.mipmaps.Add(t.texture.mipmaps[0]);
 
-                    BNTX.glTexByName.Add(ofd.FileName, BRTI.CreateTexture2D(t.texture));
+                    bntx.glTexByName.Add(ofd.FileName, BRTI.CreateTexture2D(t.texture));
 
                     if (newTexture == null)
                         return;
@@ -280,7 +280,7 @@ namespace SmashForge
                 }
                 if (Path.GetExtension(save.FileName).ToLower().Equals(".tex"))
                 {
-                    ExportBNTX(save.FileName);
+                    ExportBntx(save.FileName);
                 }
             }
         }
@@ -294,23 +294,23 @@ namespace SmashForge
         {
             if (textureListBox.SelectedIndex >= 0)
             {
-                SelectedTexture = ((BRTI)textureListBox.SelectedItem);
+                selectedTexture = ((BRTI)textureListBox.SelectedItem);
 
 
-                label1.Text = "Width: " + SelectedTexture.texture.width;
-                label2.Text = "Height: " + SelectedTexture.texture.height;
+                label1.Text = "Width: " + selectedTexture.texture.width;
+                label2.Text = "Height: " + selectedTexture.texture.height;
 
-                uint Format = SelectedTexture.format >> 8;
-                byte DataType = (byte)(SelectedTexture.format & 0xFF);
+                uint format = selectedTexture.format >> 8;
+                byte dataType = (byte)(selectedTexture.format & 0xFF);
 
-                Formats.BNTXImageFormat f = (Formats.BNTXImageFormat)Format;
-                Formats.BNTXImageTypes t = (Formats.BNTXImageTypes)DataType;
+                Formats.BNTXImageFormat f = (Formats.BNTXImageFormat)format;
+                Formats.BNTXImageTypes t = (Formats.BNTXImageTypes)dataType;
 
                 label3.Text = f.ToString() + " " + t.ToString();
 
                 // Render the selected texture.
-                if (BNTX.glTexByName.ContainsKey(SelectedTexture.Text))
-                    textureToRender = BNTX.glTexByName[SelectedTexture.Text];
+                if (bntx.glTexByName.ContainsKey(selectedTexture.Text))
+                    textureToRender = bntx.glTexByName[selectedTexture.Text];
             }
             else
             {
@@ -322,10 +322,10 @@ namespace SmashForge
 
         private void RenderTexture()
         {
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || glControl1 == null)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized || glControl1 == null)
                 return;
 
-            if (!OpenTKSharedResources.shaders["Texture"].LinkStatusIsOk)
+            if (!OpenTkSharedResources.shaders["Texture"].LinkStatusIsOk)
                 return;
 
             glControl1.MakeCurrent();
@@ -441,8 +441,8 @@ namespace SmashForge
         {
             currentMipLevel = mipLevelTrackBar.Value;
 
-            int width = Math.Max(1, SelectedTexture.texture.width >> currentMipLevel);
-            int height = Math.Max(1, SelectedTexture.texture.height >> currentMipLevel);
+            int width = Math.Max(1, selectedTexture.texture.width >> currentMipLevel);
+            int height = Math.Max(1, selectedTexture.texture.height >> currentMipLevel);
 
             label1.Text = "Width: " + width;
             label2.Text = "Height: " + height;
@@ -471,17 +471,17 @@ namespace SmashForge
                 if (textureListBox.Items[itemindex] is BRTI)
                 {
                     textureListBox.SelectedIndex = itemindex;
-                    TextureMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
+                    textureMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
                 }
             }
         }
         private void SetUpRendering()
         {
             // Make sure the shaders and textures are ready for rendering.
-            OpenTKSharedResources.InitializeSharedResources();
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            OpenTkSharedResources.InitializeSharedResources();
+            if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Initialized)
             {
-                BNTX.RefreshGlTexturesByName();
+                bntx.RefreshGlTexturesByName();
                 pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
                 screenTriangle = ScreenDrawing.CreateScreenTriangle();
             }

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using OpenTK;
-using SALT.PARAMS;
 using SALT.Graphics;
-using System.Diagnostics;
 using System.Globalization;
-using SmashForge.Params;
 
 
 namespace SmashForge.Rendering.Lights
@@ -24,7 +17,7 @@ namespace SmashForge.Rendering.Lights
         // light_map.xmb
         public static List<LightMap> lightMaps = new List<LightMap>();
 
-        public static void CreateAreaLightsFromXMB(XMBFile xmb)
+        public static void CreateAreaLightsFromXmb(XMBFile xmb)
         {
             if (xmb != null)
             {
@@ -34,7 +27,7 @@ namespace SmashForge.Rendering.Lights
                     {
                         foreach (XMBEntry lightEntry in entry.Children)
                         {
-                            AreaLight newAreaLight = CreateAreaLightFromXMBEntry(lightEntry);
+                            AreaLight newAreaLight = CreateAreaLightFromXmbEntry(lightEntry);
                             areaLights.Add(newAreaLight);
                         }
                     }
@@ -42,7 +35,7 @@ namespace SmashForge.Rendering.Lights
             }
         }
 
-        public static void CreateLightMapsFromXMB(XMBFile xmb)
+        public static void CreateLightMapsFromXmb(XMBFile xmb)
         {
             if (xmb != null)
             {
@@ -52,7 +45,7 @@ namespace SmashForge.Rendering.Lights
                     {
                         foreach (XMBEntry lightMapEntry in entry.Children)
                         {
-                            LightMap newLightMap = CreateLightMapFromXMBEntry(lightMapEntry);
+                            LightMap newLightMap = CreateLightMapFromXmbEntry(lightMapEntry);
                             lightMaps.Add(newLightMap);
                         }
                     }
@@ -60,14 +53,14 @@ namespace SmashForge.Rendering.Lights
             }
         }
 
-        private static LightMap CreateLightMapFromXMBEntry(XMBEntry entry)
+        private static LightMap CreateLightMapFromXmbEntry(XMBEntry entry)
         {
             float scaleX = 1;
             float scaleY = 1;
             float scaleZ = 1;
 
-            int texture_index = 0x10080000;
-            int texture_addr = 0;
+            int textureIndex = 0x10080000;
+            int textureAddr = 0;
 
             float posX = 0;
             float posY = 0;
@@ -98,11 +91,11 @@ namespace SmashForge.Rendering.Lights
                     if (index.StartsWith("0x"))
                         index = index.Substring(2);
 
-                    int.TryParse(index, NumberStyles.HexNumber, null, out texture_index);
+                    int.TryParse(index, NumberStyles.HexNumber, null, out textureIndex);
                 }
                 if (name.Contains("texture_addr"))
                 {
-                    int.TryParse(values[0], out texture_addr);
+                    int.TryParse(values[0], out textureAddr);
                 }
                 if (name.Contains("pos"))
                 {
@@ -127,11 +120,11 @@ namespace SmashForge.Rendering.Lights
             Vector3 position = new Vector3(posX, posY, posZ);
             Vector3 scale = new Vector3(scaleX, scaleY, scaleZ);
 
-            return new LightMap(new Vector3(scaleX, scaleY, scaleZ), texture_index, texture_addr, new Vector3(posX, posY, posZ), rotX, rotY, rotZ, id);
+            return new LightMap(new Vector3(scaleX, scaleY, scaleZ), textureIndex, textureAddr, new Vector3(posX, posY, posZ), rotX, rotY, rotZ, id);
         }
 
 
-        private static AreaLight CreateAreaLightFromXMBEntry(XMBEntry entry)
+        private static AreaLight CreateAreaLightFromXmbEntry(XMBEntry entry)
         {
             string id = "";
             float posX = 0;

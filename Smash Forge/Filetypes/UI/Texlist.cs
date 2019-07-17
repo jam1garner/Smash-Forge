@@ -54,29 +54,29 @@ namespace SmashForge
         public override void Read(string filename)
         {
             FileData buf = new FileData(filename);
-            buf.Endian = Endianness.Little;
+            buf.endian = Endianness.Little;
 
-            buf.seek(0x06);
+            buf.Seek(0x06);
 
-            short numAtlases = buf.readShort();
-            short numTextures = buf.readShort();
-            short flagsOffset = buf.readShort();
-            short entriesOffset = buf.readShort();
-            short stringsOffset = buf.readShort();
+            short numAtlases = buf.ReadShort();
+            short numTextures = buf.ReadShort();
+            short flagsOffset = buf.ReadShort();
+            short entriesOffset = buf.ReadShort();
+            short stringsOffset = buf.ReadShort();
 
 
-            buf.seek(flagsOffset);
+            buf.Seek(flagsOffset);
             for (int i = 0; i < numAtlases; i++)
             {
-                atlases.Add((AtlasFlag)buf.readInt());
+                atlases.Add((AtlasFlag)buf.ReadInt());
             }
 
-            buf.seek(entriesOffset);
+            buf.Seek(entriesOffset);
             for (int i = 0; i < numTextures; i++)
             {
                 Texture entry = new Texture();
-                int nameOffset = buf.readInt();
-                int nameOffset2 = buf.readInt();
+                int nameOffset = buf.ReadInt();
+                int nameOffset2 = buf.ReadInt();
 
                 // I have yet to see this.
                 if (nameOffset != nameOffset2)
@@ -84,72 +84,72 @@ namespace SmashForge
                     throw new NotImplementedException("texlist name offsets don't match?");
                 }
 
-                buf.seek(stringsOffset + nameOffset);
-                entry.name = buf.readString();
+                buf.Seek(stringsOffset + nameOffset);
+                entry.name = buf.ReadString();
 
-                entry.topLeft = new Vector2(buf.readFloat(), buf.readFloat());
-                entry.botRight = new Vector2(buf.readFloat(), buf.readFloat());
+                entry.topLeft = new Vector2(buf.ReadFloat(), buf.ReadFloat());
+                entry.botRight = new Vector2(buf.ReadFloat(), buf.ReadFloat());
 
-                entry.width = buf.readShort();
-                entry.height = buf.readShort();
-                entry.atlasId = buf.readShort();
+                entry.width = buf.ReadShort();
+                entry.height = buf.ReadShort();
+                entry.atlasId = buf.ReadShort();
 
                 textures.Add(entry);
 
-                buf.skip(0x02); // Padding.
+                buf.Skip(0x02); // Padding.
             }
         }
 
         public override byte[] Rebuild()
         {
             FileOutput buf = new FileOutput();
-            buf.Endian = Endianness.Little;
+            buf.endian = Endianness.Little;
 
             var flagsOffset = 0x10;
             var entriesOffset = flagsOffset + (atlases.Count * 4);
             var stringsOffset = entriesOffset + (textures.Count * 0x20);
 
-            buf.writeInt(0x544C5354); // TLST
-            buf.writeShort(0); // idk
-            buf.writeShort((short)atlases.Count);
-            buf.writeShort((short)textures.Count);
-            buf.writeShort((short)flagsOffset);
-            buf.writeShort((short)entriesOffset);
-            buf.writeShort((short)stringsOffset);
+            buf.WriteInt(0x544C5354); // TLST
+            buf.WriteShort(0); // idk
+            buf.WriteShort((short)atlases.Count);
+            buf.WriteShort((short)textures.Count);
+            buf.WriteShort((short)flagsOffset);
+            buf.WriteShort((short)entriesOffset);
+            buf.WriteShort((short)stringsOffset);
 
             // flags
             foreach (var flag in atlases)
             {
-                buf.writeInt((int)flag);
+                buf.WriteInt((int)flag);
             }
 
             // entries
             int namePtr = 0;
             foreach (var texture in textures)
             {
-                buf.writeInt(namePtr);
-                buf.writeInt(namePtr);
+                buf.WriteInt(namePtr);
+                buf.WriteInt(namePtr);
                 namePtr += texture.name.Length + 1;
 
-                buf.writeFloat(texture.topLeft.X);
-                buf.writeFloat(texture.topLeft.Y);
-                buf.writeFloat(texture.botRight.X);
-                buf.writeFloat(texture.botRight.Y);
+                buf.WriteFloat(texture.topLeft.X);
+                buf.WriteFloat(texture.topLeft.Y);
+                buf.WriteFloat(texture.botRight.X);
+                buf.WriteFloat(texture.botRight.Y);
 
-                buf.writeShort(texture.width);
-                buf.writeShort(texture.height);
-                buf.writeShort(texture.atlasId);
-                buf.writeShort(0); // pad
+                buf.WriteShort(texture.width);
+                buf.WriteShort(texture.height);
+                buf.WriteShort(texture.atlasId);
+                buf.WriteShort(0); // pad
             }
 
             //strings
             foreach (var texture in textures)
             {
                 buf.WriteString(texture.name);
-                buf.writeByte(0);
+                buf.WriteByte(0);
             }
 
-            buf.writeByte(0);
+            buf.WriteByte(0);
 
             return buf.GetBytes();
         }

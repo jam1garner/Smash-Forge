@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 
 namespace SmashForge.LIGH
@@ -37,19 +34,19 @@ namespace SmashForge.LIGH
             FileData f = new FileData(filename);
 
             //Header
-            f.skip(0x4);
-            version = f.readInt();
-            frameCount = f.readInt();
+            f.Skip(0x4);
+            version = f.ReadInt();
+            frameCount = f.ReadInt();
             if (version == 4)
                 frameDuration = 1;
             else if (version == 5)
-                frameDuration = f.readInt();
+                frameDuration = f.ReadInt();
             else
                 throw new NotImplementedException($"Unknown light.bin version {version}");
 
             int[] offsets = new int[6];
             for (int i = 0; i < 6; i++)
-                offsets[i] = f.readInt();
+                offsets[i] = f.ReadInt();
 
             //RGB properties
             for (int i = 0; i < 5; i++)
@@ -57,19 +54,19 @@ namespace SmashForge.LIGH
                 rgbProperties[i].enabled = (offsets[i+1] != 0);
                 if (rgbProperties[i].enabled)
                 {
-                    f.seek(offsets[i+1]);
+                    f.Seek(offsets[i+1]);
                     for (int j = 0; j < frameCount; j++)
                     {
                         byte[] frame = new byte[3];
                         for (int k = 0; k < 3; k++)
-                            frame[k] = (byte)f.readByte();
+                            frame[k] = (byte)f.ReadByte();
                         rgbProperties[i].frames.Add(frame);
                     }
                 }
             }
 
             //Light data
-            f.seek(offsets[0]);
+            f.Seek(offsets[0]);
             for (int i = 0; i < frameCount; i++)
             {
                 LightFrame temp = new LightFrame();
@@ -78,22 +75,22 @@ namespace SmashForge.LIGH
                 {
                     for (int k = 0; k < 4; k++)
                     {
-                        temp.lightSets[j].lights[k].enabled = f.readInt();
+                        temp.lightSets[j].lights[k].enabled = f.ReadInt();
                         for (int l = 0; l < 3; l++)
-                            temp.lightSets[j].lights[k].angle[l] = f.readFloat();
-                        temp.lightSets[j].lights[k].colorHue = f.readFloat();
-                        temp.lightSets[j].lights[k].colorSat = f.readFloat();
-                        temp.lightSets[j].lights[k].colorVal = f.readFloat();
+                            temp.lightSets[j].lights[k].angle[l] = f.ReadFloat();
+                        temp.lightSets[j].lights[k].colorHue = f.ReadFloat();
+                        temp.lightSets[j].lights[k].colorSat = f.ReadFloat();
+                        temp.lightSets[j].lights[k].colorVal = f.ReadFloat();
                     }
-                    temp.lightSets[j].fog.unknown = (byte)f.readByte();
+                    temp.lightSets[j].fog.unknown = (byte)f.ReadByte();
                     for (int k = 0; k < 3; k++)
-                        temp.lightSets[j].fog.color[k] = (byte)f.readByte();
+                        temp.lightSets[j].fog.color[k] = (byte)f.ReadByte();
                 }
-                temp.effect.unknown = (byte)f.readByte();
+                temp.effect.unknown = (byte)f.ReadByte();
                 for (int j = 0; j < 3; j++)
-                    temp.effect.color[j] = (byte)f.readByte();
+                    temp.effect.color[j] = (byte)f.ReadByte();
                 for (int j = 0; j < 3; j++)
-                    temp.effect.position[j] = f.readFloat();
+                    temp.effect.position[j] = f.ReadFloat();
 
                 lightFrames.Add(temp);
             }
@@ -103,13 +100,13 @@ namespace SmashForge.LIGH
         public override byte[] Rebuild()
         {
             FileOutput f = new FileOutput();
-            f.Endian = Endianness.Big;
+            f.endian = Endianness.Big;
 
-            f.writeHex("4C494748"); //LIGH
-            f.writeInt(version);
-            f.writeInt(frameCount);
+            f.WriteHex("4C494748"); //LIGH
+            f.WriteInt(version);
+            f.WriteInt(frameCount);
             if (version == 5)
-                f.writeInt(frameDuration);
+                f.WriteInt(frameDuration);
 
             //Offsets
             int padding = 0;
@@ -132,17 +129,17 @@ namespace SmashForge.LIGH
             offsets[0] = currOff;
 
             for (int i = 0; i < 6; i++)
-                f.writeInt(offsets[i]);
+                f.WriteInt(offsets[i]);
 
             //RGB properties
             for (int i = 0; i < 5; i++)
             {
                 for (int j = 0; j < frameCount; j++)
                     for (int k = 0; k < 3; k++)
-                        f.writeByte(rgbProperties[i].frames[j][k]);
+                        f.WriteByte(rgbProperties[i].frames[j][k]);
 
                 for (int j = 0; j < padding; j++)
-                    f.writeByte(0);
+                    f.WriteByte(0);
             }
 
             //Light data
@@ -152,22 +149,22 @@ namespace SmashForge.LIGH
                 {
                     for (int k = 0; k < 4; k++)
                     {
-                        f.writeInt(lightFrames[i].lightSets[j].lights[k].enabled);
+                        f.WriteInt(lightFrames[i].lightSets[j].lights[k].enabled);
                         for (int l = 0; l < 3; l++)
-                            f.writeFloat(lightFrames[i].lightSets[j].lights[k].angle[l]);
-                        f.writeFloat(lightFrames[i].lightSets[j].lights[k].colorHue);
-                        f.writeFloat(lightFrames[i].lightSets[j].lights[k].colorSat);
-                        f.writeFloat(lightFrames[i].lightSets[j].lights[k].colorVal);
+                            f.WriteFloat(lightFrames[i].lightSets[j].lights[k].angle[l]);
+                        f.WriteFloat(lightFrames[i].lightSets[j].lights[k].colorHue);
+                        f.WriteFloat(lightFrames[i].lightSets[j].lights[k].colorSat);
+                        f.WriteFloat(lightFrames[i].lightSets[j].lights[k].colorVal);
                     }
-                    f.writeByte(lightFrames[i].lightSets[j].fog.unknown);
+                    f.WriteByte(lightFrames[i].lightSets[j].fog.unknown);
                     for (int k = 0; k < 3; k++)
-                        f.writeByte(lightFrames[i].lightSets[j].fog.color[k]);
+                        f.WriteByte(lightFrames[i].lightSets[j].fog.color[k]);
                 }
-                f.writeByte(lightFrames[i].effect.unknown);
+                f.WriteByte(lightFrames[i].effect.unknown);
                 for (int j = 0; j < 3; j++)
-                    f.writeByte(lightFrames[i].effect.color[j]);
+                    f.WriteByte(lightFrames[i].effect.color[j]);
                 for (int j = 0; j < 3; j++)
-                    f.writeFloat(lightFrames[i].effect.position[j]);
+                    f.WriteFloat(lightFrames[i].effect.position[j]);
             }
 
             return f.GetBytes();

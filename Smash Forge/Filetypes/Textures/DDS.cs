@@ -8,16 +8,16 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SmashForge
 {
-    public class DDS
+    public class Dds
     {
-        public enum DDSFormat
+        public enum DdsFormat
         {
-            RGBA,
-            DXT1,
-            DXT3,
-            DXT5,
-            ATI1,
-            ATI2
+            Rgba,
+            Dxt1,
+            Dxt3,
+            Dxt5,
+            Ati1,
+            Ati2
         }
 
         public enum CubemapFace
@@ -31,54 +31,54 @@ namespace SmashForge
         }
 
         [Flags]
-        public enum DDSD : uint
+        public enum Ddsd : uint
         {
-            CAPS = 0x00000001,
-            HEIGHT = 0x00000002,
-            WIDTH = 0x00000004,
-            PITCH = 0x00000008,
-            PIXELFORMAT = 0x00001000,
-            MIPMAPCOUNT = 0x00020000,
-            LINEARSIZE = 0x00080000,
-            DEPTH = 0x00800000
+            Caps = 0x00000001,
+            Height = 0x00000002,
+            Width = 0x00000004,
+            Pitch = 0x00000008,
+            Pixelformat = 0x00001000,
+            Mipmapcount = 0x00020000,
+            Linearsize = 0x00080000,
+            Depth = 0x00800000
         }
         [Flags]
-        public enum DDPF : uint
+        public enum Ddpf : uint
         {
-            ALPHAPIXELS = 0x00000001,
-            ALPHA = 0x00000002,
-            FOURCC = 0x00000004,
-            RGB = 0x00000040,
-            YUV = 0x00000200,
-            LUMINANCE = 0x00020000,
+            Alphapixels = 0x00000001,
+            Alpha = 0x00000002,
+            Fourcc = 0x00000004,
+            Rgb = 0x00000040,
+            Yuv = 0x00000200,
+            Luminance = 0x00020000,
         }
         [Flags]
-        public enum DDSCAPS : uint
+        public enum Ddscaps : uint
         {
-            COMPLEX = 0x00000008,
-            TEXTURE = 0x00001000,
-            MIPMAP = 0x00400000,
+            Complex = 0x00000008,
+            Texture = 0x00001000,
+            Mipmap = 0x00400000,
         }
         [Flags]
-        public enum DDSCAPS2 : uint
+        public enum Ddscaps2 : uint
         {
-            CUBEMAP = 0x00000200,
-            CUBEMAP_POSITIVEX = 0x00000400 | CUBEMAP,
-            CUBEMAP_NEGATIVEX = 0x00000800 | CUBEMAP,
-            CUBEMAP_POSITIVEY = 0x00001000 | CUBEMAP,
-            CUBEMAP_NEGATIVEY = 0x00002000 | CUBEMAP,
-            CUBEMAP_POSITIVEZ = 0x00004000 | CUBEMAP,
-            CUBEMAP_NEGATIVEZ = 0x00008000 | CUBEMAP,
-            CUBEMAP_ALLFACES = (CUBEMAP_POSITIVEX | CUBEMAP_NEGATIVEX |
-                                  CUBEMAP_POSITIVEY | CUBEMAP_NEGATIVEY |
-                                  CUBEMAP_POSITIVEZ | CUBEMAP_NEGATIVEZ),
-            VOLUME = 0x00200000
+            Cubemap = 0x00000200,
+            CubemapPositivex = 0x00000400 | Cubemap,
+            CubemapNegativex = 0x00000800 | Cubemap,
+            CubemapPositivey = 0x00001000 | Cubemap,
+            CubemapNegativey = 0x00002000 | Cubemap,
+            CubemapPositivez = 0x00004000 | Cubemap,
+            CubemapNegativez = 0x00008000 | Cubemap,
+            CubemapAllfaces = (CubemapPositivex | CubemapNegativex |
+                                  CubemapPositivey | CubemapNegativey |
+                                  CubemapPositivez | CubemapNegativez),
+            Volume = 0x00200000
         }
 
         //Bytes per block (4x4 pixels) for block formats, bytes per pixel for non-block formats
-        public static uint GetFormatSize(uint fourCC)
+        public static uint GetFormatSize(uint fourCc)
         {
-            switch (fourCC)
+            switch (fourCc)
             {
                 case 0x00000000: //RGBA
                     return 0x4;
@@ -99,7 +99,7 @@ namespace SmashForge
             }
         }
 
-        public const uint magic = 0x20534444; //" SDD"
+        public const uint Magic = 0x20534444; //" SDD"
         public Header header;
         public class Header
         {
@@ -111,17 +111,17 @@ namespace SmashForge
             public uint depth = 0;
             public uint mipmapCount = 0;
             public uint[] reserved1 = new uint[11];
-            public DDS_PixelFormat ddspf = new DDS_PixelFormat();
-            public class DDS_PixelFormat
+            public DdsPixelFormat ddspf = new DdsPixelFormat();
+            public class DdsPixelFormat
             {
                 public uint size = 0x20;
                 public uint flags = 0x00000000;
-                public uint fourCC = 0x00000000;
-                public uint RGBBitCount = 0;
-                public uint RBitMask = 0x00000000;
-                public uint GBitMask = 0x00000000;
-                public uint BBitMask = 0x00000000;
-                public uint ABitMask = 0x00000000;
+                public uint fourCc = 0x00000000;
+                public uint rgbBitCount = 0;
+                public uint rBitMask = 0x00000000;
+                public uint gBitMask = 0x00000000;
+                public uint bBitMask = 0x00000000;
+                public uint aBitMask = 0x00000000;
             }
             public uint caps = 0;
             public uint caps2 = 0;
@@ -131,53 +131,53 @@ namespace SmashForge
         }
         public byte[] bdata;
 
-        public DDS()
+        public Dds()
         {
             header = new Header();
         }
 
-        public DDS(FileData d)
+        public Dds(FileData d)
         {
-            d.Endian = System.IO.Endianness.Little;
+            d.endian = System.IO.Endianness.Little;
 
-            d.seek(0);
-            if (d.readUInt() != magic)
+            d.Seek(0);
+            if (d.ReadUInt() != Magic)
             {
                 MessageBox.Show("The file does not appear to be a valid DDS file.");
             }
 
             header = new Header();
-            header.size = d.readUInt();
-            header.flags = d.readUInt();
-            header.height = d.readUInt();
-            header.width = d.readUInt();
-            header.pitchOrLinearSize = d.readUInt();
-            header.depth = d.readUInt();
-            header.mipmapCount = d.readUInt();
+            header.size = d.ReadUInt();
+            header.flags = d.ReadUInt();
+            header.height = d.ReadUInt();
+            header.width = d.ReadUInt();
+            header.pitchOrLinearSize = d.ReadUInt();
+            header.depth = d.ReadUInt();
+            header.mipmapCount = d.ReadUInt();
             header.reserved1 = new uint[11];
             for (int i = 0; i < 11; ++i)
-                header.reserved1[i] = d.readUInt();
+                header.reserved1[i] = d.ReadUInt();
 
-            header.ddspf.size = d.readUInt();
-            header.ddspf.flags = d.readUInt();
-            header.ddspf.fourCC = d.readUInt();
-            header.ddspf.RGBBitCount = d.readUInt();
-            header.ddspf.RBitMask = d.readUInt();
-            header.ddspf.GBitMask = d.readUInt();
-            header.ddspf.BBitMask = d.readUInt();
-            header.ddspf.ABitMask = d.readUInt();
+            header.ddspf.size = d.ReadUInt();
+            header.ddspf.flags = d.ReadUInt();
+            header.ddspf.fourCc = d.ReadUInt();
+            header.ddspf.rgbBitCount = d.ReadUInt();
+            header.ddspf.rBitMask = d.ReadUInt();
+            header.ddspf.gBitMask = d.ReadUInt();
+            header.ddspf.bBitMask = d.ReadUInt();
+            header.ddspf.aBitMask = d.ReadUInt();
 
-            header.caps = d.readUInt();
-            header.caps2 = d.readUInt();
-            header.caps3 = d.readUInt();
-            header.caps4 = d.readUInt();
-            header.reserved2 = d.readUInt();
+            header.caps = d.ReadUInt();
+            header.caps2 = d.ReadUInt();
+            header.caps3 = d.ReadUInt();
+            header.caps4 = d.ReadUInt();
+            header.reserved2 = d.ReadUInt();
 
-            d.seek((int)(4 + header.size));
-            bdata = d.read(d.size() - d.pos());
+            d.Seek((int)(4 + header.size));
+            bdata = d.Read(d.Size() - d.Pos());
         }
 
-        public DDS(NutTexture tex)
+        public Dds(NutTexture tex)
         {
             FromNutTexture(tex);
         }
@@ -185,88 +185,88 @@ namespace SmashForge
         public void Save(string fname)
         {
             FileOutput f = new FileOutput();
-            f.Endian = System.IO.Endianness.Little;
+            f.endian = System.IO.Endianness.Little;
 
-            f.writeUInt(magic);
+            f.WriteUInt(Magic);
 
-            f.writeUInt(header.size);
-            f.writeUInt(header.flags);
-            f.writeUInt(header.height);
-            f.writeUInt(header.width);
-            f.writeUInt(header.pitchOrLinearSize);
-            f.writeUInt(header.depth);
-            f.writeUInt(header.mipmapCount);
+            f.WriteUInt(header.size);
+            f.WriteUInt(header.flags);
+            f.WriteUInt(header.height);
+            f.WriteUInt(header.width);
+            f.WriteUInt(header.pitchOrLinearSize);
+            f.WriteUInt(header.depth);
+            f.WriteUInt(header.mipmapCount);
             for (int i = 0; i < 11; ++i)
-                f.writeUInt(header.reserved1[i]);
+                f.WriteUInt(header.reserved1[i]);
 
-            f.writeUInt(header.ddspf.size);
-            f.writeUInt(header.ddspf.flags);
-            f.writeUInt(header.ddspf.fourCC);
-            f.writeUInt(header.ddspf.RGBBitCount);
-            f.writeUInt(header.ddspf.RBitMask);
-            f.writeUInt(header.ddspf.GBitMask);
-            f.writeUInt(header.ddspf.BBitMask);
-            f.writeUInt(header.ddspf.ABitMask);
+            f.WriteUInt(header.ddspf.size);
+            f.WriteUInt(header.ddspf.flags);
+            f.WriteUInt(header.ddspf.fourCc);
+            f.WriteUInt(header.ddspf.rgbBitCount);
+            f.WriteUInt(header.ddspf.rBitMask);
+            f.WriteUInt(header.ddspf.gBitMask);
+            f.WriteUInt(header.ddspf.bBitMask);
+            f.WriteUInt(header.ddspf.aBitMask);
 
-            f.writeUInt(header.caps);
-            f.writeUInt(header.caps2);
-            f.writeUInt(header.caps3);
-            f.writeUInt(header.caps4);
-            f.writeUInt(header.reserved2);
+            f.WriteUInt(header.caps);
+            f.WriteUInt(header.caps2);
+            f.WriteUInt(header.caps3);
+            f.WriteUInt(header.caps4);
+            f.WriteUInt(header.reserved2);
 
-            f.writeBytes(bdata);
+            f.WriteBytes(bdata);
 
-            f.save(fname);
+            f.Save(fname);
         }
 
         public void FromNutTexture(NutTexture tex)
         {
             header = new Header();
-            header.flags = (uint)(DDSD.CAPS | DDSD.HEIGHT | DDSD.WIDTH | DDSD.PIXELFORMAT | DDSD.MIPMAPCOUNT | DDSD.LINEARSIZE);
+            header.flags = (uint)(Ddsd.Caps | Ddsd.Height | Ddsd.Width | Ddsd.Pixelformat | Ddsd.Mipmapcount | Ddsd.Linearsize);
             header.width = (uint)tex.Width;
             header.height = (uint)tex.Height;
             header.pitchOrLinearSize = (uint)tex.ImageSize;
             header.mipmapCount = (uint)tex.surfaces[0].mipmaps.Count;
             header.caps2 = tex.DdsCaps2;
-            bool isCubemap = (header.caps2 & (uint)DDSCAPS2.CUBEMAP) == (uint)DDSCAPS2.CUBEMAP;
-            header.caps = (uint)DDSCAPS.TEXTURE;
+            bool isCubemap = (header.caps2 & (uint)Ddscaps2.Cubemap) == (uint)Ddscaps2.Cubemap;
+            header.caps = (uint)Ddscaps.Texture;
             if (header.mipmapCount > 1)
-                header.caps |= (uint)(DDSCAPS.COMPLEX | DDSCAPS.MIPMAP);
+                header.caps |= (uint)(Ddscaps.Complex | Ddscaps.Mipmap);
             if (isCubemap)
-                header.caps |= (uint)DDSCAPS.COMPLEX;
+                header.caps |= (uint)Ddscaps.Complex;
 
             switch (tex.pixelInternalFormat)
             {
                 case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
-                    header.ddspf.fourCC = 0x31545844;
-                    header.ddspf.flags = (uint)DDPF.FOURCC;
+                    header.ddspf.fourCc = 0x31545844;
+                    header.ddspf.flags = (uint)Ddpf.Fourcc;
                     break;
                 case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
-                    header.ddspf.fourCC = 0x33545844;
-                    header.ddspf.flags = (uint)DDPF.FOURCC;
+                    header.ddspf.fourCc = 0x33545844;
+                    header.ddspf.flags = (uint)Ddpf.Fourcc;
                     break;
                 case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
-                    header.ddspf.fourCC = 0x35545844;
-                    header.ddspf.flags = (uint)DDPF.FOURCC;
+                    header.ddspf.fourCc = 0x35545844;
+                    header.ddspf.flags = (uint)Ddpf.Fourcc;
                     break;
                 case PixelInternalFormat.CompressedRedRgtc1:
-                    header.ddspf.fourCC = 0x31495441;
-                    header.ddspf.flags = (uint)DDPF.FOURCC;
+                    header.ddspf.fourCc = 0x31495441;
+                    header.ddspf.flags = (uint)Ddpf.Fourcc;
                     break;
                 case PixelInternalFormat.CompressedRgRgtc2:
-                    header.ddspf.fourCC = 0x32495441;
-                    header.ddspf.flags = (uint)DDPF.FOURCC;
+                    header.ddspf.fourCc = 0x32495441;
+                    header.ddspf.flags = (uint)Ddpf.Fourcc;
                     break;
                 case PixelInternalFormat.Rgba:
-                    header.ddspf.fourCC = 0x00000000;
+                    header.ddspf.fourCc = 0x00000000;
                     if (tex.pixelFormat == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
                     {
-                        header.ddspf.flags = (uint)(DDPF.RGB | DDPF.ALPHAPIXELS);
-                        header.ddspf.RGBBitCount = 0x8 * 4;
-                        header.ddspf.RBitMask = 0x000000FF;
-                        header.ddspf.GBitMask = 0x0000FF00;
-                        header.ddspf.BBitMask = 0x00FF0000;
-                        header.ddspf.ABitMask = 0xFF000000;
+                        header.ddspf.flags = (uint)(Ddpf.Rgb | Ddpf.Alphapixels);
+                        header.ddspf.rgbBitCount = 0x8 * 4;
+                        header.ddspf.rBitMask = 0x000000FF;
+                        header.ddspf.gBitMask = 0x0000FF00;
+                        header.ddspf.bBitMask = 0x00FF0000;
+                        header.ddspf.aBitMask = 0xFF000000;
                     }
                     break;
                 default:
@@ -289,10 +289,10 @@ namespace SmashForge
             tex.Height = (int)header.height;
             tex.Width = (int)header.width;
             byte surfaceCount = 1;
-            bool isCubemap = (header.caps2 & (uint)DDSCAPS2.CUBEMAP) == (uint)DDSCAPS2.CUBEMAP;
+            bool isCubemap = (header.caps2 & (uint)Ddscaps2.Cubemap) == (uint)Ddscaps2.Cubemap;
             if (isCubemap)
             {
-                if ((header.caps2 & (uint)DDSCAPS2.CUBEMAP_ALLFACES) == (uint)DDSCAPS2.CUBEMAP_ALLFACES)
+                if ((header.caps2 & (uint)Ddscaps2.CubemapAllfaces) == (uint)Ddscaps2.CubemapAllfaces)
                     surfaceCount = 6;
                 else
                     throw new NotImplementedException($"Unsupported cubemap face amount for texture. Six faces are required.");
@@ -300,7 +300,7 @@ namespace SmashForge
 
             bool isBlock = true;
 
-            switch (header.ddspf.fourCC)
+            switch (header.ddspf.fourCc)
             {
                 case 0x00000000: //RGBA
                     isBlock = false;
@@ -325,11 +325,11 @@ namespace SmashForge
                     tex.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
                     break;
                 default:
-                    MessageBox.Show("Unsupported DDS format - 0x" + header.ddspf.fourCC.ToString("x"));
+                    MessageBox.Show("Unsupported DDS format - 0x" + header.ddspf.fourCc.ToString("x"));
                     break;
             }
 
-            uint formatSize = GetFormatSize(header.ddspf.fourCC);
+            uint formatSize = GetFormatSize(header.ddspf.fourCc);
 
             FileData d = new FileData(bdata);
             if (header.mipmapCount == 0)
@@ -360,7 +360,7 @@ namespace SmashForge
 
                     w /= 2;
                     h /= 2;
-                    surface.mipmaps.Add(d.getSection((int)off, (int)s));
+                    surface.mipmaps.Add(d.GetSection((int)off, (int)s));
                     off += s;
                 }
                 tex.surfaces.Add(surface);
@@ -370,7 +370,7 @@ namespace SmashForge
         }
 
         //For bfres / bntx
-        public BRTI.BRTI_Texture toBRTITexture()
+        public BRTI.BRTI_Texture ToBrtiTexture()
         {
             // TODO: Check these casts.
             BRTI.BRTI_Texture tex = new BRTI.BRTI_Texture();
@@ -384,7 +384,7 @@ namespace SmashForge
                 MessageBox.Show("Possible texture error: Only one mipmap");
             }*/
 
-            switch (header.ddspf.fourCC)
+            switch (header.ddspf.fourCc)
             {
                 case 0x0:
                     size = 4f;
@@ -408,7 +408,7 @@ namespace SmashForge
                     tex.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
                     break;
                 default:
-                    MessageBox.Show("Unsupported DDS format - 0x" + header.ddspf.fourCC.ToString("x"));
+                    MessageBox.Show("Unsupported DDS format - 0x" + header.ddspf.fourCc.ToString("x"));
                     break;
             }
 
@@ -424,7 +424,7 @@ namespace SmashForge
                 //Console.WriteLine(off.ToString("x") + " " + s.ToString("x"));
                 w /= 2;
                 h /= 2;
-                tex.mipmaps.Add(d.getSection(off, s));
+                tex.mipmaps.Add(d.GetSection(off, s));
                 off += s;
             }
             Console.WriteLine(off.ToString("x"));
@@ -432,20 +432,20 @@ namespace SmashForge
             return tex;
         }
 
-        public Bitmap toBitmap()
+        public Bitmap ToBitmap()
         {
             byte[] pixels = new byte[header.width * header.height * 4];
 
-            if (header.ddspf.fourCC == 0x31545844)
-                decodeDXT1(pixels, bdata, (int)header.width, (int)header.height);
+            if (header.ddspf.fourCc == 0x31545844)
+                DecodeDxt1(pixels, bdata, (int)header.width, (int)header.height);
             else
-            if (header.ddspf.fourCC == 0x33545844)
-                decodeDXT3(pixels, bdata, (int)header.width, (int)header.height);
+            if (header.ddspf.fourCc == 0x33545844)
+                DecodeDxt3(pixels, bdata, (int)header.width, (int)header.height);
             else
-            if (header.ddspf.fourCC == 0x35545844)
-                decodeDXT5(pixels, bdata, (int)header.width, (int)header.height);
+            if (header.ddspf.fourCc == 0x35545844)
+                DecodeDxt5(pixels, bdata, (int)header.width, (int)header.height);
             else
-                Console.WriteLine("Unknown DDS format " + header.ddspf.fourCC);
+                Console.WriteLine("Unknown DDS format " + header.ddspf.fourCc);
 
             Bitmap bmp = new Bitmap((int)header.width, (int)header.height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
@@ -459,16 +459,16 @@ namespace SmashForge
         }
 
 
-        public static Bitmap toBitmap(byte[] d, int width, int height, DDSFormat format)
+        public static Bitmap ToBitmap(byte[] d, int width, int height, DdsFormat format)
         {
             byte[] pixels = new byte[width * height * 4];
 
-            if (format == DDSFormat.DXT1)
-                decodeDXT1(pixels, d, width, height);
-            if (format == DDSFormat.DXT3)
-                decodeDXT3(pixels, d, width, height);
-            if (format == DDSFormat.DXT5)
-                decodeDXT5(pixels, d, width, height);
+            if (format == DdsFormat.Dxt1)
+                DecodeDxt1(pixels, d, width, height);
+            if (format == DdsFormat.Dxt3)
+                DecodeDxt3(pixels, d, width, height);
+            if (format == DdsFormat.Dxt5)
+                DecodeDxt5(pixels, d, width, height);
 
             Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
@@ -487,7 +487,7 @@ namespace SmashForge
         // DECODING TOOLS--------------------------------
 
 
-        public static void decodeDXT1(byte[] pixels, byte[] data, int width, int height)
+        public static void DecodeDxt1(byte[] pixels, byte[] data, int width, int height)
         {
             int x = 0, y = 0;
             int p = 0;
@@ -502,19 +502,19 @@ namespace SmashForge
                     block[i] = data[p++];
 
                 int[] pal = new int[4];
-                pal[0] = makeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
-                pal[1] = makeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
+                pal[0] = MakeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
+                pal[1] = MakeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
 
 
-                int r = (2 * getRed(pal[0]) + getRed(pal[1])) / 3;
-                int g = (2 * getGreen(pal[0]) + getGreen(pal[1])) / 3;
-                int b = (2 * getBlue(pal[0]) + getBlue(pal[1])) / 3;
+                int r = (2 * GetRed(pal[0]) + GetRed(pal[1])) / 3;
+                int g = (2 * GetGreen(pal[0]) + GetGreen(pal[1])) / 3;
+                int b = (2 * GetBlue(pal[0]) + GetBlue(pal[1])) / 3;
 
                 pal[2] = (0xFF << 24) | (r << 16) | (g << 8) | (b);
 
-                r = (2 * getRed(pal[1]) + getRed(pal[0])) / 3;
-                g = (2 * getGreen(pal[1]) + getGreen(pal[0])) / 3;
-                b = (2 * getBlue(pal[1]) + getBlue(pal[0])) / 3;
+                r = (2 * GetRed(pal[1]) + GetRed(pal[0])) / 3;
+                g = (2 * GetGreen(pal[1]) + GetGreen(pal[0])) / 3;
+                b = (2 * GetBlue(pal[1]) + GetBlue(pal[0])) / 3;
 
                 pal[3] = (0xFF << 24) | (r << 16) | (g << 8) | (b);
 
@@ -560,7 +560,7 @@ namespace SmashForge
         }
 
         //INCOMPLETE - But toBitmap is never called anyway *shrug*
-        public static void decodeDXT3(byte[] pixels, byte[] data, int width, int height)
+        public static void DecodeDxt3(byte[] pixels, byte[] data, int width, int height)
         {
             int x = 0, y = 0;
             int p = 0;
@@ -575,19 +575,19 @@ namespace SmashForge
                     block[i] = data[p++];
 
                 int[] pal = new int[4];
-                pal[0] = makeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
-                pal[1] = makeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
+                pal[0] = MakeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
+                pal[1] = MakeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
 
 
-                int r = (2 * getRed(pal[0]) + getRed(pal[1])) / 3;
-                int g = (2 * getGreen(pal[0]) + getGreen(pal[1])) / 3;
-                int b = (2 * getBlue(pal[0]) + getBlue(pal[1])) / 3;
+                int r = (2 * GetRed(pal[0]) + GetRed(pal[1])) / 3;
+                int g = (2 * GetGreen(pal[0]) + GetGreen(pal[1])) / 3;
+                int b = (2 * GetBlue(pal[0]) + GetBlue(pal[1])) / 3;
 
                 pal[2] = (0xFF << 24) | (r << 16) | (g << 8) | (b);
 
-                r = (2 * getRed(pal[1]) + getRed(pal[0])) / 3;
-                g = (2 * getGreen(pal[1]) + getGreen(pal[0])) / 3;
-                b = (2 * getBlue(pal[1]) + getBlue(pal[0])) / 3;
+                r = (2 * GetRed(pal[1]) + GetRed(pal[0])) / 3;
+                g = (2 * GetGreen(pal[1]) + GetGreen(pal[0])) / 3;
+                b = (2 * GetBlue(pal[1]) + GetBlue(pal[0])) / 3;
 
                 pal[3] = (0xFF << 24) | (r << 16) | (g << 8) | (b);
 
@@ -632,7 +632,7 @@ namespace SmashForge
             }
         }
 
-        public static void decodeDXT5(byte[] pixels, byte[] data, int width, int height)
+        public static void DecodeDxt5(byte[] pixels, byte[] data, int width, int height)
         {
             int x = 0, y = 0;
             int p = 0;
@@ -661,13 +661,13 @@ namespace SmashForge
                     {
                         int code = (int)(aWord1 & 0x7);
                         aWord1 >>= 3;
-                        a[i] = getDXTAWord(code, a1, a2) & 0xFF;
+                        a[i] = GetDxtaWord(code, a1, a2) & 0xFF;
                     }
                     else
                     {
                         int code = (int)(aWord2 & 0x7);
                         aWord2 >>= 3;
-                        a[i] = getDXTAWord(code, a1, a2) & 0xFF;
+                        a[i] = GetDxtaWord(code, a1, a2) & 0xFF;
                     }
                 }
 
@@ -680,19 +680,19 @@ namespace SmashForge
                     block[i] = data[p++];
 
                 int[] pal = new int[4];
-                pal[0] = makeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
-                pal[1] = makeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
+                pal[0] = MakeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
+                pal[1] = MakeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
 
 
-                int r = (2 * getRed(pal[0]) + getRed(pal[1])) / 3;
-                int g = (2 * getGreen(pal[0]) + getGreen(pal[1])) / 3;
-                int b = (2 * getBlue(pal[0]) + getBlue(pal[1])) / 3;
+                int r = (2 * GetRed(pal[0]) + GetRed(pal[1])) / 3;
+                int g = (2 * GetGreen(pal[0]) + GetGreen(pal[1])) / 3;
+                int b = (2 * GetBlue(pal[0]) + GetBlue(pal[1])) / 3;
 
                 pal[2] = (0xFF << 24) | (r << 16) | (g << 8) | (b);
 
-                r = (2 * getRed(pal[1]) + getRed(pal[0])) / 3;
-                g = (2 * getGreen(pal[1]) + getGreen(pal[0])) / 3;
-                b = (2 * getBlue(pal[1]) + getBlue(pal[0])) / 3;
+                r = (2 * GetRed(pal[1]) + GetRed(pal[0])) / 3;
+                g = (2 * GetGreen(pal[1]) + GetGreen(pal[0])) / 3;
+                b = (2 * GetBlue(pal[1]) + GetBlue(pal[0])) / 3;
 
                 pal[3] = (0xFF << 24) | (r << 16) | (g << 8) | (b);
 
@@ -717,7 +717,7 @@ namespace SmashForge
                     for (int w = 0; w < 4; w++)
                     {
                         int color = (a[(w) + (h) * 4] << 24) | (pal[index[(w) + (h) * 4]] & 0x00FFFFFF);
-                        pixels[((w + x) + (h + y) * width) * 4 + 3] = (byte)getAlpha(color);
+                        pixels[((w + x) + (h + y) * width) * 4 + 3] = (byte)GetAlpha(color);
                         pixels[((w + x) + (h + y) * width) * 4 + 2] = (byte)((color >> 16) & 0xFF);
                         pixels[((w + x) + (h + y) * width) * 4 + 1] = (byte)((color >> 8) & 0xFF);
                         pixels[((w + x) + (h + y) * width) * 4 + 0] = (byte)((color) & 0xFF);
@@ -738,7 +738,7 @@ namespace SmashForge
         }
 
 
-        private static int getDXTAWord(int code, int alpha0, int alpha1)
+        private static int GetDxtaWord(int code, int alpha0, int alpha1)
         {
 
             if (alpha0 > alpha1)
@@ -773,27 +773,27 @@ namespace SmashForge
             return 0;
         }
 
-        public static int getAlpha(int c)
+        public static int GetAlpha(int c)
         {
             return (c >> 24) >> 0xFF;
         }
 
-        public static int getRed(int c)
+        public static int GetRed(int c)
         {
             return (c & 0x00FF0000) >> 16;
         }
 
-        public static int getGreen(int c)
+        public static int GetGreen(int c)
         {
             return (c & 0x0000FF00) >> 8;
         }
 
-        public static int getBlue(int c)
+        public static int GetBlue(int c)
         {
             return (c & 0x000000FF);
         }
 
-        private static int makeColor565(int b1, int b2)
+        private static int MakeColor565(int b1, int b2)
         {
 
             int bt = (b2 << 8) | b1;

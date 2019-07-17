@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Diagnostics;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Textures.TextureFormats;
 
@@ -122,7 +117,7 @@ namespace SmashForge
         public static byte[] BNTXFile = new byte[0];
         public string target;
 
-        BNTXEditor Editor;
+        BntxEditor Editor;
 
         public BNTX() //Binary Texture Container
         {
@@ -174,7 +169,7 @@ namespace SmashForge
 
 
                 FileData f = new FileData(newBntx);
-                f.Endian = Endianness.Little;
+                f.endian = Endianness.Little;
 
 
                 bn.Nodes.Clear();
@@ -184,21 +179,21 @@ namespace SmashForge
 
         private void OpenEditor(object sender, EventArgs args)
         {
-            Editor = new BNTXEditor(this);
+            Editor = new BntxEditor(this);
             Editor.Text = Parent.Text + "\\" + Text;
             MainForm.Instance.AddDockedControl(Editor);
         }
         public void ReadBNTXFile(string data) //For single BNTX files
         {
             FileData f = new FileData(data);
-            f.Endian = Endianness.Little;
+            f.endian = Endianness.Little;
 
             Read(f);
         }
         public void ReadBNTXFile(byte[] data) //For single BNTX files
         {
             FileData f = new FileData(data);
-            f.Endian = Endianness.Little;
+            f.endian = Endianness.Little;
 
             Read(f);
         }
@@ -224,36 +219,36 @@ namespace SmashForge
 
             BFRES b = new BFRES();
 
-            temp = f.pos();
+            temp = f.Pos();
 
-            f.skip(8); //Magic
-            int Version = f.readInt();
-            int ByteOrderMark = f.readShort();
-            int FormatRevision = f.readShort();
-            Text = f.readString(f.readInt() + temp, -1);
-            f.skip(2);
-            int strOffset = f.readShort();
-            int relocOffset = f.readInt();
-            int FileSize = f.readInt();
-            target = f.readString(f.pos(), 4); //NX
-            f.skip(4);
-            int TexturesCount = f.readInt();
-            int InfoPtrsOffset = f.readInt();
-            int DataBlockOffset = f.readInt();
-            int DictOffset = f.readInt();
-            int strDictSize = f.readInt();
+            f.Skip(8); //Magic
+            int Version = f.ReadInt();
+            int ByteOrderMark = f.ReadShort();
+            int FormatRevision = f.ReadShort();
+            Text = f.ReadString(f.ReadInt() + temp, -1);
+            f.Skip(2);
+            int strOffset = f.ReadShort();
+            int relocOffset = f.ReadInt();
+            int FileSize = f.ReadInt();
+            target = f.ReadString(f.Pos(), 4); //NX
+            f.Skip(4);
+            int TexturesCount = f.ReadInt();
+            int InfoPtrsOffset = f.ReadInt();
+            int DataBlockOffset = f.ReadInt();
+            int DictOffset = f.ReadInt();
+            int strDictSize = f.ReadInt();
 
             Text = Text + ".bntx";
 
-            BNTXFile = f.getSection(temp, FileSize);
+            BNTXFile = f.GetSection(temp, FileSize);
 
             for (int i = 0; i < TexturesCount; i++)
             {
-                f.seek(InfoPtrsOffset + temp + i * 8);
-                BRTIOffset = f.readInt();
+                f.Seek(InfoPtrsOffset + temp + i * 8);
+                BRTIOffset = f.ReadInt();
 
 
-                f.seek(BRTIOffset + temp);
+                f.Seek(BRTIOffset + temp);
 
                 //  textures.Add(new BRTI(f));
                 BRTI texture = new BRTI();
@@ -326,38 +321,38 @@ namespace SmashForge
             ImageKey = "texture";
             SelectedImageKey = "texture";
 
-            f.skip(4);
+            f.Skip(4);
 
-            int BRTISize1 = f.readInt();
-            long BRTISize2 = f.readInt64();
+            int BRTISize1 = f.ReadInt();
+            long BRTISize2 = f.ReadInt64();
             surf = new TegraX1Swizzle.Surface();
-            ushort Flags = (ushort)f.readShort();
-            surf.dim = (sbyte)f.readByte();
-            surf.tileMode = (sbyte)f.readByte();
-            surf.swizzle = (ushort)f.readShort();
-            surf.numMips = (ushort)f.readShort();
-            uint numSamples = (uint)f.readInt();
-            surf.format = (uint)f.readInt();
+            ushort Flags = (ushort)f.ReadShort();
+            surf.dim = (sbyte)f.ReadByte();
+            surf.tileMode = (sbyte)f.ReadByte();
+            surf.swizzle = (ushort)f.ReadShort();
+            surf.numMips = (ushort)f.ReadShort();
+            uint numSamples = (uint)f.ReadInt();
+            surf.format = (uint)f.ReadInt();
             DataType = (byte)(surf.format & 0xFF);
-            uint accessFlags = (uint)f.readInt();
-            surf.width = f.readInt();
-            surf.height = f.readInt();
-            surf.depth = f.readInt();
-            int FaceCount = f.readInt();
-            surf.sizeRange = f.readInt();
-            uint unk38 = (uint)f.readInt();
-            uint unk3C = (uint)f.readInt();
-            uint unk40 = (uint)f.readInt();
-            uint unk44 = (uint)f.readInt();
-            uint unk48 = (uint)f.readInt();
-            uint unk4C = (uint)f.readInt();
-            surf.imageSize = f.readInt();
-            surf.alignment = f.readInt();
-            int ChannelType = f.readInt();
-            int TextureType = f.readInt();
-            Text = f.readString((int)f.readInt64() + BNTX.temp + 2, -1);
-            long ParentOffset = f.readInt64();
-            long PtrsOffset = f.readInt64();
+            uint accessFlags = (uint)f.ReadInt();
+            surf.width = f.ReadInt();
+            surf.height = f.ReadInt();
+            surf.depth = f.ReadInt();
+            int FaceCount = f.ReadInt();
+            surf.sizeRange = f.ReadInt();
+            uint unk38 = (uint)f.ReadInt();
+            uint unk3C = (uint)f.ReadInt();
+            uint unk40 = (uint)f.ReadInt();
+            uint unk44 = (uint)f.ReadInt();
+            uint unk48 = (uint)f.ReadInt();
+            uint unk4C = (uint)f.ReadInt();
+            surf.imageSize = f.ReadInt();
+            surf.alignment = f.ReadInt();
+            int ChannelType = f.ReadInt();
+            int TextureType = f.ReadInt();
+            Text = f.ReadString((int)f.ReadInt64() + BNTX.temp + 2, -1);
+            long ParentOffset = f.ReadInt64();
+            long PtrsOffset = f.ReadInt64();
 
             format = surf.format;
 
@@ -367,13 +362,13 @@ namespace SmashForge
             blkWidth = blk_dim >> 4;
             blkHeight = blk_dim & 0xF;
 
-            f.seek((int)PtrsOffset + BNTX.temp);
-            long firstMipOffset = f.readInt64();
-            surf.data.Add(f.getSection((int)firstMipOffset + BNTX.temp, surf.imageSize));
+            f.Seek((int)PtrsOffset + BNTX.temp);
+            long firstMipOffset = f.ReadInt64();
+            surf.data.Add(f.GetSection((int)firstMipOffset + BNTX.temp, surf.imageSize));
             for (int mipLevel = 1; mipLevel < surf.numMips; mipLevel++)
             {
-                long dataOff = f.readInt64();
-                surf.data.Add(f.getSection((int)dataOff + BNTX.temp, (int)firstMipOffset + surf.imageSize - (int)dataOff));
+                long dataOff = f.ReadInt64();
+                surf.data.Add(f.GetSection((int)dataOff + BNTX.temp, (int)firstMipOffset + surf.imageSize - (int)dataOff));
                 //    Debug.WriteLine($"{Name} Height {surf.height}wdith = {surf.width}allignment = {surf.alignment}blkwidth = {blkWidth}blkheight = {blkHeight}blkdims = {blk_dim} format = {surf.format} datatype = {DataType} dataoffset = {dataOff}");
             }
             bpp = Formats.bpps(surf.format >> 8);

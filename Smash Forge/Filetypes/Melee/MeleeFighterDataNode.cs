@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MeleeLib.DAT;
 using MeleeLib.DAT.Script;
 using System.Windows.Forms;
 using SmashForge.Gui.Melee;

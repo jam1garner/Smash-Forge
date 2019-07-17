@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace SmashForge
@@ -35,26 +32,26 @@ namespace SmashForge
             {
                 {
                     FileData d = new FileData(filename);
-                    var size1 = d.readUShort();
+                    var size1 = d.ReadUShort();
                     if (size1 > 255)
                     {
-                        d.seek(0);
-                        d.Endian = Endianness.Little;
-                        size1 = d.readUShort();
+                        d.Seek(0);
+                        d.endian = Endianness.Little;
+                        size1 = d.ReadUShort();
                     }
-                    if (d.size() < 4) return;
-                    var size2 = d.readUShort();
+                    if (d.Size() < 4) return;
+                    var size2 = d.ReadUShort();
                     List<short> Table1 = new List<short>();
                     for (int i = 0; i < size1; i++)
                     {
-                        if (d.pos() + 2 > d.size()) break;
-                        Table1.Add(d.readShort());
+                        if (d.Pos() + 2 > d.Size()) break;
+                        Table1.Add(d.ReadShort());
                     }
                     List<short> Table2 = new List<short>();
                     for (int i = 0; i < size2; i++)
                     {
-                        if (d.pos() + 2 > d.size()) break;
-                        Table2.Add(d.readShort());
+                        if (d.Pos() + 2 > d.Size()) break;
+                        Table2.Add(d.ReadShort());
                     }
                     Tables = new List<List<short>>();
                     Tables.Add(Table1);

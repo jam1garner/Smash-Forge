@@ -3,8 +3,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 
 namespace SmashForge
@@ -35,7 +33,7 @@ namespace SmashForge
 
                 if (e.Name.EndsWith(".dds"))
                 {
-                    NutTexture tex = new DDS(new FileData(b)).ToNutTexture();
+                    NutTexture tex = new Dds(new FileData(b)).ToNutTexture();
                     nut.Nodes.Add(tex);
                     tex.HashId = 0x40000000 + randomNumber;
                     nut.glTexByHashId.Add(tex.HashId, NUT.CreateTexture2D(tex));
@@ -238,7 +236,7 @@ namespace SmashForge
             //Runtime.ModelContainers.Add(converted);
             //-------------------------------------------------
 
-            Runtime.TargetVBN = converted.VBN;
+            Runtime.TargetVbn = converted.VBN;
 
             MainForm.HashMatch();
 
@@ -274,10 +272,10 @@ namespace SmashForge
                     {
                         Console.WriteLine("Matched " + name + " with " + key);
 
-                        if (!anims[an].getNodes(true).Contains(0) && !key.Contains("Cliff"))
+                        if (!anims[an].GetNodes(true).Contains(0) && !key.Contains("Cliff"))
                         {
-                            KeyNode node = anims[an].getNode(0, 0);
-                            node.t_type = 1;
+                            KeyNode node = anims[an].GetNode(0, 0);
+                            node.tType = 1;
                         }
                         d = OMOOld.createOMO(anims[an], converted.VBN);
                         break;
@@ -315,7 +313,7 @@ namespace SmashForge
             {
                 foreach (KeyNode node in frame.nodes)
                 {
-                    if (node.t_type != -1)
+                    if (node.tType != -1)
                     {
                         Vector3 pos = Vector3.TransformVector(node.t, sca);
                         if (node.t.X != -99) node.t.X = pos.X;

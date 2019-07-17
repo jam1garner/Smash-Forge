@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-using SALT.Moveset.AnimCMD;
-using System.Text.RegularExpressions;
 
 namespace SmashForge
 {
@@ -22,7 +14,7 @@ namespace SmashForge
             InitializeComponent();
         }
 
-        public void refresh()
+        public void Refresh()
         {
             treeView1.BeginUpdate();
             treeView1.Nodes.Clear();
@@ -30,7 +22,7 @@ namespace SmashForge
             {
                 foreach (Hitbox h in Runtime.gameAcmdScript.Hitboxes.Values)
                 {
-                    TreeNode node = new TreeNode($"Hitbox {h.ID}") { Tag = h.ID, Checked = true };
+                    TreeNode node = new TreeNode($"Hitbox {h.Id}") { Tag = h.Id, Checked = true };
 
                     treeView1.Nodes.Add(node);
                 }
@@ -52,8 +44,8 @@ namespace SmashForge
                 hitboxData.Columns.Add(new DataColumn("Name") { ReadOnly = true });
                 hitboxData.Columns.Add("Value");
                 hitboxData.Rows.Add("Type", hitbox.GetHitboxType());
-                hitboxData.Rows.Add("ID", hitbox.ID);
-                if (hitbox.Type == Hitbox.HITBOX || hitbox.Type == Hitbox.WINDBOX)
+                hitboxData.Rows.Add("ID", hitbox.Id);
+                if (hitbox.Type == Hitbox.HitboxValue || hitbox.Type == Hitbox.Windbox)
                     hitboxData.Rows.Add("Part", hitbox.Part);
                 hitboxData.Rows.Add("Bone", hitbox.Bone);
                 hitboxData.Rows.Add("Damage", hitbox.Damage);
@@ -73,7 +65,7 @@ namespace SmashForge
                     hitboxData.Rows.Add("Z Stretch", hitbox.Z2);
                 }
 
-                Runtime.SelectedHitboxID = hitbox.ID;
+                Runtime.SelectedHitboxId = hitbox.Id;
             }
         }
 
@@ -99,7 +91,7 @@ namespace SmashForge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Runtime.SelectedHitboxID = -1;
+            Runtime.SelectedHitboxId = -1;
         }
     }
 }

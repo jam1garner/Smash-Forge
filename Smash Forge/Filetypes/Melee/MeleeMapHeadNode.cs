@@ -84,7 +84,7 @@ namespace SmashForge.Filetypes.Melee
                     if (q.NodeData.JOBJ != null)
                     {
                         MeleeJointPath path = new MeleeJointPath(q.NodeData.JOBJ.Path, "Bone_" + boneIndex);
-                        normal.Bones.AddRange(path.GetAnimation(q.NodeData.JOBJ).Bones);
+                        normal.bones.AddRange(path.GetAnimation(q.NodeData.JOBJ).bones);
                     }
                 }
                 boneIndex++;

@@ -16,7 +16,7 @@ using SmashForge.Rendering.Meshes;
 
 namespace SmashForge
 {
-    public partial class NUTEditor : EditorBase
+    public partial class NutEditor : EditorBase
     {
         private NUT currentNut;
         private FileSystemWatcher fw;
@@ -39,10 +39,10 @@ namespace SmashForge
 
         private bool dontModify;
 
-        ContextMenu TextureMenu = new ContextMenu();
-        ContextMenu NUTMenu = new ContextMenu();
+        ContextMenu textureMenu = new ContextMenu();
+        ContextMenu nutMenu = new ContextMenu();
 
-        public NUTEditor()
+        public NutEditor()
         {
             InitializeComponent();
             FilePath = "";
@@ -52,17 +52,17 @@ namespace SmashForge
             SetUpContextMenus();
         }
 
-        public NUTEditor(NUT nut) : this()
+        public NutEditor(NUT nut) : this()
         {
-            SelectNUT(nut);
+            SelectNut(nut);
         }
 
-        public NUTEditor(string filePath) : this()
+        public NutEditor(string filePath) : this()
         {
             NUT nut = new NUT(filePath);
             FilePath = filePath;
             Edited = false;
-            SelectNUT(nut);
+            SelectNut(nut);
         }
 
         private void SetUpFileSystemWatcher()
@@ -86,19 +86,19 @@ namespace SmashForge
             // Texture Context Menu
             MenuItem replace = new MenuItem("Replace");
             replace.Click += replaceToolStripMenuItem_Click;
-            TextureMenu.MenuItems.Add(replace);
+            textureMenu.MenuItems.Add(replace);
 
             MenuItem export = new MenuItem("Export");
             export.Click += exportTextureToolStripMenuItem_Click;
-            TextureMenu.MenuItems.Add(export);
+            textureMenu.MenuItems.Add(export);
 
             MenuItem remove = new MenuItem("Remove");
             remove.Click += RemoveToolStripMenuItem1_Click_1;
-            TextureMenu.MenuItems.Add(remove);
+            textureMenu.MenuItems.Add(remove);
 
             MenuItem regenerateMipMaps = new MenuItem("Regenerate Existing Mipmaps");
             regenerateMipMaps.Click += RegenerateMipMaps_Click;
-            TextureMenu.MenuItems.Add(regenerateMipMaps);
+            textureMenu.MenuItems.Add(regenerateMipMaps);
         }
 
         private void SetUpNutContextMenu()
@@ -106,34 +106,34 @@ namespace SmashForge
             // NUT Context Menu
             MenuItem import = new MenuItem("Import New Texture");
             import.Click += importToolStripMenuItem_Click;
-            NUTMenu.MenuItems.Add(import);
+            nutMenu.MenuItems.Add(import);
 
             MenuItem exportall = new MenuItem("Export to Folder");
-            exportall.Click += exportNutToFolder;
-            NUTMenu.MenuItems.Add(exportall);
+            exportall.Click += ExportNutToFolder;
+            nutMenu.MenuItems.Add(exportall);
 
             MenuItem exportAllPng = new MenuItem("Export to Folder as PNG");
             exportAllPng.Click += exportNutAsPngToolStripMenuItem_Click;
-            NUTMenu.MenuItems.Add(exportAllPng);
+            nutMenu.MenuItems.Add(exportAllPng);
 
             MenuItem exportAllPngAlpha = new MenuItem("Export to Folder as PNG (Separate Alpha)");
             exportAllPngAlpha.Click += exportNutAsPngSeparateAlphaToolStripMenuItem_Click;
-            NUTMenu.MenuItems.Add(exportAllPngAlpha);
+            nutMenu.MenuItems.Add(exportAllPngAlpha);
 
             MenuItem importall = new MenuItem("Import from Folder");
-            importall.Click += importNutFromFolder;
-            NUTMenu.MenuItems.Add(importall);
+            importall.Click += ImportNutFromFolder;
+            nutMenu.MenuItems.Add(importall);
 
             MenuItem texid = new MenuItem("Set TEXID for NUT");
             texid.Click += texIDToolStripMenuItem_Click;
-            NUTMenu.MenuItems.Add(texid);
+            nutMenu.MenuItems.Add(texid);
 
             MenuItem regenerateAllMipMaps = new MenuItem("Regenerate All Existing Mipmaps");
             regenerateAllMipMaps.Click += RegenerateAllMipMaps_Click;
-            NUTMenu.MenuItems.Add(regenerateAllMipMaps);
+            nutMenu.MenuItems.Add(regenerateAllMipMaps);
 
             // Disable unavailable options.
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Failed)
+            if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Failed)
             {
                 exportAllPng.Enabled = false;
                 exportAllPngAlpha.Enabled = false;
@@ -154,8 +154,8 @@ namespace SmashForge
             FileOutput fileOutput = new FileOutput();
             byte[] n = currentNut.Rebuild();
 
-            fileOutput.writeBytes(n);
-            fileOutput.save(FilePath);
+            fileOutput.WriteBytes(n);
+            fileOutput.Save(FilePath);
             Edited = false;
         }
 
@@ -192,7 +192,7 @@ namespace SmashForge
             }
         }
 
-        public void SelectNUT(NUT n)
+        public void SelectNut(NUT n)
         {
             currentNut = n;
             FillForm();
@@ -215,7 +215,7 @@ namespace SmashForge
                 if (tex.surfaces.Count == 6)
                 {
                     SetCubeMapText(tex);
-                    if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+                    if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Initialized)
                         RenderTools.dummyTextures[Filetypes.Models.Nuds.NudEnums.DummyTexture.StageMapHigh] = NUT.CreateTextureCubeMap(tex);
                 }
                 else
@@ -301,10 +301,10 @@ namespace SmashForge
 
         private void RenderTexture()
         {
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || glControl1 == null)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized || glControl1 == null)
                 return;
 
-            if (!OpenTKSharedResources.shaders["Texture"].LinkStatusIsOk)
+            if (!OpenTkSharedResources.shaders["Texture"].LinkStatusIsOk)
                 return;
 
             glControl1.MakeCurrent();
@@ -332,7 +332,7 @@ namespace SmashForge
 
         private void RenderTextureToPng(NutTexture nutTexture, string outputPath, bool r = true, bool g = true, bool b = true, bool a = false)
         {
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || glControl1 == null)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized || glControl1 == null)
                 return;
 
             // Load the OpenGL texture and export the image data.
@@ -345,7 +345,7 @@ namespace SmashForge
 
         private void RegenerateMipMaps_Click(object sender, EventArgs e)
         {
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             if (textureListBox.SelectedItem != null)
@@ -420,7 +420,7 @@ namespace SmashForge
                 sfd.FileName = tex.ToString() + ".dds";
 
                 // OpenGL is used for simplifying conversion to PNG.
-                if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+                if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Initialized)
                 {
                     sfd.Filter = "Supported Formats|*.dds;*.png|" +
                                  "DirectDraw Surface (.dds)|*.dds|" +
@@ -439,24 +439,24 @@ namespace SmashForge
 
                     if (extension == ".dds")
                     {
-                        ExportDDS(sfd.FileName, tex);
+                        ExportDds(sfd.FileName, tex);
                     }
                     else if (extension == ".png")
                     {
-                        ExportPNG(sfd.FileName, tex);
+                        ExportPng(sfd.FileName, tex);
                     }
                 }
             }
         }
 
-        private void ExportDDS(string filename, NutTexture tex)
+        private void ExportDds(string filename, NutTexture tex)
         {
-            DDS dds = new DDS();
+            Dds dds = new Dds();
             dds.FromNutTexture(tex);
             dds.Save(filename);
         }
 
-        private void ExportPNG(string filename, NutTexture tex)
+        private void ExportPng(string filename, NutTexture tex)
         {
             if (tex.surfaces[0].mipmaps.Count > 1)
                 MessageBox.Show("Note: Textures exported as PNG do not preserve mipmaps.");
@@ -515,12 +515,12 @@ namespace SmashForge
                     string extension = Path.GetExtension(ofd.FileName).ToLowerInvariant();
                     if (extension == ".dds")
                     {
-                        DDS dds = new DDS(new FileData(ofd.FileName));
+                        Dds dds = new Dds(new FileData(ofd.FileName));
                         tex = dds.ToNutTexture();
                     }
                     else if (extension == ".png")
                     {
-                        tex = fromPNG(ofd.FileName, 1);
+                        tex = FromPng(ofd.FileName, 1);
                     }
                     else
                     {
@@ -546,17 +546,17 @@ namespace SmashForge
             }
         }
 
-        public static NutTexture fromPNG(string fname, int mipcount)
+        public static NutTexture FromPng(string fname, int mipcount)
         {
             Bitmap bmp = new Bitmap(fname);
             NutTexture tex = new NutTexture();
 
             tex.surfaces.Add(new TextureSurface());
-            tex.surfaces[0].mipmaps.Add(fromPNG(bmp));
+            tex.surfaces[0].mipmaps.Add(FromPng(bmp));
             for (int i = 1; i < mipcount; i++)
             {
                 if (bmp.Width / (int)Math.Pow(2, i) < 4 || bmp.Height / (int)Math.Pow(2, i) < 4) break;
-                tex.surfaces[0].mipmaps.Add(fromPNG(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
+                tex.surfaces[0].mipmaps.Add(FromPng(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
             }
             tex.Width = bmp.Width;
             tex.Height = bmp.Height;
@@ -566,7 +566,7 @@ namespace SmashForge
             return tex;
         }
 
-        private static byte[] fromPNG(Bitmap bmp)
+        private static byte[] FromPng(Bitmap bmp)
         {
             BitmapData bmpData =
                 bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
@@ -615,7 +615,7 @@ namespace SmashForge
                     ((NutTexture)textureListBox.SelectedItem).HashId = newid;
 
                     // Update the OpenGL textures. 
-                    if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+                    if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Initialized)
                     {
                         currentNut.glTexByHashId.Add(newid, currentNut.glTexByHashId[oldid]);
                         currentNut.glTexByHashId.Remove(oldid);
@@ -651,12 +651,12 @@ namespace SmashForge
                     string extension = Path.GetExtension(ofd.FileName).ToLowerInvariant();
                     if (extension == ".dds")
                     {
-                        DDS dds = new DDS(new FileData(ofd.FileName));
+                        Dds dds = new Dds(new FileData(ofd.FileName));
                         newTexture = dds.ToNutTexture();
                     }
                     else if (extension == ".png")
                     {
-                        newTexture = fromPNG(ofd.FileName, 1);
+                        newTexture = FromPng(ofd.FileName, 1);
                     }
                     else
                     {
@@ -714,7 +714,7 @@ namespace SmashForge
                 tempFileName = fileFromTexture[(NutTexture) textureListBox.SelectedItem];
             }
 
-            DDS dds = new DDS();
+            Dds dds = new Dds();
             dds.FromNutTexture((NutTexture)(textureListBox.SelectedItem));
             dds.Save(tempFileName);
             System.Diagnostics.Process.Start(tempFileName);
@@ -750,7 +750,7 @@ namespace SmashForge
                 tempFileName = fileFromTexture[(NutTexture)textureListBox.SelectedItem];
             }
 
-            DDS dds = new DDS();
+            Dds dds = new Dds();
             dds.FromNutTexture((NutTexture)(textureListBox.SelectedItem));
             dds.Save(tempFileName);
             ShowOpenWithDialog(tempFileName);
@@ -766,7 +766,7 @@ namespace SmashForge
             dontModify = false;
         }
 
-        private void importBack(string filename)
+        private void ImportBack(string filename)
         {
             if (dontModify)
                 return;
@@ -775,7 +775,7 @@ namespace SmashForge
 
             try
             {
-                DDS dds = new DDS(new FileData(filename));
+                Dds dds = new Dds(new FileData(filename));
                 NutTexture ntex = dds.ToNutTexture();
 
                 tex.Height = ntex.Height;
@@ -800,10 +800,10 @@ namespace SmashForge
 
         private void importEditedFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            importBack(fileFromTexture[(NutTexture)textureListBox.SelectedItem]);
+            ImportBack(fileFromTexture[(NutTexture)textureListBox.SelectedItem]);
         }
 
-        private void exportNutToFolder(object sender, EventArgs e)
+        private void ExportNutToFolder(object sender, EventArgs e)
         {
             using (FolderSelectDialog f = new FolderSelectDialog())
             {
@@ -819,12 +819,12 @@ namespace SmashForge
                         if (tex.pixelInternalFormat == PixelInternalFormat.Rgba)
                         {
                             string filename = Path.Combine(f.SelectedPath, $"{tex.HashId.ToString("X")}.png");
-                            ExportPNG(filename, tex);
+                            ExportPng(filename, tex);
                         }
                         else
                         {
                             string filename = Path.Combine(f.SelectedPath, $"{tex.HashId.ToString("X")}.dds");
-                            DDS dds = new DDS();
+                            Dds dds = new Dds();
                             dds.FromNutTexture(tex);
                             dds.Save(filename);
                         }
@@ -843,7 +843,7 @@ namespace SmashForge
             }
         }
 
-        private void importNutFromFolder(object sender, EventArgs e)
+        private void ImportNutFromFolder(object sender, EventArgs e)
         {
             using (FolderSelectDialog f = new FolderSelectDialog())
             {
@@ -876,12 +876,12 @@ namespace SmashForge
                             NutTexture tex = null;
                             if (extension == ".dds")
                             {
-                                DDS dds = new DDS(new FileData(texPath));
+                                Dds dds = new Dds(new FileData(texPath));
                                 tex = dds.ToNutTexture();
                             }
                             else if (extension == ".png")
                             {
-                                tex = fromPNG(texPath, 1);
+                                tex = FromPng(texPath, 1);
                             }
 
                             if (isTex)
@@ -900,12 +900,12 @@ namespace SmashForge
                             NutTexture ntex = null;
                             if (extension == ".dds")
                             {
-                                DDS dds = new DDS(new FileData(texPath));
+                                Dds dds = new Dds(new FileData(texPath));
                                 ntex = dds.ToNutTexture();
                             }
                             else if (extension == ".png")
                             {
-                                ntex = fromPNG(texPath, 1);
+                                ntex = FromPng(texPath, 1);
                             }
 
                             tex.Height = ntex.Height;
@@ -920,8 +920,8 @@ namespace SmashForge
                             FillForm();
                         }
                     }
-                    if (!Runtime.TextureContainers.Contains(nut))
-                        Runtime.TextureContainers.Add(nut);
+                    if (!Runtime.textureContainers.Contains(nut))
+                        Runtime.textureContainers.Add(nut);
                 }
             }
             FillForm();
@@ -939,8 +939,8 @@ namespace SmashForge
                     if (sfd.FileName.EndsWith(".nut") && currentNut != null)
                     {
                         FileOutput o = new FileOutput();
-                        o.writeBytes(FileData.DeflateZLIB(currentNut.Rebuild()));
-                        o.save(sfd.FileName);
+                        o.WriteBytes(FileData.DeflateZlib(currentNut.Rebuild()));
+                        o.Save(sfd.FileName);
                     }
                 }
             }
@@ -1030,13 +1030,13 @@ namespace SmashForge
                 int itemindex = textureListBox.IndexFromPoint(e.Location);
                 if(itemindex == -1)
                 {
-                    NUTMenu.Show(this, new System.Drawing.Point(e.X + 15, e.Y));
+                    nutMenu.Show(this, new System.Drawing.Point(e.X + 15, e.Y));
 
                 }
                 else if (textureListBox.Items[itemindex] is NutTexture)
                 {
                     textureListBox.SelectedIndex = itemindex;
-                    TextureMenu.Show(this, new System.Drawing.Point(e.X + 15, e.Y));
+                    textureMenu.Show(this, new System.Drawing.Point(e.X + 15, e.Y));
                 }
             }
         }
@@ -1089,8 +1089,8 @@ namespace SmashForge
         private void SetUpRendering()
         {
             // Make sure the shaders and textures are ready for rendering.
-            OpenTKSharedResources.InitializeSharedResources();
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            OpenTkSharedResources.InitializeSharedResources();
+            if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Initialized)
             {
                 currentNut.RefreshGlTexturesByHashId();
                 pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);

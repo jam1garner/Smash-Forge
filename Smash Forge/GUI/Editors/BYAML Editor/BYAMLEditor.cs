@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK;
@@ -15,7 +9,7 @@ namespace SmashForge
 {
     public partial class ByamlEditor : DockContent
     {
-        public BYAML TargetBYAML;
+        public BYAML targetByaml;
         public BYAML.PathPoint currentEntry;
 
         public ByamlEditor()
@@ -25,13 +19,13 @@ namespace SmashForge
         
         }
 
-        public SortedList<double, BYAML.PathPoint> GetBYAMPointSelection(Ray ray)
+        public SortedList<double, BYAML.PathPoint> GetByamPointSelection(Ray ray)
         {
             SortedList<double, BYAML.PathPoint> selected = new SortedList<double, BYAML.PathPoint>(new DuplicateKeyComparer<double>());
-            if (TargetBYAML != null)
+            if (targetByaml != null)
             {
                 Vector3 closest = Vector3.Zero;
-                foreach (BYAML.GenericPathGroup path in TargetBYAML.EnemyPaths.Nodes)
+                foreach (BYAML.GenericPathGroup path in targetByaml.EnemyPaths.Nodes)
                 {
                     foreach (BYAML.PathPoint pt in path.Nodes)
                     {

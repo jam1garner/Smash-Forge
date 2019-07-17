@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Diagnostics;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -155,73 +154,73 @@ namespace SmashForge
     {
         public void Read(FileData f)
         {
-            f.Endian = Endianness.Little;
-            f.seek(4);
-            int count = f.readInt();
-            f.skip(12);
-            int dataCount = f.readInt();
-            int boneCount = f.readInt();
-            int hashCount = f.readInt();
-            int hashOffset = f.readInt() + 0x28;
-            f.skip(4);
+            f.endian = Endianness.Little;
+            f.Seek(4);
+            int count = f.ReadInt();
+            f.Skip(12);
+            int dataCount = f.ReadInt();
+            int boneCount = f.ReadInt();
+            int hashCount = f.ReadInt();
+            int hashOffset = f.ReadInt() + 0x28;
+            f.Skip(4);
 
-            int pos = f.pos();
-            f.seek(hashOffset);
+            int pos = f.Pos();
+            f.Seek(hashOffset);
 
             csvHashes csv = new csvHashes(Path.Combine(MainForm.executableDir, "hashTable.csv"));
             List<string> bonename = new List<string>();
 
             for (int i = 0; i < hashCount; i++)
             {
-                uint hash = (uint)f.readInt();
+                uint hash = (uint)f.ReadInt();
                 Console.WriteLine(csv.ids[hash]);
                 bonename.Add(csv.ids[hash]);
             }
 
-            f.seek(pos);
+            f.Seek(pos);
             Console.WriteLine("Count " + count);
 
             for (int i = 0; i < dataCount; i++)
             {
-                Console.WriteLine("Bone " + i + " start at " + f.pos().ToString("x"));
+                Console.WriteLine("Bone " + i + " start at " + f.Pos().ToString("x"));
                 // 3 sections
-                int secLength = f.readInt();
-                int someCount = f.readInt(); // usually 2?
+                int secLength = f.ReadInt();
+                int someCount = f.ReadInt(); // usually 2?
 
                 for (int sec = 0; sec < 5; sec++)
                 {
-                    int size = f.readInt();
-                    int id = f.readInt();
+                    int size = f.ReadInt();
+                    int id = f.ReadInt();
                     Console.WriteLine(id + ":\t" + size.ToString("x"));
                     for (int j = 0; j < ((size - 1) / 4) - 1; j++)
                     {
 
                         if (id == 4)
                         {
-                            short b1 = f.readShort();
-                            short b2 = f.readShort();
+                            short b1 = f.ReadShort();
+                            short b2 = f.ReadShort();
                             Console.Write("\t" + (b1 == -1 ? b1 + "" : bonename[b1]) + " " + b2 + "\t");
                         }
                         else
                         if (id == 5)
                         {
-                            short b1 = f.readShort();
-                            short b2 = f.readShort();
+                            short b1 = f.ReadShort();
+                            short b2 = f.ReadShort();
                             Console.Write("\t" + (b1 == -1 ? b1 + "" : bonename[b1]) + " " + (b2 == -1 ? b2 + "" : bonename[b2]) + "\t");
                         }
                         else
-                            Console.Write("\t" + (f.readUShort() / (id == 7 ? (float)0xffff : 1)) + " " + (f.readUShort() / (id == 7 ? (float)0xffff : 1)) + "\t");
+                            Console.Write("\t" + (f.ReadUShort() / (id == 7 ? (float)0xffff : 1)) + " " + (f.ReadUShort() / (id == 7 ? (float)0xffff : 1)) + "\t");
                     }
                     Console.WriteLine();
                 }
 
-                f.skip(8);
+                f.Skip(8);
             }
 
-            Console.WriteLine("0x" + f.pos().ToString("X"));
-            f.skip(8);
-            int hashSize = f.readInt();
-            int unk = f.readInt();
+            Console.WriteLine("0x" + f.Pos().ToString("X"));
+            f.Skip(8);
+            int hashSize = f.ReadInt();
+            int unk = f.ReadInt();
 
 
 
@@ -607,34 +606,34 @@ namespace SmashForge
             FileData file = new FileData(filename);
             if (file != null)
             {
-                file.Endian = Endianness.Little;
+                file.endian = Endianness.Little;
                 Endian = Endianness.Little;
-                string magic = file.readString(0, 4);
+                string magic = file.ReadString(0, 4);
                 if (magic == "VBN ")
                 {
-                    file.Endian = Endianness.Big;
+                    file.endian = Endianness.Big;
                     Endian = Endianness.Big;
                 }
 
-                file.seek(4);
+                file.Seek(4);
 
-                unk_1 = file.readShort();
-                unk_2 = file.readShort();
-                totalBoneCount = (UInt32)file.readInt();
-                boneCountPerType[0] = (UInt32)file.readInt();
-                boneCountPerType[1] = (UInt32)file.readInt();
-                boneCountPerType[2] = (UInt32)file.readInt();
-                boneCountPerType[3] = (UInt32)file.readInt();
+                unk_1 = file.ReadShort();
+                unk_2 = file.ReadShort();
+                totalBoneCount = (UInt32)file.ReadInt();
+                boneCountPerType[0] = (UInt32)file.ReadInt();
+                boneCountPerType[1] = (UInt32)file.ReadInt();
+                boneCountPerType[2] = (UInt32)file.ReadInt();
+                boneCountPerType[3] = (UInt32)file.ReadInt();
 
                 int[] pi = new int[totalBoneCount];
                 for (int i = 0; i < totalBoneCount; i++)
                 {
                     Bone temp = new Bone(this);
-                    temp.Text = file.readString(file.pos(), -1);
-                    file.skip(64);
-                    temp.boneType = (UInt32)file.readInt();
-                    pi[i] = file.readInt();
-                    temp.boneId = (UInt32)file.readInt();
+                    temp.Text = file.ReadString(file.Pos(), -1);
+                    file.Skip(64);
+                    temp.boneType = (UInt32)file.ReadInt();
+                    pi[i] = file.ReadInt();
+                    temp.boneId = (UInt32)file.ReadInt();
                     temp.position = new float[3];
                     temp.rotation = new float[3];
                     temp.scale = new float[3];
@@ -644,15 +643,15 @@ namespace SmashForge
 
                 for (int i = 0; i < bones.Count; i++)
                 {
-                    bones[i].position[0] = file.readFloat();
-                    bones[i].position[1] = file.readFloat();
-                    bones[i].position[2] = file.readFloat();
-                    bones[i].rotation[0] = file.readFloat();
-                    bones[i].rotation[1] = file.readFloat();
-                    bones[i].rotation[2] = file.readFloat();
-                    bones[i].scale[0] = file.readFloat();
-                    bones[i].scale[1] = file.readFloat();
-                    bones[i].scale[2] = file.readFloat();
+                    bones[i].position[0] = file.ReadFloat();
+                    bones[i].position[1] = file.ReadFloat();
+                    bones[i].position[2] = file.ReadFloat();
+                    bones[i].rotation[0] = file.ReadFloat();
+                    bones[i].rotation[1] = file.ReadFloat();
+                    bones[i].rotation[2] = file.ReadFloat();
+                    bones[i].scale[0] = file.ReadFloat();
+                    bones[i].scale[1] = file.ReadFloat();
+                    bones[i].scale[2] = file.ReadFloat();
                     Bone temp = bones[i];
                     temp.parentIndex = pi[i];
                     //Debug.Write(temp.parentIndex);
@@ -671,21 +670,21 @@ namespace SmashForge
             {
                 if (Endian == Endianness.Little)
                 {
-                    file.Endian = Endianness.Little;
+                    file.endian = Endianness.Little;
                     file.WriteString(" NBV");
-                    file.writeShort(0x02);
-                    file.writeShort(0x01);
+                    file.WriteShort(0x02);
+                    file.WriteShort(0x01);
                 }
                 else if (Endian == Endianness.Big)
                 {
-                    file.Endian = Endianness.Big;
+                    file.endian = Endianness.Big;
                     file.WriteString("VBN ");
-                    file.writeShort(0x01);
-                    file.writeShort(0x02);
+                    file.WriteShort(0x01);
+                    file.WriteShort(0x02);
                 }
 
 
-                file.writeInt(bones.Count);
+                file.WriteInt(bones.Count);
                 if (boneCountPerType[0] == 0)
                     boneCountPerType[0] = (uint)bones.Count;
 
@@ -751,10 +750,10 @@ namespace SmashForge
                     }
                 }
 
-                file.writeInt(Normal.Count);
-                file.writeInt(Unk.Count);
-                file.writeInt(Helper.Count);
-                file.writeInt(Swing.Count);
+                file.WriteInt(Normal.Count);
+                file.WriteInt(Unk.Count);
+                file.WriteInt(Helper.Count);
+                file.WriteInt(Swing.Count);
 
                 List<Bone> NewBoneOrder = new List<Bone>();
                 NewBoneOrder.AddRange(Normal);
@@ -768,26 +767,26 @@ namespace SmashForge
                 {
                     file.WriteString(bones[i].Text);
                     for (int j = 0; j < 64 - bones[i].Text.Length; j++)
-                        file.writeByte(0);
-                    file.writeInt((int)bones[i].boneType);
+                        file.WriteByte(0);
+                    file.WriteInt((int)bones[i].boneType);
                     if (bones[i].parentIndex == -1)
-                        file.writeInt(0x0FFFFFFF);
+                        file.WriteInt(0x0FFFFFFF);
                     else
-                        file.writeInt(bones[i].parentIndex);
-                    file.writeInt((int)bones[i].boneId);
+                        file.WriteInt(bones[i].parentIndex);
+                    file.WriteInt((int)bones[i].boneId);
                 }
 
                 for (int i = 0; i < bones.Count; i++)
                 {
-                    file.writeFloat(bones[i].position[0]);
-                    file.writeFloat(bones[i].position[1]);
-                    file.writeFloat(bones[i].position[2]);
-                    file.writeFloat(bones[i].rotation[0]);
-                    file.writeFloat(bones[i].rotation[1]);
-                    file.writeFloat(bones[i].rotation[2]);
-                    file.writeFloat(bones[i].scale[0]);
-                    file.writeFloat(bones[i].scale[1]);
-                    file.writeFloat(bones[i].scale[2]);
+                    file.WriteFloat(bones[i].position[0]);
+                    file.WriteFloat(bones[i].position[1]);
+                    file.WriteFloat(bones[i].position[2]);
+                    file.WriteFloat(bones[i].rotation[0]);
+                    file.WriteFloat(bones[i].rotation[1]);
+                    file.WriteFloat(bones[i].rotation[2]);
+                    file.WriteFloat(bones[i].scale[0]);
+                    file.WriteFloat(bones[i].scale[1]);
+                    file.WriteFloat(bones[i].scale[2]);
                 }
             }
             return file.GetBytes();
@@ -1037,42 +1036,42 @@ namespace SmashForge
         {
             FileData d = new FileData(filename);
             FilePath = filename;
-            d.Endian = Endianness.Little; // characters are little
-            d.seek(8); // skip magic and version?
-            int count = d.readInt(); // entry count
+            d.endian = Endianness.Little; // characters are little
+            d.Seek(8); // skip magic and version?
+            int count = d.ReadInt(); // entry count
 
             for (int i = 0; i < count; i++)
             {
                 SBEntry sb = new SBEntry()
                 {
-                    hash = (uint)d.readInt(),
-                    param1_1 = d.readFloat(),
-                    param1_2 = d.readInt(),
-                    param1_3 = d.readInt(),
-                    param2_1 = d.readFloat(),
-                    param2_2 = d.readFloat(),
-                    param2_3 = d.readInt(),
-                    rx1 = d.readFloat(),
-                    rx2 = d.readFloat(),
-                    ry1 = d.readFloat(),
-                    ry2 = d.readFloat(),
-                    rz1 = d.readFloat(),
-                    rz2 = d.readFloat()
+                    hash = (uint)d.ReadInt(),
+                    param1_1 = d.ReadFloat(),
+                    param1_2 = d.ReadInt(),
+                    param1_3 = d.ReadInt(),
+                    param2_1 = d.ReadFloat(),
+                    param2_2 = d.ReadFloat(),
+                    param2_3 = d.ReadInt(),
+                    rx1 = d.ReadFloat(),
+                    rx2 = d.ReadFloat(),
+                    ry1 = d.ReadFloat(),
+                    ry2 = d.ReadFloat(),
+                    rz1 = d.ReadFloat(),
+                    rz2 = d.ReadFloat()
                 };
 
                 for (int j = 0; j < 8; j++)
-                    sb.boneHashes[j] = (uint)d.readInt();
+                    sb.boneHashes[j] = (uint)d.ReadInt();
 
                 for (int j = 0; j < 4; j++)
-                    sb.unks1[j] = d.readFloat();
+                    sb.unks1[j] = d.ReadFloat();
 
                 for (int j = 0; j < 6; j++)
-                    sb.unks2[j] = d.readFloat();
+                    sb.unks2[j] = d.ReadFloat();
 
-                sb.factor = d.readFloat();
+                sb.factor = d.ReadFloat();
 
                 for (int j = 0; j < 3; j++)
-                    sb.ints[j] = d.readInt();
+                    sb.ints[j] = d.ReadInt();
 
                 bones.Add(sb);
 
@@ -1100,42 +1099,42 @@ namespace SmashForge
         public override byte[] Rebuild()
         {
             FileOutput o = new FileOutput();
-            o.Endian = Endianness.Little;
+            o.endian = Endianness.Little;
 
             o.WriteString(" BWS");
-            o.writeShort(0x05);
-            o.writeShort(0x01);
-            o.writeInt(bones.Count);
+            o.WriteShort(0x05);
+            o.WriteShort(0x01);
+            o.WriteInt(bones.Count);
 
             foreach (SBEntry s in bones)
             {
-                o.writeInt((int)s.hash);
-                o.writeFloat(s.param1_1);
-                o.writeInt(s.param1_2);
-                o.writeInt(s.param1_3);
-                o.writeFloat(s.param2_1);
-                o.writeFloat(s.param2_2);
-                o.writeInt(s.param2_3);
-                o.writeFloat(s.rx1);
-                o.writeFloat(s.rx2);
-                o.writeFloat(s.ry1);
-                o.writeFloat(s.ry2);
-                o.writeFloat(s.rz1);
-                o.writeFloat(s.rz2);
+                o.WriteInt((int)s.hash);
+                o.WriteFloat(s.param1_1);
+                o.WriteInt(s.param1_2);
+                o.WriteInt(s.param1_3);
+                o.WriteFloat(s.param2_1);
+                o.WriteFloat(s.param2_2);
+                o.WriteInt(s.param2_3);
+                o.WriteFloat(s.rx1);
+                o.WriteFloat(s.rx2);
+                o.WriteFloat(s.ry1);
+                o.WriteFloat(s.ry2);
+                o.WriteFloat(s.rz1);
+                o.WriteFloat(s.rz2);
 
                 for (int j = 0; j < 8; j++)
-                    o.writeInt((int)s.boneHashes[j]);
+                    o.WriteInt((int)s.boneHashes[j]);
 
                 for (int j = 0; j < 4; j++)
-                    o.writeFloat(s.unks1[j]);
+                    o.WriteFloat(s.unks1[j]);
 
                 for (int j = 0; j < 6; j++)
-                    o.writeFloat(s.unks2[j]);
+                    o.WriteFloat(s.unks2[j]);
 
-                o.writeFloat(s.factor);
+                o.WriteFloat(s.factor);
 
                 for (int j = 0; j < 3; j++)
-                    o.writeInt(s.ints[j]);
+                    o.WriteInt(s.ints[j]);
             }
 
             return o.GetBytes();

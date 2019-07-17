@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -128,9 +125,9 @@ namespace SmashForge
 
             public void Read(FileData f)
             {
-                type = f.readInt();
-                format = f.readInt();
-                scale = f.readFloat();
+                type = f.ReadInt();
+                format = f.ReadInt();
+                scale = f.ReadFloat();
                 Text = ((_3DSGPU.VertexAttribute)type).ToString() + "_" + format;
             }
 
@@ -152,7 +149,7 @@ namespace SmashForge
                         v.col = new Vector4(ReadType(f), ReadType(f), ReadType(f), ReadType(f));
                         break;
                     case (int)_3DSGPU.VertexAttribute.bone:
-                        v.bone = new Vector2(f.readByte(), f.readByte());
+                        v.bone = new Vector2(f.ReadByte(), f.ReadByte());
                         break;
                     case (int)_3DSGPU.VertexAttribute.weight:
                         v.weight = new Vector2(ReadType(f), ReadType(f));
@@ -186,8 +183,8 @@ namespace SmashForge
                         WriteType(f, v.col.W);
                         break;
                     case (int)_3DSGPU.VertexAttribute.bone:
-                        f.writeByte((int)v.bone.X);
-                        f.writeByte((int)v.bone.Y);
+                        f.WriteByte((int)v.bone.X);
+                        f.WriteByte((int)v.bone.Y);
                         break;
                     case (int)_3DSGPU.VertexAttribute.weight:
                         WriteType(f, v.weight.X);
@@ -204,13 +201,13 @@ namespace SmashForge
                 switch (format)
                 {
                     case 0:
-                        return d.readFloat() * scale;
+                        return d.ReadFloat() * scale;
                     case 1:
-                        return d.readByte() * scale;
+                        return d.ReadByte() * scale;
                     case 2:
-                        return d.readSByte() * scale;
+                        return d.ReadSByte() * scale;
                     case 3:
-                        return d.readShort() * scale;
+                        return d.ReadShort() * scale;
                 }
                 return 0;
             }
@@ -220,16 +217,16 @@ namespace SmashForge
                 switch (format)
                 {
                     case 0:
-                        d.writeFloat(data / scale);
+                        d.WriteFloat(data / scale);
                         break;
                     case 1:
-                        d.writeByte((byte)(data / scale));
+                        d.WriteByte((byte)(data / scale));
                         break;
                     case 2:
-                        d.writeByte((byte)(data / scale));
+                        d.WriteByte((byte)(data / scale));
                         break;
                     case 3:
-                        d.writeShort((short)(data / scale));
+                        d.WriteShort((short)(data / scale));
                         break;
                 }
             }
@@ -239,29 +236,29 @@ namespace SmashForge
         {
             int format = 6;
             FileOutput o = new FileOutput();
-            o.Endian = Endianness.Little;
+            o.endian = Endianness.Little;
             
-            o.writeShort(format);
-            o.writeShort(0xFFFF);
-            o.writeInt(0); //flags
-            o.writeInt(1); //mode
-            o.writeInt(Nodes.Count);
+            o.WriteShort(format);
+            o.WriteShort(0xFFFF);
+            o.WriteInt(0); //flags
+            o.WriteInt(1); //mode
+            o.WriteInt(Nodes.Count);
 
             // Write Vertex Attributes
             {
-                o.writeInt(attributes.Count);
+                o.WriteInt(attributes.Count);
                 foreach(VertexAttribute va in attributes)
                 {
-                    o.writeInt(va.type);
-                    o.writeInt(va.format);
-                    o.writeFloat(va.scale);
+                    o.WriteInt(va.type);
+                    o.WriteInt(va.format);
+                    o.WriteFloat(va.scale);
                 }
             }
 
 
             //Vertex Buffer
             FileOutput vertexBuffer = new FileOutput();
-            vertexBuffer.Endian = Endianness.Little;
+            vertexBuffer.endian = Endianness.Little;
 
             for(int i = 0; i < vertices.Length; i++)
             {
@@ -272,63 +269,63 @@ namespace SmashForge
                 }
             }
 
-            o.writeInt(vertexBuffer.Size()); // Vertex Buffer Size
+            o.WriteInt(vertexBuffer.Size()); // Vertex Buffer Size
 
             //Mesh Information
             FileOutput indexBuffer = new FileOutput();
-            indexBuffer.Endian = Endianness.Little;
+            indexBuffer.endian = Endianness.Little;
             foreach (BCH_Mesh mesh in Nodes)
             {
-                o.writeInt(mesh.Nodes.Count);
+                o.WriteInt(mesh.Nodes.Count);
                 foreach(BCH_PolyGroup pg in mesh.Nodes)
                 {
                     // Node List
-                    o.writeInt(pg.BoneList.Length);
+                    o.WriteInt(pg.BoneList.Length);
                     foreach (int b in pg.BoneList)
-                        o.writeInt(b);
+                        o.WriteInt(b);
 
                     // Triangle Count
-                    o.writeInt(pg.Faces.Length);
+                    o.WriteInt(pg.Faces.Length);
                     // o.writeInt(0); something if format == 4
 
                     // Index Buffer
                     foreach (int i in pg.Faces)
-                        indexBuffer.writeShort(i);
-                    indexBuffer.align(0x20, 0xFF);
+                        indexBuffer.WriteShort(i);
+                    indexBuffer.Align(0x20, 0xFF);
                 }
             }
 
-            if (format != 4) o.align(0x20, 0xFF);
+            if (format != 4) o.Align(0x20, 0xFF);
 
             o.WriteOutput(vertexBuffer);
-            o.align(0x20, 0xFF);
+            o.Align(0x20, 0xFF);
             o.WriteOutput(indexBuffer);
-            o.save(fname);
+            o.Save(fname);
         }
 
         public void OpenMBN(FileData f)
         {
-            f.Endian = Endianness.Little;
-            f.seek(0);
+            f.endian = Endianness.Little;
+            f.Seek(0);
 
-            int format = f.readUShort();
-            f.skip(2);//0xFFFF
-            int flags = f.readInt();
-            int mode = f.readInt();
-            int meshCount = f.readInt();
+            int format = f.ReadUShort();
+            f.Skip(2);//0xFFFF
+            int flags = f.ReadInt();
+            int mode = f.ReadInt();
+            int meshCount = f.ReadInt();
             
             int length = 0;
             if (mode == 1)
             {
                 //One Attribute
-                int count = f.readInt();
+                int count = f.ReadInt();
                 for(int i = 0; i < count; i++)
                 {
                     VertexAttribute a = new VertexAttribute();
                     a.Read(f);
                     attributes.Add(a);
                 }
-                length = f.readInt();
+                length = f.ReadInt();
             }
 
             // Get Mesh Nodes
@@ -344,26 +341,26 @@ namespace SmashForge
             {
                 BCH_Mesh m = (BCH_Mesh)Nodes[i];
 
-                int polyCount = f.readInt();
+                int polyCount = f.ReadInt();
                 for (int j = 0; j < polyCount; j++)
                 {
                     BCH_PolyGroup pg = new BCH_PolyGroup();
                     m.Nodes.Add(pg);
-                    int nodeCount = f.readInt();
+                    int nodeCount = f.ReadInt();
                     int[] nodeList = new int[nodeCount];
                     pg.BoneList=(nodeList);
                     for (int k = 0; k < nodeCount; k++)
                     {
-                        nodeList[k] = f.readInt();
+                        nodeList[k] = f.ReadInt();
                     }
-                    pg.Count=(f.readInt());
-                    if ((flags & 2) > 0) f.readInt();
+                    pg.Count=(f.ReadInt());
+                    if ((flags & 2) > 0) f.ReadInt();
 
                 }
             }
 
 
-            if (format != 4) f.align(32);
+            if (format != 4) f.Align(32);
 
             int stride = 0;
             foreach (VertexAttribute a in attributes)
@@ -382,7 +379,7 @@ namespace SmashForge
                 }
                 vertices[vi] = v;
             }
-            f.align(32);
+            f.Align(32);
 
 
             for (int i = 0; i < meshCount; i++)
@@ -395,8 +392,8 @@ namespace SmashForge
                     pg.Text = "Polygroup_"+pi++;
                     pg.Faces = new int[pg.Count];
                     for(int k = 0; k < pg.Count; k++)
-                        pg.Faces[k] = f.readUShort();
-                    f.align(32);
+                        pg.Faces[k] = f.ReadUShort();
+                    f.Align(32);
                 }
             }
         }
@@ -412,7 +409,7 @@ namespace SmashForge
                 GenerateBuffers();
             }
 
-            shader = OpenTKSharedResources.shaders["Mbn"];
+            shader = OpenTkSharedResources.shaders["Mbn"];
             shader.UseProgram();
 
             GL.Uniform1(shader.GetUniformLocation("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
@@ -466,7 +463,7 @@ namespace SmashForge
 
                 GL.ActiveTexture(TextureUnit.Texture0);
                 BCH_Material material = (BCH_Material)((BCH)Parent.Parent).Materials.Nodes[m.MaterialIndex];
-                BCH_Texture tex = ((BCH)Parent.Parent).GetTexture(material.Text);
+                BchTexture tex = ((BCH)Parent.Parent).GetTexture(material.Text);
                 if (tex == null)
                     RenderTools.defaultTex.Bind();
                 else

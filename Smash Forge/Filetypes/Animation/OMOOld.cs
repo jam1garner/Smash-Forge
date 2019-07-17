@@ -44,50 +44,50 @@ namespace SmashForge
         public static Animation read(FileData d)
         {
 
-            d.Endian = Endianness.Big;
+            d.endian = Endianness.Big;
 
-            d.skip(4); // header OMO
-            d.skip(4); // two shorts, idk
+            d.Skip(4); // header OMO
+            d.Skip(4); // two shorts, idk
 
-            d.skip(4); //flags?
+            d.Skip(4); //flags?
 
-            d.skip(2);
-            int boneCount = d.readUShort();
-            int frameCount = d.readUShort();
-            int frameSize = d.readUShort();
+            d.Skip(2);
+            int boneCount = d.ReadUShort();
+            int frameCount = d.ReadUShort();
+            int frameSize = d.ReadUShort();
 
-            int offset1 = d.readInt();  // nodeOffset
-            int offset2 = d.readInt();  // interOffset
-            int offset3 = d.readInt();  // keyOffset
+            int offset1 = d.ReadInt();  // nodeOffset
+            int offset2 = d.ReadInt();  // interOffset
+            int offset3 = d.ReadInt();  // keyOffset
 
             SkelAnimation anim = new SkelAnimation();
-            anim.Tag = d;
+            anim.tag = d;
 
             if (boneCount > offset2 / 0x10)
             {
                 boneCount = offset2 / 0x10;
-                anim.Tag = null;
+                anim.tag = null;
             }
 
             // base frames
             // These are linked to bones via hashes
-            d.seek(offset1); // 
+            d.Seek(offset1); // 
             int[] framekey = new int[boneCount];
             KeyNode[] baseNode = new KeyNode[boneCount];
 
             // Start positions for bones/nodes
             for (int i = 0; i < boneCount; i++)
             {
-                flagsused = flagsused | d.readInt(); d.seek(d.pos() - 4);
+                flagsused = flagsused | d.ReadInt(); d.Seek(d.Pos() - 4);
                 //Console.WriteLine(flagsused.ToString("x"));
 
-                int flags = d.readByte();
-                int tFlag = d.readByte();
-                int rFlag = d.readByte();
-                int sFlag = d.readByte();
-                int hash = d.readInt(); // used to find the identifying bone
-                int off1 = d.readInt() + offset2;
-                framekey[i] = d.readInt();
+                int flags = d.ReadByte();
+                int tFlag = d.ReadByte();
+                int rFlag = d.ReadByte();
+                int sFlag = d.ReadByte();
+                int hash = d.ReadInt(); // used to find the identifying bone
+                int off1 = d.ReadInt() + offset2;
+                framekey[i] = d.ReadInt();
 
                 bool hasTrans = (flags & 0x01) == 0x01;
                 bool hasScale = (flags & 0x04) == 0x04;
@@ -98,26 +98,26 @@ namespace SmashForge
 
                 node.hash = (uint)hash;
 
-                int temp = d.pos();
-                d.seek(off1);
+                int temp = d.Pos();
+                d.Seek(off1);
 
                 if (hasTrans)
                 {
                     if (tFlag == 0x8)
                     { // interpolated
-                        node.t_type = KeyNode.INTERPOLATED;
-                        node.t = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
-                        node.t2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        node.tType = KeyNode.Interpolated;
+                        node.t = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
+                        node.t2 = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
                     }
                     else if (tFlag == 0x20)
                     {
-                        node.t_type = KeyNode.CONSTANT;
-                        node.t = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        node.tType = KeyNode.Constant;
+                        node.t = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
                     }
                     else if (tFlag == 0x4)
                     {
                         // entire Vector3 provided in keyframe data i.e. KEYFRAME type
-                        node.t_type = KeyNode.KEYFRAME;
+                        node.tType = KeyNode.Keyframe;
                     }
                 }
                 if (hasRot)
@@ -130,27 +130,27 @@ namespace SmashForge
                     if ((rFlag & 0xF0) == 0xA0)
                     {
                         // All data is in the keyframe for this type
-                        node.r_type = KeyNode.COMPRESSED;
+                        node.rType = KeyNode.Compressed;
                     }
 
                     if ((rFlag & 0xF0) == 0x50)
                     { // interpolated
-                        node.r_type = KeyNode.INTERPOLATED;
-                        node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
-                        node.rv2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        node.rType = KeyNode.Interpolated;
+                        node.rv = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
+                        node.rv2 = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
                     }
 
                     if ((rFlag & 0xF0) == 0x60)
                     {
-                        node.r_type = KeyNode.KEYFRAME;
-                        node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
-                        node.r_extra = d.readFloat() / 65535;
+                        node.rType = KeyNode.Keyframe;
+                        node.rv = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
+                        node.rExtra = d.ReadFloat() / 65535;
                     }
 
                     if ((rFlag & 0xF0) == 0x70)
                     {
-                        node.r_type = KeyNode.CONSTANT;
-                        node.rv = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        node.rType = KeyNode.Constant;
+                        node.rv = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
                     }
                 }
 
@@ -158,28 +158,28 @@ namespace SmashForge
                 {
                     if ((sFlag & 0xF0) == 0x80)
                     { // interpolated
-                        node.s_type = KeyNode.INTERPOLATED;
-                        node.s = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
-                        node.s2 = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        node.sType = KeyNode.Interpolated;
+                        node.s = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
+                        node.s2 = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
                     }
                     // TODO: investigate the difference between these
                     if ((rFlag & 0x0F) == 0x02 || (rFlag & 0x0F) == 0x03)
                     { // constant
-                        node.s_type = KeyNode.CONSTANT;
-                        node.s = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        node.sType = KeyNode.Constant;
+                        node.s = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
                     }
                 }
-                d.seek(temp);
+                d.Seek(temp);
             }
 
             // Interpolated type below here is always a set translation/rotation/scale
             // from the coords specified with the bone node above
 
             Animation a = new Animation("Anim");
-            a.Tag = anim.Tag;
-            a.FrameCount = frameCount;
+            a.Tag = anim.tag;
+            a.frameCount = frameCount;
 
-            d.seek(offset3);
+            d.Seek(offset3);
 
             for (int j = 0; j < boneCount; j++)
             {
@@ -190,64 +190,64 @@ namespace SmashForge
                     hash = (int)baseNode[j].hash;
                 }
                 Animation.KeyNode n = new Animation.KeyNode(bid);
-                n.Hash = hash;
-                a.Bones.Add(n);
-                n.Type = Animation.BoneType.NORMAL;
+                n.hash = hash;
+                a.bones.Add(n);
+                n.type = Animation.BoneType.Normal;
                 /*foreach (ModelContainer con in Runtime.ModelContainers)
                     if (con.VBN != null)
                         bid = con.VBN.getBone(baseNode[j].hash) == null ? "" : con.VBN.getBone(baseNode[j].hash).Text;*/
 
-                for (int i = 0; i < a.FrameCount; i++)
+                for (int i = 0; i < a.frameCount; i++)
                 {
-                    d.seek(offset3 + frameSize * i + framekey[j]);
+                    d.Seek(offset3 + frameSize * i + framekey[j]);
 
-                    if (baseNode[j].t_type == KeyNode.INTERPOLATED)
+                    if (baseNode[j].tType == KeyNode.Interpolated)
                     {
-                        float i1 = ((float)d.readUShort() / 0xffff);
-                        float i2 = ((float)d.readUShort() / 0xffff);
-                        float i3 = ((float)d.readUShort() / 0xffff);
+                        float i1 = ((float)d.ReadUShort() / 0xffff);
+                        float i2 = ((float)d.ReadUShort() / 0xffff);
+                        float i3 = ((float)d.ReadUShort() / 0xffff);
 
                         float x = baseNode[j].t.X + (baseNode[j].t2.X * (i1));
                         float y = baseNode[j].t.Y + (baseNode[j].t2.Y * (i2));
                         float z = baseNode[j].t.Z + (baseNode[j].t2.Z * (i3));
 
                         //node.t = new Vector3(x, y, z);  // Translation
-                        n.XPOS.Keys.Add(new Animation.KeyFrame(x, i));
-                        n.YPOS.Keys.Add(new Animation.KeyFrame(y, i));
-                        n.ZPOS.Keys.Add(new Animation.KeyFrame(z, i));
+                        n.xpos.keys.Add(new Animation.KeyFrame(x, i));
+                        n.ypos.keys.Add(new Animation.KeyFrame(y, i));
+                        n.zpos.keys.Add(new Animation.KeyFrame(z, i));
                     }
-                    else if (baseNode[j].t_type == KeyNode.CONSTANT)
+                    else if (baseNode[j].tType == KeyNode.Constant)
                     {
                         //node.t = baseNode[j].t;
-                        n.XPOS.Keys.Add(new Animation.KeyFrame(baseNode[j].t.X, i));
-                        n.YPOS.Keys.Add(new Animation.KeyFrame(baseNode[j].t.Y, i));
-                        n.ZPOS.Keys.Add(new Animation.KeyFrame(baseNode[j].t.Z, i));
+                        n.xpos.keys.Add(new Animation.KeyFrame(baseNode[j].t.X, i));
+                        n.ypos.keys.Add(new Animation.KeyFrame(baseNode[j].t.Y, i));
+                        n.zpos.keys.Add(new Animation.KeyFrame(baseNode[j].t.Z, i));
                     }
-                    else if (baseNode[j].t_type == 2)
+                    else if (baseNode[j].tType == 2)
                     {
-                        float x = d.readFloat();
-                        float y = d.readFloat();
-                        float z = d.readFloat();
+                        float x = d.ReadFloat();
+                        float y = d.ReadFloat();
+                        float z = d.ReadFloat();
 
                         //node.t = new Vector3(x, y, z);
-                        n.XPOS.Keys.Add(new Animation.KeyFrame(x, i));
-                        n.YPOS.Keys.Add(new Animation.KeyFrame(y, i));
-                        n.ZPOS.Keys.Add(new Animation.KeyFrame(z, i));
+                        n.xpos.keys.Add(new Animation.KeyFrame(x, i));
+                        n.ypos.keys.Add(new Animation.KeyFrame(y, i));
+                        n.zpos.keys.Add(new Animation.KeyFrame(z, i));
                     }
 
-                    if (baseNode[j].r_type == KeyNode.COMPRESSED)
+                    if (baseNode[j].rType == KeyNode.Compressed)
                     {
                         // There are 64 bits present for each node of this rot type
                         // The format is: 20bits * 3 of encoded floats, and 4 bits of flags
                         // The flags describe which 3 components of the quaternion are being presented
-                        int b1 = d.readByte();
-                        int b2 = d.readByte();
-                        int b3 = d.readByte();
-                        int b4 = d.readByte();
-                        int b5 = d.readByte();
-                        int b6 = d.readByte();
-                        int b7 = d.readByte();
-                        int b8 = d.readByte();
+                        int b1 = d.ReadByte();
+                        int b2 = d.ReadByte();
+                        int b3 = d.ReadByte();
+                        int b4 = d.ReadByte();
+                        int b5 = d.ReadByte();
+                        int b6 = d.ReadByte();
+                        int b7 = d.ReadByte();
+                        int b8 = d.ReadByte();
 
                         // Capture 20 bits at a time of the raw data
                         int f1 = (b1 << 12) | (b2 << 4) | ((b3 & 0xF0) >> 4);
@@ -290,17 +290,17 @@ namespace SmashForge
                                 Console.WriteLine("Unknown rotation type3 flags: " + flags);
                                 break;
                         }
-                        n.RotType = Animation.RotationType.QUATERNION;
-                        n.XROT.Keys.Add(new Animation.KeyFrame(r.X, i));
-                        n.YROT.Keys.Add(new Animation.KeyFrame(r.Y, i));
-                        n.ZROT.Keys.Add(new Animation.KeyFrame(r.Z, i));
-                        n.WROT.Keys.Add(new Animation.KeyFrame(r.W, i));
+                        n.rotType = Animation.RotationType.Quaternion;
+                        n.xrot.keys.Add(new Animation.KeyFrame(r.X, i));
+                        n.yrot.keys.Add(new Animation.KeyFrame(r.Y, i));
+                        n.zrot.keys.Add(new Animation.KeyFrame(r.Z, i));
+                        n.wrot.keys.Add(new Animation.KeyFrame(r.W, i));
                     }
-                    else if (baseNode[j].r_type == KeyNode.INTERPOLATED)
+                    else if (baseNode[j].rType == KeyNode.Interpolated)
                     {
-                        float i1 = ((float)d.readUShort() / (0xffff));
-                        float i2 = ((float)d.readUShort() / (0xffff));
-                        float i3 = ((float)d.readUShort() / (0xffff));
+                        float i1 = ((float)d.ReadUShort() / (0xffff));
+                        float i2 = ((float)d.ReadUShort() / (0xffff));
+                        float i3 = ((float)d.ReadUShort() / (0xffff));
 
                         float x = baseNode[j].rv.X + (baseNode[j].rv2.X * (i1));
                         float y = baseNode[j].rv.Y + (baseNode[j].rv2.Y * (i2));
@@ -311,26 +311,26 @@ namespace SmashForge
                         Quaternion r = new Quaternion(new Vector3(x, y, z), w);
                         r.Normalize();
 
-                        n.RotType = Animation.RotationType.QUATERNION;
-                        n.XROT.Keys.Add(new Animation.KeyFrame(r.X, i));
-                        n.YROT.Keys.Add(new Animation.KeyFrame(r.Y, i));
-                        n.ZROT.Keys.Add(new Animation.KeyFrame(r.Z, i));
-                        n.WROT.Keys.Add(new Animation.KeyFrame(r.W, i));
+                        n.rotType = Animation.RotationType.Quaternion;
+                        n.xrot.keys.Add(new Animation.KeyFrame(r.X, i));
+                        n.yrot.keys.Add(new Animation.KeyFrame(r.Y, i));
+                        n.zrot.keys.Add(new Animation.KeyFrame(r.Z, i));
+                        n.wrot.keys.Add(new Animation.KeyFrame(r.W, i));
                     }
-                    else if (baseNode[j].r_type == KeyNode.KEYFRAME)
+                    else if (baseNode[j].rType == KeyNode.Keyframe)
                     {
-                        float scale = d.readUShort() * baseNode[j].r_extra;
+                        float scale = d.ReadUShort() * baseNode[j].rExtra;
                         float x = baseNode[j].rv.X;
                         float y = baseNode[j].rv.Y;
                         float z = baseNode[j].rv.Z + scale;
                         float w = rot6CalculateW(x, y, z);
 
                         Quaternion r = new Quaternion(x, y, z, w);
-                        n.RotType = Animation.RotationType.QUATERNION;
-                        n.XROT.Keys.Add(new Animation.KeyFrame(r.X, i));
-                        n.YROT.Keys.Add(new Animation.KeyFrame(r.Y, i));
-                        n.ZROT.Keys.Add(new Animation.KeyFrame(r.Z, i));
-                        n.WROT.Keys.Add(new Animation.KeyFrame(r.W, i));
+                        n.rotType = Animation.RotationType.Quaternion;
+                        n.xrot.keys.Add(new Animation.KeyFrame(r.X, i));
+                        n.yrot.keys.Add(new Animation.KeyFrame(r.Y, i));
+                        n.zrot.keys.Add(new Animation.KeyFrame(r.Z, i));
+                        n.wrot.keys.Add(new Animation.KeyFrame(r.W, i));
                     }
                     else
                     {
@@ -341,34 +341,34 @@ namespace SmashForge
 
                         Quaternion r = new Quaternion(baseNode[j].rv, w);
                         r.Normalize();
-                        n.RotType = Animation.RotationType.QUATERNION;
-                        n.XROT.Keys.Add(new Animation.KeyFrame(r.X, i));
-                        n.YROT.Keys.Add(new Animation.KeyFrame(r.Y, i));
-                        n.ZROT.Keys.Add(new Animation.KeyFrame(r.Z, i));
-                        n.WROT.Keys.Add(new Animation.KeyFrame(r.W, i));
+                        n.rotType = Animation.RotationType.Quaternion;
+                        n.xrot.keys.Add(new Animation.KeyFrame(r.X, i));
+                        n.yrot.keys.Add(new Animation.KeyFrame(r.Y, i));
+                        n.zrot.keys.Add(new Animation.KeyFrame(r.Z, i));
+                        n.wrot.keys.Add(new Animation.KeyFrame(r.W, i));
                     }
 
-                    if (baseNode[j].s_type == KeyNode.INTERPOLATED)
+                    if (baseNode[j].sType == KeyNode.Interpolated)
                     {
-                        float i1 = ((float)d.readUShort() / (0xffff));
-                        float i2 = ((float)d.readUShort() / (0xffff));
-                        float i3 = ((float)d.readUShort() / (0xffff));
+                        float i1 = ((float)d.ReadUShort() / (0xffff));
+                        float i2 = ((float)d.ReadUShort() / (0xffff));
+                        float i3 = ((float)d.ReadUShort() / (0xffff));
 
                         float x = baseNode[j].s.X + (baseNode[j].s2.X * (i1));
                         float y = baseNode[j].s.Y + (baseNode[j].s2.Y * (i2));
                         float z = baseNode[j].s.Z + (baseNode[j].s2.Z * (i3));
 
                         //node.s = new Vector3(x, y, z);
-                        n.XSCA.Keys.Add(new Animation.KeyFrame(x, i));
-                        n.YSCA.Keys.Add(new Animation.KeyFrame(y, i));
-                        n.ZSCA.Keys.Add(new Animation.KeyFrame(z, i));
+                        n.xsca.keys.Add(new Animation.KeyFrame(x, i));
+                        n.ysca.keys.Add(new Animation.KeyFrame(y, i));
+                        n.zsca.keys.Add(new Animation.KeyFrame(z, i));
                     }
                     else
                     {
                         //node.s = baseNode[j].s;
-                        n.XSCA.Keys.Add(new Animation.KeyFrame(baseNode[j].s.X, i));
-                        n.YSCA.Keys.Add(new Animation.KeyFrame(baseNode[j].s.Y, i));
-                        n.ZSCA.Keys.Add(new Animation.KeyFrame(baseNode[j].s.Z, i));
+                        n.xsca.keys.Add(new Animation.KeyFrame(baseNode[j].s.X, i));
+                        n.ysca.keys.Add(new Animation.KeyFrame(baseNode[j].s.Y, i));
+                        n.zsca.keys.Add(new Animation.KeyFrame(baseNode[j].s.Z, i));
                     }
                 }
             }
@@ -383,38 +383,38 @@ namespace SmashForge
 
         public static byte[] createOMO(SkelAnimation a, VBN vbn)
         {
-            List<int> nodeid = a.getNodes(true, vbn);
+            List<int> nodeid = a.GetNodes(true, vbn);
 
             int startNode = 0;
             int sizeNode = nodeid.Count;
 
             FileOutput o = new FileOutput();
-            o.Endian = Endianness.Big;
+            o.endian = Endianness.Big;
 
             FileOutput t1 = new FileOutput();
-            t1.Endian = Endianness.Big;
+            t1.endian = Endianness.Big;
 
             FileOutput t2 = new FileOutput();
-            t2.Endian = Endianness.Big;
+            t2.endian = Endianness.Big;
 
             o.WriteString("OMO ");
-            o.writeShort(1); //idk
-            o.writeShort(3);//idk
+            o.WriteShort(1); //idk
+            o.WriteShort(3);//idk
 
-            o.writeInt(0x091E100C); //flags??
+            o.WriteInt(0x091E100C); //flags??
 
 
-            o.writeShort(0); //padding
-            o.writeShort(sizeNode); // numOfNodes
+            o.WriteShort(0); //padding
+            o.WriteShort(sizeNode); // numOfNodes
 
-            o.writeShort(a.frames.Count); // frame size
-            o.writeShort(0); // frame start ??
+            o.WriteShort(a.frames.Count); // frame size
+            o.WriteShort(0); // frame start ??
 
-            o.writeInt(0);
-            o.writeInt(0);
-            o.writeInt(0);
+            o.WriteInt(0);
+            o.WriteInt(0);
+            o.WriteInt(0);
 
-            o.writeIntAt(o.Size(), 0x14);
+            o.WriteIntAt(o.Size(), 0x14);
 
 
             // ASSESSMENT
@@ -427,14 +427,14 @@ namespace SmashForge
             bool[] conTrans = new bool[sizeNode];
             bool[] conRot = new bool[sizeNode];
 
-            a.setFrame(0);
+            a.SetFrame(0);
 
             List<List<Bone>> Frames = new List<List<Bone>>();
             VBN tempvbn = new VBN();
 
-            for (int i = 0; i < a.size(); i++)
+            for (int i = 0; i < a.Size(); i++)
             {
-                a.nextFrame(vbn, true);
+                a.NextFrame(vbn, true);
                 List<Bone> bonelist = new List<Bone>();
                 for (int j = 0; j < nodeid.Count; j++)
                 {
@@ -453,14 +453,14 @@ namespace SmashForge
                         hasScale[j] = false;
                         hasTrans[j] = false;
 
-                        KeyNode n = a.getFirstNode(nodeid[j]);
+                        KeyNode n = a.GetFirstNode(nodeid[j]);
                         if (n != null)
                         {
-                            if (n.r_type != -1)
+                            if (n.rType != -1)
                                 hasRot[j] = true;
-                            if (n.t_type != -1)
+                            if (n.tType != -1)
                                 hasTrans[j] = true;
-                            if (n.s_type != -1)
+                            if (n.sType != -1)
                                 hasScale[j] = true;
                         }
 
@@ -574,17 +574,17 @@ namespace SmashForge
                 if(MainForm.hashes.names.ContainsKey(getNodeId(vbn, nodeid[i]).Text))
                     hash = (int)MainForm.hashes.names[getNodeId(vbn, nodeid[i]).Text];
                 //else hash = (int)FileData.crc12(getNodeId(vbn, nodeid[i]).Text);
-                o.writeInt(flag); // flags...
-                o.writeInt(hash); //hash
-                o.writeInt(t1.Size()); // Offset in 1 table
-                o.writeInt(t2Size); // Offset in 2 table
+                o.WriteInt(flag); // flags...
+                o.WriteInt(hash); //hash
+                o.WriteInt(t1.Size()); // Offset in 1 table
+                o.WriteInt(t2Size); // Offset in 2 table
 
                 // calculate size needed
                 if (hasTrans[i])
                 {
-                    t1.writeFloat(minmax[i].t.X);
-                    t1.writeFloat(minmax[i].t.Y);
-                    t1.writeFloat(minmax[i].t.Z);
+                    t1.WriteFloat(minmax[i].t.X);
+                    t1.WriteFloat(minmax[i].t.Y);
+                    t1.WriteFloat(minmax[i].t.Z);
 
                     if (!conTrans[i])
                     {
@@ -592,9 +592,9 @@ namespace SmashForge
                         minmax[i].t2.Y -= minmax[i].t.Y;
                         minmax[i].t2.Z -= minmax[i].t.Z;
 
-                        t1.writeFloat(minmax[i].t2.X);
-                        t1.writeFloat(minmax[i].t2.Y);
-                        t1.writeFloat(minmax[i].t2.Z);
+                        t1.WriteFloat(minmax[i].t2.X);
+                        t1.WriteFloat(minmax[i].t2.Y);
+                        t1.WriteFloat(minmax[i].t2.Z);
 
                         t2Size += 6;
                     }
@@ -602,9 +602,9 @@ namespace SmashForge
 
                 if (hasRot[i])
                 {
-                    t1.writeFloat(minmax[i].r.X);
-                    t1.writeFloat(minmax[i].r.Y);
-                    t1.writeFloat(minmax[i].r.Z);
+                    t1.WriteFloat(minmax[i].r.X);
+                    t1.WriteFloat(minmax[i].r.Y);
+                    t1.WriteFloat(minmax[i].r.Z);
 
                     if (!conRot[i])
                     {
@@ -612,9 +612,9 @@ namespace SmashForge
                         minmax[i].r2.Y -= minmax[i].r.Y;
                         minmax[i].r2.Z -= minmax[i].r.Z;
 
-                        t1.writeFloat(minmax[i].r2.X);
-                        t1.writeFloat(minmax[i].r2.Y);
-                        t1.writeFloat(minmax[i].r2.Z);
+                        t1.WriteFloat(minmax[i].r2.X);
+                        t1.WriteFloat(minmax[i].r2.Y);
+                        t1.WriteFloat(minmax[i].r2.Z);
 
                         t2Size += 6;
                     }
@@ -622,9 +622,9 @@ namespace SmashForge
 
                 if (hasScale[i])
                 {
-                    t1.writeFloat(minmax[i].s.X);
-                    t1.writeFloat(minmax[i].s.Y);
-                    t1.writeFloat(minmax[i].s.Z);
+                    t1.WriteFloat(minmax[i].s.X);
+                    t1.WriteFloat(minmax[i].s.Y);
+                    t1.WriteFloat(minmax[i].s.Z);
 
                     if (!conScale[i])
                     {
@@ -632,20 +632,20 @@ namespace SmashForge
                         minmax[i].s2.Y -= minmax[i].s.Y;
                         minmax[i].s2.Z -= minmax[i].s.Z;
 
-                        t1.writeFloat(minmax[i].s2.X);
-                        t1.writeFloat(minmax[i].s2.Y);
-                        t1.writeFloat(minmax[i].s2.Z);
+                        t1.WriteFloat(minmax[i].s2.X);
+                        t1.WriteFloat(minmax[i].s2.Y);
+                        t1.WriteFloat(minmax[i].s2.Z);
 
                         t2Size += 6;
                     }
                 }
             }
 
-            o.writeIntAt(o.Size(), 0x18);
+            o.WriteIntAt(o.Size(), 0x18);
 
             o.WriteOutput(t1);
 
-            o.writeIntAt(o.Size(), 0x1C);
+            o.WriteIntAt(o.Size(), 0x1C);
 
             // INTERPOLATION
 
@@ -662,9 +662,9 @@ namespace SmashForge
 
                     if (hasTrans[j] && !conTrans[j])
                     {
-                        t2.writeShort((int)(((node.pos.X - minmax[j].t.X) / minmax[j].t2.X) * 0xFFFF));
-                        t2.writeShort((int)(((node.pos.Y - minmax[j].t.Y) / minmax[j].t2.Y) * 0xFFFF));
-                        t2.writeShort((int)(((node.pos.Z - minmax[j].t.Z) / minmax[j].t2.Z) * 0xFFFF));
+                        t2.WriteShort((int)(((node.pos.X - minmax[j].t.X) / minmax[j].t2.X) * 0xFFFF));
+                        t2.WriteShort((int)(((node.pos.Y - minmax[j].t.Y) / minmax[j].t2.Y) * 0xFFFF));
+                        t2.WriteShort((int)(((node.pos.Z - minmax[j].t.Z) / minmax[j].t2.Z) * 0xFFFF));
                     }
 
                     if (hasRot[j] && !conRot[j])
@@ -673,22 +673,22 @@ namespace SmashForge
                         //float[] f = CalculateRotation(node.nrx, node.nry, node.nrz);
                         Quaternion r = node.rot;
 
-                        t2.writeShort((int)(((r.X - minmax[j].r.X) / minmax[j].r2.X) * 0xFFFF));
-                        t2.writeShort((int)(((r.Y - minmax[j].r.Y) / minmax[j].r2.Y) * 0xFFFF));
-                        t2.writeShort((int)(((r.Z - minmax[j].r.Z) / minmax[j].r2.Z) * 0xFFFF));
+                        t2.WriteShort((int)(((r.X - minmax[j].r.X) / minmax[j].r2.X) * 0xFFFF));
+                        t2.WriteShort((int)(((r.Y - minmax[j].r.Y) / minmax[j].r2.Y) * 0xFFFF));
+                        t2.WriteShort((int)(((r.Z - minmax[j].r.Z) / minmax[j].r2.Z) * 0xFFFF));
                     }
 
                     if (hasScale[j] && !conScale[j])
                     {
-                        t2.writeShort((int)(((node.sca.X - minmax[j].s.X) / minmax[j].s2.X) * 0xFFFF));
-                        t2.writeShort((int)(((node.sca.Y - minmax[j].s.Y) / minmax[j].s2.Y) * 0xFFFF));
-                        t2.writeShort((int)(((node.sca.Z - minmax[j].s.Z) / minmax[j].s2.Z) * 0xFFFF));
+                        t2.WriteShort((int)(((node.sca.X - minmax[j].s.X) / minmax[j].s2.X) * 0xFFFF));
+                        t2.WriteShort((int)(((node.sca.Y - minmax[j].s.Y) / minmax[j].s2.Y) * 0xFFFF));
+                        t2.WriteShort((int)(((node.sca.Z - minmax[j].s.Z) / minmax[j].s2.Z) * 0xFFFF));
                     }
                     j++;
                 }
                 if (!go)
                 {
-                    o.writeShortAt(t2.Size(), 0x12);
+                    o.WriteShortAt(t2.Size(), 0x12);
                     go = true;
                 }
             }
@@ -711,9 +711,9 @@ namespace SmashForge
             //-------------------------
 
             List<Animation.KeyNode> toRem = new List<Animation.KeyNode>();
-            for (int j = 0; j < a.Bones.Count; j++)
+            for (int j = 0; j < a.bones.Count; j++)
             {
-                Animation.KeyNode keynode = ((Animation.KeyNode)a.Bones[j]);
+                Animation.KeyNode keynode = ((Animation.KeyNode)a.bones[j]);
                 Bone b = vbn.getBone(keynode.Text);
 
                 if (b == null)
@@ -722,50 +722,50 @@ namespace SmashForge
             foreach (Animation.KeyNode r in toRem)
             {
                 Console.WriteLine("Removing " + r.Text);
-                a.Bones.Remove(r);
+                a.bones.Remove(r);
             }
 
             //-------------------------
 
             FileOutput o = new FileOutput();
-            o.Endian = Endianness.Big;
+            o.endian = Endianness.Big;
 
             FileOutput t1 = new FileOutput();
-            t1.Endian = Endianness.Big;
+            t1.endian = Endianness.Big;
 
             FileOutput t2 = new FileOutput();
-            t2.Endian = Endianness.Big;
+            t2.endian = Endianness.Big;
 
             o.WriteString("OMO ");
-            o.writeShort(1); //idk
-            o.writeShort(3);//idk
+            o.WriteShort(1); //idk
+            o.WriteShort(3);//idk
 
-            o.writeInt(0x091E100C); //flags??
+            o.WriteInt(0x091E100C); //flags??
 
 
-            o.writeShort(0); //padding
-            o.writeShort(a.Bones.Count); // numOfNodes
+            o.WriteShort(0); //padding
+            o.WriteShort(a.bones.Count); // numOfNodes
 
-            o.writeShort(a.FrameCount); // frame size
-            o.writeShort(0); // frame start ??
+            o.WriteShort(a.frameCount); // frame size
+            o.WriteShort(0); // frame start ??
 
-            o.writeInt(0);
-            o.writeInt(0);
-            o.writeInt(0);
+            o.WriteInt(0);
+            o.WriteInt(0);
+            o.WriteInt(0);
 
-            o.writeIntAt(o.Size(), 0x14);
+            o.WriteIntAt(o.Size(), 0x14);
             
             // ASSESSMENT
-            Vector3[] maxT = new Vector3[a.Bones.Count], minT = new Vector3[a.Bones.Count];
-            Vector4[] maxR = new Vector4[a.Bones.Count], minR = new Vector4[a.Bones.Count];
-            Vector3[] maxS = new Vector3[a.Bones.Count], minS = new Vector3[a.Bones.Count];
-            bool[] hasScale = new bool[a.Bones.Count];
-            bool[] hasTrans = new bool[a.Bones.Count];
-            bool[] hasRot = new bool[a.Bones.Count];
+            Vector3[] maxT = new Vector3[a.bones.Count], minT = new Vector3[a.bones.Count];
+            Vector4[] maxR = new Vector4[a.bones.Count], minR = new Vector4[a.bones.Count];
+            Vector3[] maxS = new Vector3[a.bones.Count], minS = new Vector3[a.bones.Count];
+            bool[] hasScale = new bool[a.bones.Count];
+            bool[] hasTrans = new bool[a.bones.Count];
+            bool[] hasRot = new bool[a.bones.Count];
 
-            bool[] conScale = new bool[a.Bones.Count];
-            bool[] conTrans = new bool[a.Bones.Count];
-            bool[] conRot = new bool[a.Bones.Count];
+            bool[] conScale = new bool[a.bones.Count];
+            bool[] conTrans = new bool[a.bones.Count];
+            bool[] conRot = new bool[a.bones.Count];
             
             a.SetFrame(0);
 
@@ -773,14 +773,14 @@ namespace SmashForge
 
             {
 
-                for (int j = 0; j < a.Bones.Count; j++)
+                for (int j = 0; j < a.bones.Count; j++)
                 {
-                    Animation.KeyNode keynode = ((Animation.KeyNode)a.Bones[j]);
-                    if (keynode.XPOS.HasAnimation() || keynode.YPOS.HasAnimation() || keynode.ZPOS.HasAnimation())
+                    Animation.KeyNode keynode = ((Animation.KeyNode)a.bones[j]);
+                    if (keynode.xpos.HasAnimation() || keynode.ypos.HasAnimation() || keynode.zpos.HasAnimation())
                         hasTrans[j] = true;
-                    if (keynode.XROT.HasAnimation())
+                    if (keynode.xrot.HasAnimation())
                         hasRot[j] = true;
-                    if (keynode.XSCA.HasAnimation() || keynode.YSCA.HasAnimation() || keynode.ZSCA.HasAnimation())
+                    if (keynode.xsca.HasAnimation() || keynode.ysca.HasAnimation() || keynode.zsca.HasAnimation())
                         hasScale[j] = true;
 
                     maxT[j] = new Vector3(-999f, -999f, -999f);
@@ -790,47 +790,47 @@ namespace SmashForge
                     maxR[j] = new Vector4(-999f, -999f, -999f, -999f);
                     minR[j] = new Vector4(999f, 999f, 999f, 999f);
 
-                    foreach(Animation.KeyFrame key in keynode.XPOS.Keys)
+                    foreach(Animation.KeyFrame key in keynode.xpos.keys)
                     {
                         maxT[j].X = Math.Max(maxT[j].X, key.Value);
                         minT[j].X = Math.Min(minT[j].X, key.Value);
                     }
-                    foreach (Animation.KeyFrame key in keynode.YPOS.Keys)
+                    foreach (Animation.KeyFrame key in keynode.ypos.keys)
                     {
                         maxT[j].Y = Math.Max(maxT[j].Y, key.Value);
                         minT[j].Y = Math.Min(minT[j].Y, key.Value);
                     }
-                    foreach (Animation.KeyFrame key in keynode.ZPOS.Keys)
+                    foreach (Animation.KeyFrame key in keynode.zpos.keys)
                     {
                         maxT[j].Z = Math.Max(maxT[j].Z, key.Value);
                         minT[j].Z = Math.Min(minT[j].Z, key.Value);
                     }
-                    foreach (Animation.KeyFrame key in keynode.XSCA.Keys)
+                    foreach (Animation.KeyFrame key in keynode.xsca.keys)
                     {
                         maxS[j].X = Math.Max(maxS[j].X, key.Value);
                         minS[j].X = Math.Min(minS[j].X, key.Value);
                     }
-                    foreach (Animation.KeyFrame key in keynode.YSCA.Keys)
+                    foreach (Animation.KeyFrame key in keynode.ysca.keys)
                     {
                         maxS[j].Y = Math.Max(maxS[j].Y, key.Value);
                         minS[j].Y = Math.Min(minS[j].Y, key.Value);
                     }
-                    foreach (Animation.KeyFrame key in keynode.ZSCA.Keys)
+                    foreach (Animation.KeyFrame key in keynode.zsca.keys)
                     {
                         maxS[j].Z = Math.Max(maxS[j].Z, key.Value);
                         minS[j].Z = Math.Min(minS[j].Z, key.Value);
                     }
 
                     Bone b = vbn.getBone(keynode.Text);
-                    for (int i = 0; i < a.FrameCount; i++)
+                    for (int i = 0; i < a.frameCount; i++)
                     {
                         Quaternion r = new Quaternion();
-                        if (keynode.RotType == Animation.RotationType.QUATERNION)
+                        if (keynode.rotType == Animation.RotationType.Quaternion)
                         {
-                            Animation.KeyFrame[] x = keynode.XROT.GetFrame(i);
-                            Animation.KeyFrame[] y = keynode.YROT.GetFrame(i);
-                            Animation.KeyFrame[] z = keynode.ZROT.GetFrame(i);
-                            Animation.KeyFrame[] w = keynode.WROT.GetFrame(i);
+                            Animation.KeyFrame[] x = keynode.xrot.GetFrame(i);
+                            Animation.KeyFrame[] y = keynode.yrot.GetFrame(i);
+                            Animation.KeyFrame[] z = keynode.zrot.GetFrame(i);
+                            Animation.KeyFrame[] w = keynode.wrot.GetFrame(i);
                             Quaternion q1 = new Quaternion(x[0].Value, y[0].Value, z[0].Value, w[0].Value);
                             Quaternion q2 = new Quaternion(x[1].Value, y[1].Value, z[1].Value, w[1].Value);
                             if (x[0].Frame == i)
@@ -842,11 +842,11 @@ namespace SmashForge
                                 r = Quaternion.Slerp(q1, q2, (i - x[0].Frame) / (x[1].Frame - x[0].Frame));
                         }
                         else
-                        if (keynode.RotType == Animation.RotationType.EULER)
+                        if (keynode.rotType == Animation.RotationType.Euler)
                         {
-                            float x = keynode.XROT.HasAnimation() ? keynode.XROT.GetValue(i) : b.rotation[0];
-                            float y = keynode.YROT.HasAnimation() ? keynode.YROT.GetValue(i) : b.rotation[1];
-                            float z = keynode.ZROT.HasAnimation() ? keynode.ZROT.GetValue(i) : b.rotation[2];
+                            float x = keynode.xrot.HasAnimation() ? keynode.xrot.GetValue(i) : b.rotation[0];
+                            float y = keynode.yrot.HasAnimation() ? keynode.yrot.GetValue(i) : b.rotation[1];
+                            float z = keynode.zrot.HasAnimation() ? keynode.zrot.GetValue(i) : b.rotation[2];
                             r = Animation.EulerToQuat(z, y, x);
                         }
                         r.Normalize();
@@ -909,7 +909,7 @@ namespace SmashForge
             // NODE INFO
 
             int t2Size = 0;
-            for (int i = 0; i < a.Bones.Count; i++)
+            for (int i = 0; i < a.bones.Count; i++)
             {
                 int flag = 0;
 
@@ -951,10 +951,10 @@ namespace SmashForge
 
                 //uint id = 999;
                 
-                Bone b = vbn.getBone(a.Bones[i].Text);
+                Bone b = vbn.getBone(a.bones[i].Text);
                 int hash = -1;
-                if (MainForm.hashes.names.ContainsKey(a.Bones[i].Text))
-                    hash = (int)MainForm.hashes.names[a.Bones[i].Text];
+                if (MainForm.hashes.names.ContainsKey(a.bones[i].Text))
+                    hash = (int)MainForm.hashes.names[a.bones[i].Text];
                 else
                 {
                     if (b != null)
@@ -964,17 +964,17 @@ namespace SmashForge
                 }
                 //if(hash == -1)
                 //hash = (int)FileData.crc32(getNodeId(nodeid.get(i)).name);
-                o.writeInt(flag); // flags...
-                o.writeInt(hash); //hash
-                o.writeInt(t1.Size()); // Offset in 1 table
-                o.writeInt(t2Size); // Offset in 2 table
+                o.WriteInt(flag); // flags...
+                o.WriteInt(hash); //hash
+                o.WriteInt(t1.Size()); // Offset in 1 table
+                o.WriteInt(t2Size); // Offset in 2 table
 
                 // calculate size needed
                 if (hasTrans[i])
                 {
-                    t1.writeFloat(minT[i].X);
-                    t1.writeFloat(minT[i].Y);
-                    t1.writeFloat(minT[i].Z);
+                    t1.WriteFloat(minT[i].X);
+                    t1.WriteFloat(minT[i].Y);
+                    t1.WriteFloat(minT[i].Z);
 
                     if (!conTrans[i])
                     {
@@ -982,9 +982,9 @@ namespace SmashForge
                         maxT[i].Y -= minT[i].Y;
                         maxT[i].Z -= minT[i].Z;
 
-                        t1.writeFloat(maxT[i].X);
-                        t1.writeFloat(maxT[i].Y);
-                        t1.writeFloat(maxT[i].Z);
+                        t1.WriteFloat(maxT[i].X);
+                        t1.WriteFloat(maxT[i].Y);
+                        t1.WriteFloat(maxT[i].Z);
 
                         t2Size += 6;
                     }
@@ -992,9 +992,9 @@ namespace SmashForge
 
                 if (hasRot[i])
                 {
-                    t1.writeFloat(minR[i].X);
-                    t1.writeFloat(minR[i].Y);
-                    t1.writeFloat(minR[i].Z);
+                    t1.WriteFloat(minR[i].X);
+                    t1.WriteFloat(minR[i].Y);
+                    t1.WriteFloat(minR[i].Z);
 
                     if (!conRot[i])
                     {
@@ -1002,9 +1002,9 @@ namespace SmashForge
                         maxR[i].Y -= minR[i].Y;
                         maxR[i].Z -= minR[i].Z;
 
-                        t1.writeFloat(maxR[i].X);
-                        t1.writeFloat(maxR[i].Y);
-                        t1.writeFloat(maxR[i].Z);
+                        t1.WriteFloat(maxR[i].X);
+                        t1.WriteFloat(maxR[i].Y);
+                        t1.WriteFloat(maxR[i].Z);
 
                         t2Size += 6;
                     }
@@ -1012,9 +1012,9 @@ namespace SmashForge
 
                 if (hasScale[i])
                 {
-                    t1.writeFloat(minS[i].X);
-                    t1.writeFloat(minS[i].Y);
-                    t1.writeFloat(minS[i].Z);
+                    t1.WriteFloat(minS[i].X);
+                    t1.WriteFloat(minS[i].Y);
+                    t1.WriteFloat(minS[i].Z);
 
                     if (!conScale[i])
                     {
@@ -1022,52 +1022,52 @@ namespace SmashForge
                         maxS[i].Y -= minS[i].Y;
                         maxS[i].Z -= minS[i].Z;
 
-                        t1.writeFloat(maxS[i].X);
-                        t1.writeFloat(maxS[i].Y);
-                        t1.writeFloat(maxS[i].Z);
+                        t1.WriteFloat(maxS[i].X);
+                        t1.WriteFloat(maxS[i].Y);
+                        t1.WriteFloat(maxS[i].Z);
 
                         t2Size += 6;
                     }
                 }
             }
 
-            o.writeIntAt(o.Size(), 0x18);
+            o.WriteIntAt(o.Size(), 0x18);
 
             o.WriteOutput(t1);
 
-            o.writeIntAt(o.Size(), 0x1C);
+            o.WriteIntAt(o.Size(), 0x1C);
 
             // INTERPOLATION
 
             a.SetFrame(0);
 
             bool go = true;
-            for (int i = 0; i < a.FrameCount; i++)
+            for (int i = 0; i < a.frameCount; i++)
             {
                 //a.NextFrame(vbn);
-                for (int j = 0; j < a.Bones.Count; j++)
+                for (int j = 0; j < a.bones.Count; j++)
                 {
-                    Bone node = vbn.getBone(a.Bones[j].Text);
+                    Bone node = vbn.getBone(a.bones[j].Text);
                     
-                    Animation.KeyNode anode = a.Bones[j];
+                    Animation.KeyNode anode = a.bones[j];
                     //if (node == null) continue;
 
                     if (hasTrans[j] && !conTrans[j])
                     {
-                        t2.writeShort((int)(((anode.XPOS.GetValue(i) - minT[j].X) / maxT[j].X) * 0xFFFF));
-                        t2.writeShort((int)(((anode.YPOS.GetValue(i) - minT[j].Y) / maxT[j].Y) * 0xFFFF));
-                        t2.writeShort((int)(((anode.ZPOS.GetValue(i) - minT[j].Z) / maxT[j].Z) * 0xFFFF));
+                        t2.WriteShort((int)(((anode.xpos.GetValue(i) - minT[j].X) / maxT[j].X) * 0xFFFF));
+                        t2.WriteShort((int)(((anode.ypos.GetValue(i) - minT[j].Y) / maxT[j].Y) * 0xFFFF));
+                        t2.WriteShort((int)(((anode.zpos.GetValue(i) - minT[j].Z) / maxT[j].Z) * 0xFFFF));
                     }
 
                     if (hasRot[j] && !conRot[j])
                     {
                         Quaternion r = new Quaternion();
-                        if (anode.RotType == Animation.RotationType.QUATERNION)
+                        if (anode.rotType == Animation.RotationType.Quaternion)
                         {
-                            Animation.KeyFrame[] x = anode.XROT.GetFrame(i);
-                            Animation.KeyFrame[] y = anode.YROT.GetFrame(i);
-                            Animation.KeyFrame[] z = anode.ZROT.GetFrame(i);
-                            Animation.KeyFrame[] w = anode.WROT.GetFrame(i);
+                            Animation.KeyFrame[] x = anode.xrot.GetFrame(i);
+                            Animation.KeyFrame[] y = anode.yrot.GetFrame(i);
+                            Animation.KeyFrame[] z = anode.zrot.GetFrame(i);
+                            Animation.KeyFrame[] w = anode.wrot.GetFrame(i);
                             Quaternion q1 = new Quaternion(x[0].Value, y[0].Value, z[0].Value, w[0].Value);
                             Quaternion q2 = new Quaternion(x[1].Value, y[1].Value, z[1].Value, w[1].Value);
                             if (x[0].Frame == i)
@@ -1079,30 +1079,30 @@ namespace SmashForge
                                 r = Quaternion.Slerp(q1, q2, (i - x[0].Frame) / (x[1].Frame - x[0].Frame));
                         }
                         else
-                        if (anode.RotType == Animation.RotationType.EULER)
+                        if (anode.rotType == Animation.RotationType.Euler)
                         {
-                            float x = anode.XROT.HasAnimation() ? anode.XROT.GetValue(i) : node.rotation[0];
-                            float y = anode.YROT.HasAnimation() ? anode.YROT.GetValue(i) : node.rotation[1];
-                            float z = anode.ZROT.HasAnimation() ? anode.ZROT.GetValue(i) : node.rotation[2];
+                            float x = anode.xrot.HasAnimation() ? anode.xrot.GetValue(i) : node.rotation[0];
+                            float y = anode.yrot.HasAnimation() ? anode.yrot.GetValue(i) : node.rotation[1];
+                            float z = anode.zrot.HasAnimation() ? anode.zrot.GetValue(i) : node.rotation[2];
                             r = Animation.EulerToQuat(z, y, x);
                         }
                         r.Normalize();
-                        t2.writeShort((int)(((r.X - minR[j].X) / maxR[j].X) * 0xFFFF));
-                        t2.writeShort((int)(((r.Y - minR[j].Y) / maxR[j].Y) * 0xFFFF));
-                        t2.writeShort((int)(((r.Z - minR[j].Z) / maxR[j].Z) * 0xFFFF));
+                        t2.WriteShort((int)(((r.X - minR[j].X) / maxR[j].X) * 0xFFFF));
+                        t2.WriteShort((int)(((r.Y - minR[j].Y) / maxR[j].Y) * 0xFFFF));
+                        t2.WriteShort((int)(((r.Z - minR[j].Z) / maxR[j].Z) * 0xFFFF));
                     }
 
                     if (hasScale[j] && !conScale[j])
                     {
-                        t2.writeShort((int)(((anode.XSCA.GetValue(i) - minS[j].X) / maxS[j].X) * 0xFFFF));
-                        t2.writeShort((int)(((anode.YSCA.GetValue(i) - minS[j].Y) / maxS[j].Y) * 0xFFFF));
-                        t2.writeShort((int)(((anode.ZSCA.GetValue(i) - minS[j].Z) / maxS[j].Z) * 0xFFFF));
+                        t2.WriteShort((int)(((anode.xsca.GetValue(i) - minS[j].X) / maxS[j].X) * 0xFFFF));
+                        t2.WriteShort((int)(((anode.ysca.GetValue(i) - minS[j].Y) / maxS[j].Y) * 0xFFFF));
+                        t2.WriteShort((int)(((anode.zsca.GetValue(i) - minS[j].Z) / maxS[j].Z) * 0xFFFF));
                     }
                 }
 
                 if (go)
                 {
-                    o.writeShortAt(t2.Size(), 0x12);
+                    o.WriteShortAt(t2.Size(), 0x12);
                     go = false;
                 }
             }

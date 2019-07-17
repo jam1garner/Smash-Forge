@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SmashForge
@@ -17,9 +11,9 @@ namespace SmashForge
             InitializeComponent();
         }
 
-        readonly Font CONSOLAS = new Font("Consolas", 11);
+        readonly Font consolas = new Font("Consolas", 11);
 
-        public void fill(MatData m)
+        public void Fill(MatData m)
         {
             //Display as color animation
             colorAnimList.Visible = true;
@@ -28,7 +22,7 @@ namespace SmashForge
             foreach (MatData.frame frame in m.frames)
             {
                 Color c = Color.FromArgb((int)(frame.values[0] * 255), (int)(frame.values[1] * 255), (int)(frame.values[2] * 255), (int)(frame.values[3] * 255));
-                colorKeyframe ck = new colorKeyframe(i++, c) { maxLength = max };
+                ColorKeyframe ck = new ColorKeyframe(i++, c) { maxLength = max };
                 colorAnimList.Items.Add(ck);
             }
         }
@@ -49,15 +43,15 @@ namespace SmashForge
             }
 
             Rectangle colorBounds = new Rectangle();
-            colorBounds.X = textBounds.X + (int)e.Graphics.MeasureString(text, CONSOLAS).Width + 5;
+            colorBounds.X = textBounds.X + (int)e.Graphics.MeasureString(text, consolas).Width + 5;
             colorBounds.Y = textBounds.Y + 1;
             colorBounds.Height = textBounds.Height - 2;
             colorBounds.Width = 20;
-            SolidBrush b = new SolidBrush(((colorKeyframe)colorAnimList.Items[e.Index]).color);
+            SolidBrush b = new SolidBrush(((ColorKeyframe)colorAnimList.Items[e.Index]).color);
 
             // Draw the current item text based on the current Font  
             // and the custom brush settings.
-            e.Graphics.DrawString(text, CONSOLAS, Brushes.Black, textBounds, StringFormat.GenericDefault);
+            e.Graphics.DrawString(text, consolas, Brushes.Black, textBounds, StringFormat.GenericDefault);
 
             //Draw the color rectangle
             e.Graphics.FillRectangle(b, colorBounds);

@@ -25,7 +25,7 @@ namespace SmashForge.Rendering
 
         private static Bitmap DrawTextureToBitmap(Texture2D texture, int width, int height, bool r, bool g, bool b, bool a)
         {
-            using (GameWindow gameWindow = OpenTKSharedResources.CreateGameWindowContext(width, height))
+            using (GameWindow gameWindow = OpenTkSharedResources.CreateGameWindowContext(width, height))
             {
                 Framebuffer framebuffer = DrawTextureToNewFbo(texture, width, height, r, g, b, a);
                 return framebuffer.ReadImagePixels(a);

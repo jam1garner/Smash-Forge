@@ -1,6 +1,4 @@
-﻿using System.IO;
-using Syroot.BinaryData;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace EveryFileExplorer

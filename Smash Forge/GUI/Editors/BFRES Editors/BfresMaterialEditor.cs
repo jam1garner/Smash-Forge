@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Syroot.NintenTools.Bfres;
-using Syroot.NintenTools.Bfres.GX2;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using WeifenLuo.WinFormsUI.Docking;
@@ -22,17 +16,17 @@ namespace SmashForge
         public BFRES.MaterialData mat;
         public ImageList paramColorList = new ImageList();
         public ImageList textureImageList = new ImageList();
-        public string SelectedMatParam = "";
-        public string SelectedTexture = "";
+        public string selectedMatParam = "";
+        public string selectedTexture = "";
 
-        public List<string> ColorBoxMatParmList = new List<string>(new string[] {
+        public List<string> colorBoxMatParmList = new List<string>(new string[] {
            "edge_light_color",
         });
 
         public BfresMaterialEditor()
         {
             InitializeComponent();
-            ResetParamUIData();
+            ResetParamUiData();
         }
         public void LoadMaterial(BFRES.Mesh p)
         {
@@ -90,30 +84,30 @@ namespace SmashForge
         }
         private void InitializeParamListView(BFRES.MaterialData mat)
         {
-            int CurParam = 0;
+            int curParam = 0;
             foreach (var prm in mat.matparam)
             {
-                string DisplayValue = "";
+                string displayValue = "";
 
                 //   listBox2.Items.Add(prm);
                 var item = new ListViewItem(prm.Key);
 
-                Color SetColor = Color.White;
+                Color setColor = Color.White;
 
                 if (prm.Value.Type == ShaderParamType.Float)
                 {
-                    DisplayValue = mat.matparam[prm.Key].Value_float.ToString();
+                    displayValue = mat.matparam[prm.Key].Value_float.ToString();
                 }
                 if (prm.Value.Type == ShaderParamType.Float2)
                 {
-                    DisplayValue = mat.matparam[prm.Key].Value_float2.ToString();
+                    displayValue = mat.matparam[prm.Key].Value_float2.ToString();
                 }
                 if (prm.Value.Type == ShaderParamType.Float3)
                 {
-                    DisplayValue = mat.matparam[prm.Key].Value_float3.ToString();
+                    displayValue = mat.matparam[prm.Key].Value_float3.ToString();
 
-                    bool IsColor = prm.Key.Contains("Color") || prm.Key.Contains("color");
-                    if (IsColor)
+                    bool isColor = prm.Key.Contains("Color") || prm.Key.Contains("color");
+                    if (isColor)
                     {
                         Vector3 col = mat.matparam[prm.Key].Value_float3;
 
@@ -128,7 +122,7 @@ namespace SmashForge
                         if (someIntX <= 1 && someIntY <= 1 && someIntZ <= 1)
                         {
 
-                            SetColor = Color.FromArgb(
+                            setColor = Color.FromArgb(
                          255,
                         (int)Math.Ceiling(someIntX * 255.0f),
                         (int)Math.Ceiling(someIntY * 255.0f),
@@ -140,10 +134,10 @@ namespace SmashForge
                 }
                 if (prm.Value.Type == ShaderParamType.Float4)
                 {
-                    DisplayValue = mat.matparam[prm.Key].Value_float4.ToString();
+                    displayValue = mat.matparam[prm.Key].Value_float4.ToString();
 
-                    bool IsColor = prm.Key.Contains("Color") || prm.Key.Contains("color") || prm.Key.Contains("konst0");
-                    if (IsColor)
+                    bool isColor = prm.Key.Contains("Color") || prm.Key.Contains("color") || prm.Key.Contains("konst0");
+                    if (isColor)
                     {
                         Vector4 col = mat.matparam[prm.Key].Value_float4;
 
@@ -160,7 +154,7 @@ namespace SmashForge
                         if (someIntX <= 1 && someIntY <= 1 && someIntZ <= 1)
                         {
 
-                            SetColor = Color.FromArgb(
+                            setColor = Color.FromArgb(
                          255,
                         (int)Math.Ceiling(someIntX * 255.0f),
                         (int)Math.Ceiling(someIntY * 255.0f),
@@ -171,21 +165,21 @@ namespace SmashForge
                 }
 
                 item.UseItemStyleForSubItems = false;
-                item.SubItems.Add(DisplayValue);
+                item.SubItems.Add(displayValue);
                 item.SubItems.Add("");
-                item.SubItems[2].BackColor = SetColor;
+                item.SubItems[2].BackColor = setColor;
                 listView1.View = View.Details;
                 listView1.Items.Add(item);
-                CurParam++;
+                curParam++;
             }
         }
         private void InitializeTextureListView(BFRES.MaterialData mat)
         {
             // Shaders weren't initialized.
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized)
                 return;
 
-            int CurTex = 0;
+            int curTex = 0;
             TextureRefListView.Items.Clear();
             textureImageList.Images.Clear();
 
@@ -196,7 +190,7 @@ namespace SmashForge
 
             if (BFRES.IsSwitchBFRES == true)
             {
-                foreach (BNTX bntx in Runtime.BNTXList)
+                foreach (BNTX bntx in Runtime.bntxList)
                 {
                     foreach (ListViewItem texure in TextureRefListView.Items)
                     {
@@ -206,7 +200,7 @@ namespace SmashForge
 
                             textureImageList.Images.Add(texure.Text, bitmap);
 
-                            texure.ImageIndex = CurTex++;
+                            texure.ImageIndex = curTex++;
 
                             var dummy = textureImageList.Handle;
                             bitmap.Dispose();
@@ -216,7 +210,7 @@ namespace SmashForge
             }
             else
             {
-                foreach (FTEXContainer ftexC in Runtime.FTEXContainerList)
+                foreach (FTEXContainer ftexC in Runtime.ftexContainerList)
                 {
                     foreach (ListViewItem texure in TextureRefListView.Items)
                     {
@@ -226,7 +220,7 @@ namespace SmashForge
 
                             textureImageList.Images.Add(texure.Text, bitmap);
 
-                            texure.ImageIndex = CurTex++;
+                            texure.ImageIndex = curTex++;
 
                             var dummy = textureImageList.Handle;
                             bitmap.Dispose();
@@ -296,7 +290,7 @@ namespace SmashForge
             else
                 listView1.Sorting = SortOrder.Ascending;
         }
-        private void ResetParamUIData()
+        private void ResetParamUiData()
         {
             FloatNumUD.Visible = false;
             FloatNumUD2.Visible = false;
@@ -324,11 +318,11 @@ namespace SmashForge
         {
             if (listView1.SelectedItems.Count > 0)
             {
-                SelectedMatParam = listView1.SelectedItems[0].Text;
+                selectedMatParam = listView1.SelectedItems[0].Text;
 
-                var prm = mat.matparam[SelectedMatParam];
+                var prm = mat.matparam[selectedMatParam];
 
-                ResetParamUIData();
+                ResetParamUiData();
 
                 if (prm.Type == ShaderParamType.Float)
                 {
@@ -363,9 +357,9 @@ namespace SmashForge
                     FloatNumUD2.Visible = true;
                     FloatNumUD3.Visible = true;
 
-                    bool IsColor = listView1.SelectedItems[0].Text.Contains("Color") || listView1.SelectedItems[0].Text.Contains("color") || listView1.SelectedItems[0].Text.Contains("konst0");
+                    bool isColor = listView1.SelectedItems[0].Text.Contains("Color") || listView1.SelectedItems[0].Text.Contains("color") || listView1.SelectedItems[0].Text.Contains("konst0");
 
-                    if (IsColor)
+                    if (isColor)
                     {
                         colorboxLabel.Visible = true;
                         paramColorBox.BackColor = listView1.SelectedItems[0].SubItems[2].BackColor;
@@ -392,9 +386,9 @@ namespace SmashForge
                     FloatNumUD3.Visible = true;
                     FloatNumUD4.Visible = true;
 
-                    bool IsColor = listView1.SelectedItems[0].Text.Contains("Color") || listView1.SelectedItems[0].Text.Contains("color") || listView1.SelectedItems[0].Text.Contains("konst0");
+                    bool isColor = listView1.SelectedItems[0].Text.Contains("Color") || listView1.SelectedItems[0].Text.Contains("color") || listView1.SelectedItems[0].Text.Contains("konst0");
 
-                    if (IsColor)
+                    if (isColor)
                     {
                         colorboxLabel.Visible = true;
                         paramColorBox.BackColor = listView1.SelectedItems[0].SubItems[2].BackColor;
@@ -414,16 +408,16 @@ namespace SmashForge
 
         private void paramColorBox_Click(object sender, EventArgs e)
         {
-            if (SelectedMatParam != "")
+            if (selectedMatParam != "")
             {
-                var prm = mat.matparam[SelectedMatParam];
+                var prm = mat.matparam[selectedMatParam];
 
                 ColorDialog clr = new ColorDialog();
                 if (clr.ShowDialog() == DialogResult.OK)
                 {
                     paramColorBox.BackColor = clr.Color;
 
-                    string Value = "";
+                    string value = "";
 
 
 
@@ -439,41 +433,41 @@ namespace SmashForge
 
                         }
 
-                        Value = prm.Value_float4.ToString();
+                        value = prm.Value_float4.ToString();
                     }
                     if (prm.Type == ShaderParamType.Float3)
                     {
                         prm.Value_float3.X = (float)clr.Color.R / 255;
                         prm.Value_float3.Y = (float)clr.Color.G / 255;
                         prm.Value_float3.Z = (float)clr.Color.B / 255;
-                        Value = prm.Value_float3.ToString();
+                        value = prm.Value_float3.ToString();
                     }
-                    listView1.SelectedItems[0].SubItems[1].Text = Value;
+                    listView1.SelectedItems[0].SubItems[1].Text = value;
                     listView1.SelectedItems[0].SubItems[2].BackColor = clr.Color;
                 }
 
-                mat.matparam[SelectedMatParam] = prm;
+                mat.matparam[selectedMatParam] = prm;
 
             }
         }
 
         private void FloatNumUD_ValueChanged(object sender, EventArgs e)
         {
-            if (SelectedMatParam != "")
+            if (selectedMatParam != "")
             {
-                string Value = "";
+                string value = "";
 
-                var prm = mat.matparam[SelectedMatParam];
+                var prm = mat.matparam[selectedMatParam];
                 if (prm.Type == ShaderParamType.Float)
                 {
-                    Value = prm.Value_float.ToString();
+                    value = prm.Value_float.ToString();
 
                     if (sender == FloatNumUD)
                         prm.Value_float = (float)FloatNumUD.Value;
                 }
                 if (prm.Type == ShaderParamType.Float2)
                 {
-                    Value = prm.Value_float2.ToString();
+                    value = prm.Value_float2.ToString();
 
                     if (sender == FloatNumUD)
                         prm.Value_float2.X = (float)FloatNumUD.Value;
@@ -482,7 +476,7 @@ namespace SmashForge
                 }
                 if (prm.Type == ShaderParamType.Float3)
                 {
-                    Value = prm.Value_float3.ToString();
+                    value = prm.Value_float3.ToString();
 
                     if (sender == FloatNumUD)
                         prm.Value_float3.X = (float)FloatNumUD.Value;
@@ -493,7 +487,7 @@ namespace SmashForge
                 }
                 if (prm.Type == ShaderParamType.Float4)
                 {
-                    Value = prm.Value_float4.ToString();
+                    value = prm.Value_float4.ToString();
 
                     if (sender == FloatNumUD)
                         prm.Value_float4.X = (float)FloatNumUD.Value;
@@ -505,8 +499,8 @@ namespace SmashForge
                         prm.Value_float4.W = (float)FloatNumUD4.Value;
                 }
 
-                mat.matparam[SelectedMatParam] = prm;
-                listView1.SelectedItems[0].SubItems[1].Text = Value;
+                mat.matparam[selectedMatParam] = prm;
+                listView1.SelectedItems[0].SubItems[1].Text = value;
             }
         }
 
@@ -514,10 +508,10 @@ namespace SmashForge
         {
             if (TextureRefListView.SelectedItems.Count > 0)
             {
-                SelectedTexture = TextureRefListView.SelectedItems[0].Text;
+                selectedTexture = TextureRefListView.SelectedItems[0].Text;
                 foreach (BFRES.MatTexture matTexure in mat.textures)
                 {
-                    if (matTexure.Name == SelectedTexture)
+                    if (matTexure.Name == selectedTexture)
                     {
                         textureTypeLabel.Text = $"Type {matTexure.Type.ToString()}";
                         samplerLabel.Text = $"Sampler {matTexure.SamplerName}";
@@ -538,7 +532,7 @@ namespace SmashForge
 
         }
 
-        public Bitmap FTEXRGBA(FTEX.FTEX_Texture t, int id)
+        public Bitmap Ftexrgba(FTEX.FTEX_Texture t, int id)
         {
             Bitmap bitmap = new Bitmap(t.width, t.height);
             System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, t.width, t.height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
@@ -549,7 +543,7 @@ namespace SmashForge
 
             return bitmap;
         }
-        public static Bitmap textureRGBA(BRTI.BRTI_Texture t, SFGraphics.GLObjects.Textures.Texture renderTex)
+        public static Bitmap TextureRgba(BRTI.BRTI_Texture t, SFGraphics.GLObjects.Textures.Texture renderTex)
         {
             Bitmap bitmap = new Bitmap(t.width, t.height);
             System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, t.width, t.height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
@@ -565,12 +559,12 @@ namespace SmashForge
         {
             if (BFRES.IsSwitchBFRES)
             {
-                foreach (BNTX bntx in Runtime.BNTXList)
+                foreach (BNTX bntx in Runtime.bntxList)
                 {
-                    if (bntx.glTexByName.ContainsKey(SelectedTexture))
+                    if (bntx.glTexByName.ContainsKey(selectedTexture))
                     {
                         BntxTextureList edit = new BntxTextureList();
-                        edit.LoadTexture(SelectedTexture);
+                        edit.LoadTexture(selectedTexture);
                         edit.Show();
                     }
                 }
@@ -581,12 +575,12 @@ namespace SmashForge
         {
             if (BFRES.IsSwitchBFRES)
             {
-                foreach (BNTX bntx in Runtime.BNTXList)
+                foreach (BNTX bntx in Runtime.bntxList)
                 {
-                    if (bntx.glTexByName.ContainsKey(SelectedTexture))
+                    if (bntx.glTexByName.ContainsKey(selectedTexture))
                     {
-                        BNTXMaterialTextureEditor edit = new BNTXMaterialTextureEditor();
-                        edit.LoadTexture(poly, bntx.glTexByName[SelectedTexture], SelectedTexture);
+                        BntxMaterialTextureEditor edit = new BntxMaterialTextureEditor();
+                        edit.LoadTexture(poly, bntx.glTexByName[selectedTexture], selectedTexture);
                         edit.Show();
                     }
                 }

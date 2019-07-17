@@ -1,27 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 using SALT.PARAMS;
 using System.Text.RegularExpressions;
 using System.IO;
 
 namespace SmashForge
 {
-    public partial class PARAMEditor : EditorBase
+    public partial class ParamEditor : EditorBase
     {
         private ParamFile p;
         private DataTable tbl;
         private int[] currentEntry = new int[2];
         private List<IniLabels.Label> labels = null;
 
-        public PARAMEditor(string filename)
+        public ParamEditor(string filename)
         {
             InitializeComponent();
 
@@ -33,7 +27,7 @@ namespace SmashForge
 
             FilePath = filename;
             labels = IniLabels.GetLabels(Path.GetFileNameWithoutExtension(FilePath));
-            openParam(FilePath);
+            OpenParam(FilePath);
             Edited = false;
         }
 
@@ -44,7 +38,7 @@ namespace SmashForge
             Value
         };
 
-        private string getValueName(int i, int j, int k)
+        private string GetValueName(int i, int j, int k)
         {
             if (labels != null)
                 foreach (IniLabels.Label label in labels)
@@ -53,7 +47,7 @@ namespace SmashForge
             return $"{k}";
         }
 
-        private string getValueToolTip(int i, int j, int k)
+        private string GetValueToolTip(int i, int j, int k)
         {
             if (labels != null)
                 foreach (IniLabels.Label label in labels)
@@ -62,7 +56,7 @@ namespace SmashForge
             return null;
         }
 
-        private static string getValueTypeString(ParamEntry pvalue)
+        private static string GetValueTypeString(ParamEntry pvalue)
         {
             switch (pvalue.Type)
             {
@@ -87,7 +81,7 @@ namespace SmashForge
             }
         }
 
-        private int getEntrySize(int groupNum)
+        private int GetEntrySize(int groupNum)
         {
             int entrySize = -1;
             if (p.Groups[groupNum] is ParamGroup)
@@ -104,14 +98,14 @@ namespace SmashForge
             return entrySize;
         }
 
-        private void fillTable(int groupNum, int entryNum)
+        private void FillTable(int groupNum, int entryNum)
         {
             currentEntry[0] = groupNum;
             currentEntry[1] = entryNum;
             tbl.Clear();
             if (p.Groups.Count > groupNum)
             {
-                int entrySize = getEntrySize(groupNum);
+                int entrySize = GetEntrySize(groupNum);
                 int count;
                 if (entrySize == -1)
                 {
@@ -128,10 +122,10 @@ namespace SmashForge
                     ParamEntry val = p.Groups[groupNum].Values[(entrySize * entryNum) + i];
 
                     DataRow tempRow = tbl.NewRow();
-                    tempRow[(int)Columns.Name] = getValueName(groupNum, entryNum, i);
-                    tempRow[(int)Columns.Type] = getValueTypeString(val);
+                    tempRow[(int)Columns.Name] = GetValueName(groupNum, entryNum, i);
+                    tempRow[(int)Columns.Type] = GetValueTypeString(val);
                     tempRow[(int)Columns.Value] = val.Value;
-                    string toolTip = getValueToolTip(groupNum, entryNum, i);
+                    string toolTip = GetValueToolTip(groupNum, entryNum, i);
                     tbl.Rows.Add(tempRow);
                     //The Cells property only exists through the dataGridView, so the tooltip can only be set after adding the row
                     if (toolTip != null)
@@ -142,7 +136,7 @@ namespace SmashForge
             dataGridView1.AutoResizeColumn((int)Columns.Type, System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells);
         }
 
-        private string getGroupName(int i)
+        private string GetGroupName(int i)
         {
             if (labels != null)
                 foreach (IniLabels.Label label in labels)
@@ -151,7 +145,7 @@ namespace SmashForge
             return "Group [" + (i + 1) + "]";
         }
 
-        private string getEntryName(int i, int j)
+        private string GetEntryName(int i, int j)
         {
             if (labels != null)
                 foreach (IniLabels.Label label in labels)
@@ -161,7 +155,7 @@ namespace SmashForge
         }
 
         // Helper method for drawing some move intangibility
-        public Dictionary<string, int> getMoveNameIdMapping()
+        public Dictionary<string, int> GetMoveNameIdMapping()
         {
             Dictionary<string, int> moveNameIdMapping = new Dictionary<string, int>();
 
@@ -173,7 +167,7 @@ namespace SmashForge
             return moveNameIdMapping;
         }
 
-        private void openParam(string f)
+        private void OpenParam(string f)
         {
             p = new ParamFile(f);
             for (int i = 0; i < p.Groups.Count; i++)
@@ -183,10 +177,10 @@ namespace SmashForge
                     TreeNode[] children = new TreeNode[((ParamGroup)p.Groups[i]).EntryCount];
                     for (int j = 0; j < ((ParamGroup)p.Groups[i]).EntryCount; j++)
                     {
-                        TreeNode child = new TreeNode(getEntryName(i, j));
+                        TreeNode child = new TreeNode(GetEntryName(i, j));
                         children[j] = child;
                     }
-                    TreeNode parent = new TreeNode(getGroupName(i), children);
+                    TreeNode parent = new TreeNode(GetGroupName(i), children);
                     treeView1.Nodes.Add(parent);
                 }
                 else
@@ -198,17 +192,17 @@ namespace SmashForge
                                 entryCount = label.entries;
                     if (entryCount == -1)
                     {
-                        treeView1.Nodes.Add(new TreeNode(getGroupName(i)));
+                        treeView1.Nodes.Add(new TreeNode(GetGroupName(i)));
                     }
                     else
                     {
                         TreeNode[] children = new TreeNode[entryCount];
                         for (int j = 0; j < entryCount; j++)
                         {
-                            TreeNode child = new TreeNode(getEntryName(i, j));
+                            TreeNode child = new TreeNode(GetEntryName(i, j));
                             children[j] = child;
                         }
-                        TreeNode parent = new TreeNode(getGroupName(i), children);
+                        TreeNode parent = new TreeNode(GetGroupName(i), children);
                         treeView1.Nodes.Add(parent);
                     }
                 }
@@ -216,17 +210,17 @@ namespace SmashForge
             treeView1.SelectedNode = null;
         }
 
-        private void select(object sender, TreeViewEventArgs e)
+        private void Select(object sender, TreeViewEventArgs e)
         {
             if (e.Node.Level == 0)
-                fillTable(e.Node.Index, 0);
+                FillTable(e.Node.Index, 0);
             else
-                fillTable(e.Node.Parent.Index, e.Node.Index);
+                FillTable(e.Node.Parent.Index, e.Node.Index);
         }
 
-        private void edit(object sender, DataGridViewCellEventArgs e)
+        private void Edit(object sender, DataGridViewCellEventArgs e)
         {
-            int entrySize = getEntrySize(currentEntry[0]);
+            int entrySize = GetEntrySize(currentEntry[0]);
 
             ParamEntry pvalue;
             if (entrySize == -1)
@@ -487,7 +481,7 @@ namespace SmashForge
             }
         }
 
-        private TreeNode duplicateEntry(TreeNode node)
+        private TreeNode DuplicateEntry(TreeNode node)
         {
             int groupNum = node.Parent.Index;
             int entryNum = node.Index;
@@ -499,7 +493,7 @@ namespace SmashForge
             ((ParamGroup)p.Groups[groupNum]).Chunk();
 
             TreeNode temp2 = new TreeNode();
-            temp2.Text = getEntryName(groupNum, ((ParamGroup)p.Groups[groupNum]).EntryCount - 1);
+            temp2.Text = GetEntryName(groupNum, ((ParamGroup)p.Groups[groupNum]).EntryCount - 1);
             node.Parent.Nodes.Add(temp2);
 
             //fillTable(groupNum, ((ParamGroup)p.Groups[groupNum]).EntryCount - 1);
@@ -508,19 +502,19 @@ namespace SmashForge
             return temp2;
         }
 
-        private void duplicateSelectedEntry()
+        private void DuplicateSelectedEntry()
         {
             if (treeView1.SelectedNode == null || treeView1.SelectedNode.Level == 0)
                 return;
-            treeView1.SelectedNode = duplicateEntry(treeView1.SelectedNode);
+            treeView1.SelectedNode = DuplicateEntry(treeView1.SelectedNode);
         }
 
         private void duplicateEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            duplicateSelectedEntry();
+            DuplicateSelectedEntry();
         }
 
-        private void deleteEntry(TreeNode node)
+        private void DeleteEntry(TreeNode node)
         {
             int groupNum = node.Parent.Index;
             int entryNum = node.Index;
@@ -536,13 +530,13 @@ namespace SmashForge
             Edited = true;
         }
 
-        private void deleteSelectedEntry()
+        private void DeleteSelectedEntry()
         {
             if (treeView1.SelectedNode == null || treeView1.SelectedNode.Level == 0)
                 return;
             TreeNode prev = treeView1.SelectedNode.PrevNode;
             TreeNode next = treeView1.SelectedNode.NextNode;
-            deleteEntry(treeView1.SelectedNode);
+            DeleteEntry(treeView1.SelectedNode);
             if (prev != null)
                 treeView1.SelectedNode = prev;
             else
@@ -551,7 +545,7 @@ namespace SmashForge
 
         private void deleteEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            deleteSelectedEntry();
+            DeleteSelectedEntry();
         }
 
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
@@ -573,7 +567,7 @@ namespace SmashForge
                         p.Groups[groupNum].Values.Insert(entrySize * (entryNum - 1) + j, p.Groups[groupNum].Values[entrySize * entryNum + j]);
                         p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum + j + 1);
                     }
-                    fillTable(groupNum, entryNum - 1);
+                    FillTable(groupNum, entryNum - 1);
                     treeView1.SelectedNode = treeView1.SelectedNode.PrevNode;
                 }
                 else if (e.KeyCode == Keys.Down && treeView1.SelectedNode.Parent.LastNode != treeView1.SelectedNode)
@@ -586,17 +580,17 @@ namespace SmashForge
                         p.Groups[groupNum].Values.Insert(entrySize * (entryNum + 2), p.Groups[groupNum].Values[entrySize * entryNum]);
                         p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum);
                     }
-                    fillTable(groupNum, entryNum + 1);
+                    FillTable(groupNum, entryNum + 1);
                     treeView1.SelectedNode = treeView1.SelectedNode.NextNode;
                 }
                 else if (e.KeyCode == Keys.D)
                 {
-                    duplicateSelectedEntry();
+                    DuplicateSelectedEntry();
                 }
             }
             else if (e.KeyCode == Keys.Delete)
             {
-                deleteSelectedEntry();
+                DeleteSelectedEntry();
             }
         }
     }

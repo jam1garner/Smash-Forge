@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class MOIEditor
+    partial class MoiEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -94,7 +94,7 @@
             this.n1.Name = "n1";
             this.n1.Size = new System.Drawing.Size(79, 20);
             this.n1.TabIndex = 2;
-            this.n1.ValueChanged += new System.EventHandler(this.changedValue);
+            this.n1.ValueChanged += new System.EventHandler(this.ChangedValue);
             // 
             // n2
             // 
@@ -113,7 +113,7 @@
             this.n2.Name = "n2";
             this.n2.Size = new System.Drawing.Size(79, 20);
             this.n2.TabIndex = 3;
-            this.n2.ValueChanged += new System.EventHandler(this.changedValue);
+            this.n2.ValueChanged += new System.EventHandler(this.ChangedValue);
             // 
             // n4
             // 
@@ -132,7 +132,7 @@
             this.n4.Name = "n4";
             this.n4.Size = new System.Drawing.Size(79, 20);
             this.n4.TabIndex = 5;
-            this.n4.ValueChanged += new System.EventHandler(this.changedValue);
+            this.n4.ValueChanged += new System.EventHandler(this.ChangedValue);
             // 
             // n3
             // 
@@ -151,7 +151,7 @@
             this.n3.Name = "n3";
             this.n3.Size = new System.Drawing.Size(79, 20);
             this.n3.TabIndex = 4;
-            this.n3.ValueChanged += new System.EventHandler(this.changedValue);
+            this.n3.ValueChanged += new System.EventHandler(this.ChangedValue);
             // 
             // n6
             // 
@@ -170,7 +170,7 @@
             this.n6.Name = "n6";
             this.n6.Size = new System.Drawing.Size(79, 20);
             this.n6.TabIndex = 7;
-            this.n6.ValueChanged += new System.EventHandler(this.changedValue);
+            this.n6.ValueChanged += new System.EventHandler(this.ChangedValue);
             // 
             // n5
             // 
@@ -189,7 +189,7 @@
             this.n5.Name = "n5";
             this.n5.Size = new System.Drawing.Size(79, 20);
             this.n5.TabIndex = 6;
-            this.n5.ValueChanged += new System.EventHandler(this.changedValue);
+            this.n5.ValueChanged += new System.EventHandler(this.ChangedValue);
             // 
             // n8
             // 
@@ -208,7 +208,7 @@
             this.n8.Name = "n8";
             this.n8.Size = new System.Drawing.Size(79, 20);
             this.n8.TabIndex = 9;
-            this.n8.ValueChanged += new System.EventHandler(this.changedValue);
+            this.n8.ValueChanged += new System.EventHandler(this.ChangedValue);
             // 
             // n7
             // 
@@ -227,7 +227,7 @@
             this.n7.Name = "n7";
             this.n7.Size = new System.Drawing.Size(79, 20);
             this.n7.TabIndex = 8;
-            this.n7.ValueChanged += new System.EventHandler(this.changedValue);
+            this.n7.ValueChanged += new System.EventHandler(this.ChangedValue);
             // 
             // u2
             // 
@@ -246,7 +246,7 @@
             this.u2.Name = "u2";
             this.u2.Size = new System.Drawing.Size(79, 20);
             this.u2.TabIndex = 11;
-            this.u2.ValueChanged += new System.EventHandler(this.changedValue);
+            this.u2.ValueChanged += new System.EventHandler(this.ChangedValue);
             // 
             // u1
             // 
@@ -265,7 +265,7 @@
             this.u1.Name = "u1";
             this.u1.Size = new System.Drawing.Size(79, 20);
             this.u1.TabIndex = 10;
-            this.u1.ValueChanged += new System.EventHandler(this.changedValue);
+            this.u1.ValueChanged += new System.EventHandler(this.ChangedValue);
             // 
             // button1
             // 
@@ -297,7 +297,7 @@
             this.Controls.Add(this.listBox2);
             this.Controls.Add(this.listBox1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "MOIEditor";
+            this.Name = "MoiEditor";
             this.Text = "MOIEditor";
             this.Load += new System.EventHandler(this.MOIEditor_Load);
             ((System.ComponentModel.ISupportInitialize)(this.n1)).EndInit();

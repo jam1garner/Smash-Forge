@@ -424,7 +424,7 @@
             this.zMin.Name = "zMin";
             this.zMin.Size = new System.Drawing.Size(99, 20);
             this.zMin.TabIndex = 6;
-            this.zMin.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.zMin.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // yMin
             // 
@@ -445,7 +445,7 @@
             this.yMin.Name = "yMin";
             this.yMin.Size = new System.Drawing.Size(99, 20);
             this.yMin.TabIndex = 5;
-            this.yMin.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.yMin.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // xMin
             // 
@@ -466,7 +466,7 @@
             this.xMin.Name = "xMin";
             this.xMin.Size = new System.Drawing.Size(99, 20);
             this.xMin.TabIndex = 4;
-            this.xMin.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.xMin.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label7
             // 
@@ -523,7 +523,7 @@
             this.zMax.Name = "zMax";
             this.zMax.Size = new System.Drawing.Size(103, 20);
             this.zMax.TabIndex = 12;
-            this.zMax.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.zMax.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label4
             // 
@@ -553,7 +553,7 @@
             this.yMax.Name = "yMax";
             this.yMax.Size = new System.Drawing.Size(103, 20);
             this.yMax.TabIndex = 11;
-            this.yMax.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.yMax.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // xMax
             // 
@@ -574,7 +574,7 @@
             this.xMax.Name = "xMax";
             this.xMax.Size = new System.Drawing.Size(103, 20);
             this.xMax.TabIndex = 10;
-            this.xMax.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.xMax.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label10
             // 
@@ -669,7 +669,7 @@
             this.numericUpDown7.Name = "numericUpDown7";
             this.numericUpDown7.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown7.TabIndex = 15;
-            this.numericUpDown7.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown7.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // numericUpDown6
             // 
@@ -689,7 +689,7 @@
             this.numericUpDown6.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown6.TabIndex = 14;
             this.toolTip1.SetToolTip(this.numericUpDown6, "1 = Movement Physic; 2 = Movement and Wind Physics");
-            this.numericUpDown6.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown6.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // numericUpDown5
             // 
@@ -708,7 +708,7 @@
             this.numericUpDown5.Name = "numericUpDown5";
             this.numericUpDown5.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown5.TabIndex = 13;
-            this.numericUpDown5.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown5.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // numericUpDown4
             // 
@@ -729,7 +729,7 @@
             this.numericUpDown4.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown4.TabIndex = 12;
             this.toolTip1.SetToolTip(this.numericUpDown4, "Movement Percentage for bone.");
-            this.numericUpDown4.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown4.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // numericUpDown3
             // 
@@ -748,7 +748,7 @@
             this.numericUpDown3.Name = "numericUpDown3";
             this.numericUpDown3.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown3.TabIndex = 11;
-            this.numericUpDown3.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown3.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // numericUpDown2
             // 
@@ -767,7 +767,7 @@
             this.numericUpDown2.Name = "numericUpDown2";
             this.numericUpDown2.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown2.TabIndex = 10;
-            this.numericUpDown2.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown2.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // numericUpDown1
             // 
@@ -788,7 +788,7 @@
             this.numericUpDown1.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown1.TabIndex = 9;
             this.toolTip1.SetToolTip(this.numericUpDown1, "Higher the value, less movement it has.");
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // weightBox
             // 
@@ -809,7 +809,7 @@
             this.weightBox.Size = new System.Drawing.Size(136, 20);
             this.weightBox.TabIndex = 1;
             this.toolTip1.SetToolTip(this.weightBox, "Higher the value, the more gravity it has.");
-            this.weightBox.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.weightBox.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label11
             // 
@@ -991,7 +991,7 @@
             this.numericUpDown15.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown15.TabIndex = 16;
             this.toolTip1.SetToolTip(this.numericUpDown15, "Should always be 100");
-            this.numericUpDown15.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown15.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label25
             // 
@@ -1021,7 +1021,7 @@
             this.numericUpDown14.Name = "numericUpDown14";
             this.numericUpDown14.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown14.TabIndex = 14;
-            this.numericUpDown14.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown14.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label24
             // 
@@ -1051,7 +1051,7 @@
             this.numericUpDown13.Name = "numericUpDown13";
             this.numericUpDown13.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown13.TabIndex = 12;
-            this.numericUpDown13.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown13.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label23
             // 
@@ -1081,7 +1081,7 @@
             this.numericUpDown12.Name = "numericUpDown12";
             this.numericUpDown12.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown12.TabIndex = 10;
-            this.numericUpDown12.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown12.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label22
             // 
@@ -1111,7 +1111,7 @@
             this.numericUpDown11.Name = "numericUpDown11";
             this.numericUpDown11.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown11.TabIndex = 8;
-            this.numericUpDown11.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown11.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label21
             // 
@@ -1141,7 +1141,7 @@
             this.numericUpDown10.Name = "numericUpDown10";
             this.numericUpDown10.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown10.TabIndex = 6;
-            this.numericUpDown10.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown10.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label20
             // 
@@ -1171,7 +1171,7 @@
             this.numericUpDown9.Name = "numericUpDown9";
             this.numericUpDown9.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown9.TabIndex = 4;
-            this.numericUpDown9.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown9.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label19
             // 
@@ -1201,7 +1201,7 @@
             this.numericUpDown8.Name = "numericUpDown8";
             this.numericUpDown8.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown8.TabIndex = 2;
-            this.numericUpDown8.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown8.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // unk8
             // 
@@ -1240,7 +1240,7 @@
             this.numericUpDown16.Name = "numericUpDown16";
             this.numericUpDown16.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown16.TabIndex = 18;
-            this.numericUpDown16.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown16.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label26
             // 
@@ -1269,7 +1269,7 @@
             this.numericUpDown17.Name = "numericUpDown17";
             this.numericUpDown17.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown17.TabIndex = 21;
-            this.numericUpDown17.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown17.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // numericUpDown18
             // 
@@ -1288,7 +1288,7 @@
             this.numericUpDown18.Name = "numericUpDown18";
             this.numericUpDown18.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown18.TabIndex = 22;
-            this.numericUpDown18.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown18.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // numericUpDown19
             // 
@@ -1307,7 +1307,7 @@
             this.numericUpDown19.Name = "numericUpDown19";
             this.numericUpDown19.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown19.TabIndex = 24;
-            this.numericUpDown19.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown19.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // toolTip1
             // 

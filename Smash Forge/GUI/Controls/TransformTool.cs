@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
-using System.Diagnostics;
 using SFGraphics.Cameras;
 using SmashForge.Rendering;
 
@@ -175,7 +170,7 @@ namespace SmashForge
                     break;
             }
 
-            PrevPoint = new Vector2(Ray.mouse_x, Ray.mouse_y);
+            PrevPoint = new Vector2(Ray.mouseX, Ray.mouseY);
 
         }
         
@@ -213,8 +208,8 @@ namespace SmashForge
             }
             if (state == 1)
             {
-                float sx = (Ray.mouse_x - PrevPoint.X) / 100;
-                float sy = (Ray.mouse_y - PrevPoint.Y) / 100;
+                float sx = (Ray.mouseX - PrevPoint.X) / 100;
+                float sy = (Ray.mouseY - PrevPoint.Y) / 100;
                 float s = sx + sy;
                 b.sca = b.sca + new Vector3(_hiX ? s : 0, _hiY ? s : 0, _hiZ ? s : 0);
                 b.vbnParent.update();
@@ -277,8 +272,8 @@ namespace SmashForge
             }
             if (state == 1)
             {
-                float sx = (Ray.mouse_x - PrevPoint.X) / 100;
-                float sy = (Ray.mouse_y - PrevPoint.Y) / 100;
+                float sx = (Ray.mouseX - PrevPoint.X) / 100;
+                float sy = (Ray.mouseY - PrevPoint.Y) / 100;
                 float s = sx + sy;
                 b.pos = b.pos + new Vector3(_hiX ? s : 0, _hiY ? s : 0, _hiZ ? s * -1 : 0);
                 b.vbnParent.update();
@@ -347,8 +342,8 @@ namespace SmashForge
 
             if (state == 1)
             {
-                float sx = (Ray.mouse_x - PrevPoint.X) / 100;
-                float sy = (Ray.mouse_y - PrevPoint.Y) / 100;
+                float sx = (Ray.mouseX - PrevPoint.X) / 100;
+                float sy = (Ray.mouseY - PrevPoint.Y) / 100;
                 float s = sx + sy;
                 if (_hiX)
                     b.rot = b.rot * Quaternion.FromAxisAngle(Vector3.UnitX, s);
@@ -363,21 +358,21 @@ namespace SmashForge
             GL.MultMatrix(ref mat);
 
             GL.Color4(0.25f, 0.25f, 0.25f, 0.2f);
-            ShapeDrawing.drawSphere(Vector3.Zero, Size, 25);
+            ShapeDrawing.DrawSphere(Vector3.Zero, Size, 25);
 
             GL.Color3(_hiZ ? Color.Yellow : Color.Green);
             GL.LineWidth(3);
-            ShapeDrawing.drawCircleOutline(Vector3.Zero, Size, 25);
+            ShapeDrawing.DrawCircleOutline(Vector3.Zero, Size, 25);
 
             GL.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
 
             GL.Color3(_hiX ? Color.Yellow : Color.Red);
-            ShapeDrawing.drawCircleOutline(Vector3.Zero, Size, 25);
+            ShapeDrawing.DrawCircleOutline(Vector3.Zero, Size, 25);
 
             GL.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
 
             GL.Color3(_hiY ? Color.Yellow : Color.Blue);
-            ShapeDrawing.drawCircleOutline(Vector3.Zero, Size, 25);
+            ShapeDrawing.DrawCircleOutline(Vector3.Zero, Size, 25);
 
             GL.PopMatrix();
         }

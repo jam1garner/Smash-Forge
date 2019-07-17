@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using OpenTK;
-using OpenTK.Graphics;
 using System.IO;
 using System.Text;
 
@@ -81,7 +80,7 @@ namespace SmashForge
             {
                 Type = type;
                 Size = size;
-                Data = f.read(size * 4);
+                Data = f.Read(size * 4);
             }
 
             public UnhandledTag(TagType type, int size, byte[] data)
@@ -93,18 +92,18 @@ namespace SmashForge
 
             public UnhandledTag(FileData f)
             {
-                Type = (TagType)f.readInt();
-                Size = f.readInt();
-                Data = f.read(Size * 4);
+                Type = (TagType)f.ReadInt();
+                Size = f.ReadInt();
+                Data = f.Read(Size * 4);
             }
 
             public void Write(FileOutput o)
             {
                 Console.WriteLine($"unk_{(int)Type:X4} (size=0x{Size * 4:X4}) // offset=0x{o.Size():X2}\n");
 
-                o.writeInt((int)Type);
-                o.writeInt(Size);
-                o.writeBytes(Data);
+                o.WriteInt((int)Type);
+                o.WriteInt(Size);
+                o.WriteBytes(Data);
             }
 
             public TagType Type;
@@ -138,19 +137,19 @@ namespace SmashForge
 
             public void Read(FileData f)
             {
-                unk0 = (uint)f.readInt();
-                unk1 = (uint)f.readInt();
-                unk2 = (uint)f.readInt();
-                maxCharacterId = (uint)f.readInt();
-                unk4 = f.readInt();
-                maxCharacterId2 = (uint)f.readInt();
-                maxDepth = (ushort)f.readShort();
-                unk7 = (ushort)f.readShort();
-                framerate = f.readFloat();
-                width = f.readFloat();
-                height = f.readFloat();
-                unk8 = (uint)f.readInt();
-                unk9 = (uint)f.readInt();
+                unk0 = (uint)f.ReadInt();
+                unk1 = (uint)f.ReadInt();
+                unk2 = (uint)f.ReadInt();
+                maxCharacterId = (uint)f.ReadInt();
+                unk4 = f.ReadInt();
+                maxCharacterId2 = (uint)f.ReadInt();
+                maxDepth = (ushort)f.ReadShort();
+                unk7 = (ushort)f.ReadShort();
+                framerate = f.ReadFloat();
+                width = f.ReadFloat();
+                height = f.ReadFloat();
+                unk8 = (uint)f.ReadInt();
+                unk9 = (uint)f.ReadInt();
             }
 
             public void Write(FileOutput o)
@@ -170,22 +169,22 @@ namespace SmashForge
                 Console.WriteLine($"\tunk9: 0x{unk9:X8}");
                 Console.WriteLine("}\n");
 
-                o.writeInt((int)TagType.Properties);
-                o.writeInt(12);
+                o.WriteInt((int)TagType.Properties);
+                o.WriteInt(12);
 
-                o.writeInt((int)unk0);
-                o.writeInt((int)unk1);
-                o.writeInt((int)unk2);
-                o.writeInt((int)maxCharacterId);
-                o.writeInt(unk4);
-                o.writeInt((int)maxCharacterId2);
-                o.writeShort((short)maxDepth);
-                o.writeShort((short)unk7);
-                o.writeFloat(framerate);
-                o.writeFloat(width);
-                o.writeFloat(height);
-                o.writeInt((int)unk8);
-                o.writeInt((int)unk9);
+                o.WriteInt((int)unk0);
+                o.WriteInt((int)unk1);
+                o.WriteInt((int)unk2);
+                o.WriteInt((int)maxCharacterId);
+                o.WriteInt(unk4);
+                o.WriteInt((int)maxCharacterId2);
+                o.WriteShort((short)maxDepth);
+                o.WriteShort((short)unk7);
+                o.WriteFloat(framerate);
+                o.WriteFloat(width);
+                o.WriteFloat(height);
+                o.WriteInt((int)unk8);
+                o.WriteInt((int)unk9);
             }
         }
 
@@ -209,14 +208,14 @@ namespace SmashForge
 
             public void Read(FileData f)
             {
-                numShapes = (uint)f.readInt();
-                unk1 = (uint)f.readInt();
-                numSprites = (uint)f.readInt();
-                unk3 = (uint)f.readInt();
-                numTexts = (uint)f.readInt();
-                unk5 = (uint)f.readInt();
-                unk6 = (uint)f.readInt();
-                unk7 = (uint)f.readInt();
+                numShapes = (uint)f.ReadInt();
+                unk1 = (uint)f.ReadInt();
+                numSprites = (uint)f.ReadInt();
+                unk3 = (uint)f.ReadInt();
+                numTexts = (uint)f.ReadInt();
+                unk5 = (uint)f.ReadInt();
+                unk6 = (uint)f.ReadInt();
+                unk7 = (uint)f.ReadInt();
             }
 
             public void Write(FileOutput o)
@@ -231,17 +230,17 @@ namespace SmashForge
                 Console.WriteLine($"\tunk6: 0x{unk6:X8}");
                 Console.WriteLine($"\tunk7: 0x{unk7:X8}");
                 Console.WriteLine("}\n");
-                o.writeInt((int)TagType.Defines);
-                o.writeInt(8);
+                o.WriteInt((int)TagType.Defines);
+                o.WriteInt(8);
 
-                o.writeInt((int)numShapes);
-                o.writeInt((int)unk1);
-                o.writeInt((int)numSprites);
-                o.writeInt((int)unk3);
-                o.writeInt((int)numTexts);
-                o.writeInt((int)unk5);
-                o.writeInt((int)unk6);
-                o.writeInt((int)unk7);
+                o.WriteInt((int)numShapes);
+                o.WriteInt((int)unk1);
+                o.WriteInt((int)numSprites);
+                o.WriteInt((int)unk3);
+                o.WriteInt((int)numTexts);
+                o.WriteInt((int)unk5);
+                o.WriteInt((int)unk6);
+                o.WriteInt((int)unk7);
             }
         }
 
@@ -330,11 +329,11 @@ namespace SmashForge
 
             public void Read(FileData f)
             {
-                AtlasId = f.readInt();
-                FillType = (FillType)f.readShort();
+                AtlasId = f.ReadInt();
+                FillType = (FillType)f.ReadShort();
 
-                numVerts = f.readShort();
-                numIndices = f.readInt();
+                numVerts = f.ReadShort();
+                numIndices = f.ReadInt();
 
                 Verts = new Vertex[numVerts];
                 Indices = new ushort[numIndices];
@@ -342,21 +341,21 @@ namespace SmashForge
                 for (int i = 0; i < numVerts; i++)
                 {
                     Verts[i] = new Vertex();
-                    Verts[i].X = f.readFloat();
-                    Verts[i].Y = f.readFloat();
-                    Verts[i].U = f.readFloat();
-                    Verts[i].V = f.readFloat();
+                    Verts[i].X = f.ReadFloat();
+                    Verts[i].Y = f.ReadFloat();
+                    Verts[i].U = f.ReadFloat();
+                    Verts[i].V = f.ReadFloat();
                 }
 
                 for (int i = 0; i < numIndices; i++)
                 {
-                    Indices[i] = (ushort)f.readShort();
+                    Indices[i] = (ushort)f.ReadShort();
                 }
 
                 // indices are padded to word boundaries
                 if ((numIndices % 2) != 0)
                 {
-                    f.skip(0x02);
+                    f.Skip(0x02);
                 }
             }
         }
@@ -380,17 +379,17 @@ namespace SmashForge
 
             public void Read(FileData f)
             {
-                CharacterId = f.readInt();
-                Unk1 = f.readInt();
-                BoundsId = f.readInt();
-                Unk3 = f.readInt();
+                CharacterId = f.ReadInt();
+                Unk1 = f.ReadInt();
+                BoundsId = f.ReadInt();
+                Unk3 = f.ReadInt();
 
-                numGraphics = f.readInt();
+                numGraphics = f.ReadInt();
                 Graphics = new Graphic[numGraphics];
 
                 for (int i = 0; i < numGraphics; i++)
                 {
-                    f.skip(0x08); // graphic tag header
+                    f.Skip(0x08); // graphic tag header
                     Graphics[i] = new Graphic(f);
                 }
             }
@@ -432,47 +431,47 @@ namespace SmashForge
 
             public void Read(FileData f)
             {
-                CharacterId = f.readInt();
-                unk1 = f.readInt();
-                placeholderTextId = f.readInt();
-                unk2 = f.readInt();
-                strokeColorId = f.readInt();
-                unk3 = f.readInt();
-                unk4 = f.readInt();
-                unk5 = f.readInt();
-                alignment = (TextAlignment)f.readShort();
-                unk6 = f.readShort();
-                unk7 = f.readInt();
-                unk8 = f.readInt();
-                size = f.readFloat();
-                unk9 = f.readInt();
-                unk10 = f.readInt();
-                unk11 = f.readInt();
-                unk12 = f.readInt();
+                CharacterId = f.ReadInt();
+                unk1 = f.ReadInt();
+                placeholderTextId = f.ReadInt();
+                unk2 = f.ReadInt();
+                strokeColorId = f.ReadInt();
+                unk3 = f.ReadInt();
+                unk4 = f.ReadInt();
+                unk5 = f.ReadInt();
+                alignment = (TextAlignment)f.ReadShort();
+                unk6 = f.ReadShort();
+                unk7 = f.ReadInt();
+                unk8 = f.ReadInt();
+                size = f.ReadFloat();
+                unk9 = f.ReadInt();
+                unk10 = f.ReadInt();
+                unk11 = f.ReadInt();
+                unk12 = f.ReadInt();
             }
 
             public void Write(FileOutput o)
             {
-                o.writeInt((int)TagType.DynamicText);
-                o.writeInt(16);
+                o.WriteInt((int)TagType.DynamicText);
+                o.WriteInt(16);
 
-                o.writeInt(CharacterId);
-                o.writeInt(unk1);
-                o.writeInt(placeholderTextId);
-                o.writeInt(unk2);
-                o.writeInt(strokeColorId);
-                o.writeInt(unk3);
-                o.writeInt(unk4);
-                o.writeInt(unk5);
-                o.writeShort((short)alignment);
-                o.writeShort(unk6);
-                o.writeInt(unk7);
-                o.writeInt(unk8);
-                o.writeFloat(size);
-                o.writeInt(unk9);
-                o.writeInt(unk10);
-                o.writeInt(unk11);
-                o.writeInt(unk12);
+                o.WriteInt(CharacterId);
+                o.WriteInt(unk1);
+                o.WriteInt(placeholderTextId);
+                o.WriteInt(unk2);
+                o.WriteInt(strokeColorId);
+                o.WriteInt(unk3);
+                o.WriteInt(unk4);
+                o.WriteInt(unk5);
+                o.WriteShort((short)alignment);
+                o.WriteShort(unk6);
+                o.WriteInt(unk7);
+                o.WriteInt(unk8);
+                o.WriteFloat(size);
+                o.WriteInt(unk9);
+                o.WriteInt(unk10);
+                o.WriteInt(unk11);
+                o.WriteInt(unk12);
             }
         }
 
@@ -495,18 +494,18 @@ namespace SmashForge
 
                 public void Read(FileData f)
                 {
-                    NameId = f.readInt();
-                    StartFrame = f.readInt();
-                    Unk1 = f.readInt();
+                    NameId = f.ReadInt();
+                    StartFrame = f.ReadInt();
+                    Unk1 = f.ReadInt();
                 }
 
                 public void Write(FileOutput o)
                 {
-                    o.writeInt((int)TagType.FrameLabel);
-                    o.writeInt(3);
-                    o.writeInt(NameId);
-                    o.writeInt(StartFrame);
-                    o.writeInt(Unk1);
+                    o.WriteInt((int)TagType.FrameLabel);
+                    o.WriteInt(3);
+                    o.WriteInt(NameId);
+                    o.WriteInt(StartFrame);
+                    o.WriteInt(Unk1);
                 }
             }
 
@@ -539,23 +538,23 @@ namespace SmashForge
 
                 public void Read(FileData f)
                 {
-                    CharacterId = f.readInt();
-                    PlacementId = f.readInt();
-                    Unk1 = f.readInt();
-                    NameId = f.readInt();
-                    Flags = (PlaceFlag)f.readShort();
-                    BlendMode = (BlendMode)f.readShort();
-                    Depth = f.readShort();
-                    Unk4 = f.readShort();
-                    Unk5 = f.readShort();
-                    Unk6 = f.readShort();
-                    PositionFlags = (ushort)f.readShort();
-                    PositionId = f.readShort();
-                    ColorMultId = f.readInt();
-                    ColorAddId = f.readInt();
+                    CharacterId = f.ReadInt();
+                    PlacementId = f.ReadInt();
+                    Unk1 = f.ReadInt();
+                    NameId = f.ReadInt();
+                    Flags = (PlaceFlag)f.ReadShort();
+                    BlendMode = (BlendMode)f.ReadShort();
+                    Depth = f.ReadShort();
+                    Unk4 = f.ReadShort();
+                    Unk5 = f.ReadShort();
+                    Unk6 = f.ReadShort();
+                    PositionFlags = (ushort)f.ReadShort();
+                    PositionId = f.ReadShort();
+                    ColorMultId = f.ReadInt();
+                    ColorAddId = f.ReadInt();
 
-                    bool hasColorMatrix = (f.readInt() == 1);
-                    bool hasUnkF014 = (f.readInt() == 1);
+                    bool hasColorMatrix = (f.ReadInt() == 1);
+                    bool hasUnkF014 = (f.ReadInt() == 1);
 
                     if (hasColorMatrix)
                         ColorMatrix = new UnhandledTag(f);
@@ -566,26 +565,26 @@ namespace SmashForge
 
                 public void Write(FileOutput o)
                 {
-                    o.writeInt((int)TagType.PlaceObject);
-                    o.writeInt(12);
+                    o.WriteInt((int)TagType.PlaceObject);
+                    o.WriteInt(12);
 
-                    o.writeInt(CharacterId);
-                    o.writeInt(PlacementId);
-                    o.writeInt(Unk1);
-                    o.writeInt(NameId);
-                    o.writeShort((short)Flags);
-                    o.writeShort((short)BlendMode);
-                    o.writeShort(Depth);
-                    o.writeShort(Unk4);
-                    o.writeShort(Unk5);
-                    o.writeShort(Unk6);
-                    o.writeShort((short)PositionFlags);
-                    o.writeShort(PositionId);
-                    o.writeInt(ColorMultId);
-                    o.writeInt(ColorAddId);
+                    o.WriteInt(CharacterId);
+                    o.WriteInt(PlacementId);
+                    o.WriteInt(Unk1);
+                    o.WriteInt(NameId);
+                    o.WriteShort((short)Flags);
+                    o.WriteShort((short)BlendMode);
+                    o.WriteShort(Depth);
+                    o.WriteShort(Unk4);
+                    o.WriteShort(Unk5);
+                    o.WriteShort(Unk6);
+                    o.WriteShort((short)PositionFlags);
+                    o.WriteShort(PositionId);
+                    o.WriteInt(ColorMultId);
+                    o.WriteInt(ColorAddId);
 
-                    o.writeInt((ColorMatrix != null) ? 1 : 0);
-                    o.writeInt((UnkF014 != null) ? 1 : 0);
+                    o.WriteInt((ColorMatrix != null) ? 1 : 0);
+                    o.WriteInt((UnkF014 != null) ? 1 : 0);
 
                     if (ColorMatrix != null)
                         ColorMatrix.Write(o);
@@ -608,18 +607,18 @@ namespace SmashForge
 
                 public void Read(FileData f)
                 {
-                    Unk1 = f.readInt();
-                    Depth = f.readShort();
-                    Unk2 = f.readShort();
+                    Unk1 = f.ReadInt();
+                    Depth = f.ReadShort();
+                    Unk2 = f.ReadShort();
                 }
 
                 public void Write(FileOutput o)
                 {
-                    o.writeInt((int)TagType.RemoveObject);
-                    o.writeInt(2);
-                    o.writeInt(Unk1);
-                    o.writeShort(Depth);
-                    o.writeShort(Unk2);
+                    o.WriteInt((int)TagType.RemoveObject);
+                    o.WriteInt(2);
+                    o.WriteInt(Unk1);
+                    o.WriteShort(Depth);
+                    o.WriteShort(Unk2);
                 }
             }
 
@@ -637,16 +636,16 @@ namespace SmashForge
 
                 public void Read(FileData f)
                 {
-                    ActionId = f.readInt();
-                    Unk1 = f.readInt();
+                    ActionId = f.ReadInt();
+                    Unk1 = f.ReadInt();
                 }
 
                 public void Write(FileOutput o)
                 {
-                    o.writeInt((int)TagType.DoAction);
-                    o.writeInt(2);
-                    o.writeInt(ActionId);
-                    o.writeInt(Unk1);
+                    o.WriteInt((int)TagType.DoAction);
+                    o.WriteInt(2);
+                    o.WriteInt(ActionId);
+                    o.WriteInt(Unk1);
                 }
             }
 
@@ -667,13 +666,13 @@ namespace SmashForge
 
                 public void Read(FileData f)
                 {
-                    Id = f.readInt();
-                    int numChildren = f.readInt();
+                    Id = f.ReadInt();
+                    int numChildren = f.ReadInt();
 
                     for (int childId = 0; childId < numChildren; childId++)
                     {
-                        TagType childType = (TagType)f.readInt();
-                        int childSize = f.readInt();
+                        TagType childType = (TagType)f.ReadInt();
+                        int childSize = f.ReadInt();
 
                         if (childType == TagType.RemoveObject)
                         {
@@ -694,8 +693,8 @@ namespace SmashForge
                 // so it can be used for both frames and keyframes.
                 public void Write(FileOutput o)
                 {
-                    o.writeInt(Id);
-                    o.writeInt(Removals.Count + Actions.Count + Placements.Count);
+                    o.WriteInt(Id);
+                    o.WriteInt(Removals.Count + Actions.Count + Placements.Count);
 
                     foreach (var deletion in Removals)
                         deletion.Write(o);
@@ -728,19 +727,19 @@ namespace SmashForge
 
             public void Read(FileData f)
             {
-                CharacterId = f.readInt();
-                unk1 = f.readInt();
-                unk2 = f.readInt();
+                CharacterId = f.ReadInt();
+                unk1 = f.ReadInt();
+                unk2 = f.ReadInt();
 
-                int numLabels = f.readInt();
-                int numFrames = f.readInt();
-                int numKeyframes = f.readInt();
+                int numLabels = f.ReadInt();
+                int numFrames = f.ReadInt();
+                int numKeyframes = f.ReadInt();
 
-                unk3 = f.readInt();
+                unk3 = f.ReadInt();
 
                 for (int i = 0; i < numLabels; i++)
                 {
-                    f.skip(0x08);
+                    f.Skip(0x08);
 
                     var label = new Label(f);
                     label.KeyframeId = i;
@@ -750,8 +749,8 @@ namespace SmashForge
                 int totalFrames = numFrames + numKeyframes;
                 for (int frameId = 0; frameId < totalFrames; frameId++)
                 {
-                    TagType frameType = (TagType)f.readInt();
-                    f.skip(0x04); // size
+                    TagType frameType = (TagType)f.ReadInt();
+                    f.Skip(0x04); // size
 
                     Frame frame = new Frame(f);
 
@@ -764,15 +763,15 @@ namespace SmashForge
 
             public void Write(FileOutput o)
             {
-                o.writeInt((int)TagType.DefineSprite);
-                o.writeInt(7);
-                o.writeInt(CharacterId);
-                o.writeInt(unk1);
-                o.writeInt(unk2);
-                o.writeInt(labels.Count);
-                o.writeInt(Frames.Count);
-                o.writeInt(Keyframes.Count);
-                o.writeInt(unk3);
+                o.WriteInt((int)TagType.DefineSprite);
+                o.WriteInt(7);
+                o.WriteInt(CharacterId);
+                o.WriteInt(unk1);
+                o.WriteInt(unk2);
+                o.WriteInt(labels.Count);
+                o.WriteInt(Frames.Count);
+                o.WriteInt(Keyframes.Count);
+                o.WriteInt(unk3);
 
                 foreach (var label in labels)
                 {
@@ -781,15 +780,15 @@ namespace SmashForge
 
                 foreach (var frame in Frames)
                 {
-                    o.writeInt((int)TagType.ShowFrame);
-                    o.writeInt(2);
+                    o.WriteInt((int)TagType.ShowFrame);
+                    o.WriteInt(2);
                     frame.Write(o);
                 }
 
                 foreach (var frame in Keyframes)
                 {
-                    o.writeInt((int)TagType.Keyframe);
-                    o.writeInt(2);
+                    o.WriteInt((int)TagType.Keyframe);
+                    o.WriteInt(2);
                     frame.Write(o);
                 }
             }
@@ -816,22 +815,22 @@ namespace SmashForge
 
             public void Write(FileOutput o)
             {
-                o.writeInt(magic);
-                o.writeInt(unk0);
-                o.writeInt(unk1);
-                o.writeInt(unk2);
-                o.writeInt(unk3);
-                o.writeInt(unk4);
-                o.writeInt(unk5);
-                o.writeInt(filesize);
-                o.writeInt(unk6);
-                o.writeInt(unk7);
-                o.writeInt(unk8);
-                o.writeInt(unk9);
-                o.writeInt(unk10);
-                o.writeInt(unk11);
-                o.writeInt(unk12);
-                o.writeInt(unk13);
+                o.WriteInt(magic);
+                o.WriteInt(unk0);
+                o.WriteInt(unk1);
+                o.WriteInt(unk2);
+                o.WriteInt(unk3);
+                o.WriteInt(unk4);
+                o.WriteInt(unk5);
+                o.WriteInt(filesize);
+                o.WriteInt(unk6);
+                o.WriteInt(unk7);
+                o.WriteInt(unk8);
+                o.WriteInt(unk9);
+                o.WriteInt(unk10);
+                o.WriteInt(unk11);
+                o.WriteInt(unk12);
+                o.WriteInt(unk13);
             }
         }
 
@@ -997,39 +996,39 @@ namespace SmashForge
         public override void Read(string filename)
         {
             FileData f = new FileData(filename);
-            header.magic = f.readInt();
-            header.unk0 = f.readInt();
+            header.magic = f.ReadInt();
+            header.unk0 = f.ReadInt();
 
             if (header.unk0 == 0x10000000)
             {
-                f.Endian = Endianness.Little;
+                f.endian = Endianness.Little;
 
-                f.skip(f.pos() - 4);
-                header.unk0 = f.readInt();
+                f.Skip(f.Pos() - 4);
+                header.unk0 = f.ReadInt();
             }
 
-            header.unk1 = f.readInt();
-            header.unk2 = f.readInt();
-            header.unk3 = f.readInt();
-            header.unk4 = f.readInt();
-            header.unk5 = f.readInt();
-            header.filesize = f.readInt();
-            header.unk6 = f.readInt();
-            header.unk7 = f.readInt();
-            header.unk8 = f.readInt();
-            header.unk9 = f.readInt();
-            header.unk10 = f.readInt();
-            header.unk11 = f.readInt();
-            header.unk12 = f.readInt();
-            header.unk13 = f.readInt();
+            header.unk1 = f.ReadInt();
+            header.unk2 = f.ReadInt();
+            header.unk3 = f.ReadInt();
+            header.unk4 = f.ReadInt();
+            header.unk5 = f.ReadInt();
+            header.filesize = f.ReadInt();
+            header.unk6 = f.ReadInt();
+            header.unk7 = f.ReadInt();
+            header.unk8 = f.ReadInt();
+            header.unk9 = f.ReadInt();
+            header.unk10 = f.ReadInt();
+            header.unk11 = f.ReadInt();
+            header.unk12 = f.ReadInt();
+            header.unk13 = f.ReadInt();
 
             bool done = false;
             while (!done)
             {
-                int tagOffset = f.pos();
+                int tagOffset = f.Pos();
 
-                TagType tagType = (TagType)f.readInt();
-                int tagSize = f.readInt(); // in dwords!
+                TagType tagType = (TagType)f.ReadInt();
+                int tagSize = f.ReadInt(); // in dwords!
 
                 switch (tagType)
                 {
@@ -1041,14 +1040,14 @@ namespace SmashForge
 
                     case TagType.Symbols:
                         {
-                            int numSymbols = f.readInt();
+                            int numSymbols = f.ReadInt();
 
                             while (Strings.Count < numSymbols)
                             {
-                                int len = f.readInt();
+                                int len = f.ReadInt();
 
-                                Strings.Add(f.readString());
-                                f.skip(4 - (f.pos() % 4));
+                                Strings.Add(f.ReadString());
+                                f.Skip(4 - (f.Pos() % 4));
                             }
 
                             break;
@@ -1056,11 +1055,11 @@ namespace SmashForge
 
                     case TagType.Colors:
                         {
-                            int numColors = f.readInt();
+                            int numColors = f.ReadInt();
 
                             for (int i = 0; i < numColors; i++)
                             {
-                                AddColor(new Vector4(f.readShort() / 256f, f.readShort() / 256f, f.readShort() / 256f, f.readShort() / 256f));
+                                AddColor(new Vector4(f.ReadShort() / 256f, f.ReadShort() / 256f, f.ReadShort() / 256f, f.ReadShort() / 256f));
                             }
 
                             break;
@@ -1115,16 +1114,16 @@ namespace SmashForge
 
                     case TagType.Transforms:
                         {
-                            int numTransforms = f.readInt();
+                            int numTransforms = f.ReadInt();
 
                             for (int i = 0; i < numTransforms; i++)
                             {
-                                float a = f.readFloat();
-                                float b = f.readFloat();
-                                float c = f.readFloat();
-                                float d = f.readFloat();
-                                float x = f.readFloat();
-                                float y = f.readFloat();
+                                float a = f.ReadFloat();
+                                float b = f.ReadFloat();
+                                float c = f.ReadFloat();
+                                float d = f.ReadFloat();
+                                float x = f.ReadFloat();
+                                float y = f.ReadFloat();
 
                                 var mat = new Matrix4(
                                     a, b, 0, 0,
@@ -1141,11 +1140,11 @@ namespace SmashForge
 
                     case TagType.Positions:
                         {
-                            int numPositions = f.readInt();
+                            int numPositions = f.ReadInt();
 
                             for (int i = 0; i < numPositions; i++)
                             {
-                                Positions.Add(new Vector2(f.readFloat(), f.readFloat()));
+                                Positions.Add(new Vector2(f.ReadFloat(), f.ReadFloat()));
                             }
 
                             break;
@@ -1153,11 +1152,11 @@ namespace SmashForge
 
                     case TagType.Bounds:
                         {
-                            int numBounds = f.readInt();
+                            int numBounds = f.ReadInt();
 
                             for (int i = 0; i < numBounds; i++)
                             {
-                                Bounds.Add(new Rect(f.readFloat(), f.readFloat(), f.readFloat(), f.readFloat()));
+                                Bounds.Add(new Rect(f.ReadFloat(), f.ReadFloat(), f.ReadFloat(), f.ReadFloat()));
                             }
                             break;
                         }
@@ -1170,15 +1169,15 @@ namespace SmashForge
 
                     case TagType.TextureAtlases:
                         {
-                            int numAtlases = f.readInt();
+                            int numAtlases = f.ReadInt();
 
                             for (int i = 0; i < numAtlases; i++)
                             {
                                 TextureAtlas atlas = new TextureAtlas();
-                                atlas.id = f.readInt();
-                                atlas.nameId = f.readInt();
-                                atlas.width = f.readFloat();
-                                atlas.height = f.readFloat();
+                                atlas.id = f.ReadInt();
+                                atlas.nameId = f.ReadInt();
+                                atlas.width = f.ReadFloat();
+                                atlas.height = f.ReadFloat();
 
                                 Atlases.Add(atlas);
                             }
@@ -1216,7 +1215,7 @@ namespace SmashForge
         void writeSymbols(FileOutput o)
         {
             FileOutput tag = new FileOutput();
-            tag.writeInt(Strings.Count);
+            tag.WriteInt(Strings.Count);
 
             Console.WriteLine($"Strings = [ // offset=0x{o.Size():X2}");
             for (int i = 0; i < Strings.Count; i++)
@@ -1226,19 +1225,19 @@ namespace SmashForge
                 Console.WriteLine($"\t0x{i:X3}: \"{str}\"");
 
                 var strBytes = Encoding.UTF8.GetBytes(str);
-                tag.writeInt(strBytes.Length);
-                tag.writeBytes(strBytes);
+                tag.WriteInt(strBytes.Length);
+                tag.WriteBytes(strBytes);
 
                 int padSize = 4 - (tag.Size() % 4);
                 for (int j = 0; j < padSize; j++)
                 {
-                    tag.writeByte(0);
+                    tag.WriteByte(0);
                 }
             }
             Console.WriteLine("]\n");
 
-            o.writeInt((int)TagType.Symbols);
-            o.writeInt(tag.Size() / 4);
+            o.WriteInt((int)TagType.Symbols);
+            o.WriteInt(tag.Size() / 4);
             o.WriteOutput(tag);
         }
 
@@ -1246,18 +1245,18 @@ namespace SmashForge
         {
             Console.WriteLine($"Colors = [ // offset=0x{o.Size():X2}");
 
-            o.writeInt((int)TagType.Colors);
-            o.writeInt(Colors.Count * 2 + 1);
-            o.writeInt(Colors.Count);
+            o.WriteInt((int)TagType.Colors);
+            o.WriteInt(Colors.Count * 2 + 1);
+            o.WriteInt(Colors.Count);
 
             for (int i = 0; i < Colors.Count; i++)
             {
                 var color = Colors[i];
                 Console.WriteLine($"\t0x{i:X3}: #{(byte)(color.X * 255):X2}{(byte)(color.Z * 255):X2}{(byte)(color.Y * 255):X2}, {(byte)(color.W * 255):X2} // offset=0x{o.Size():X2}");
-                o.writeShort((short)(color.X * 256));
-                o.writeShort((short)(color.Y * 256));
-                o.writeShort((short)(color.Z * 256));
-                o.writeShort((short)(color.W * 256));
+                o.WriteShort((short)(color.X * 256));
+                o.WriteShort((short)(color.Y * 256));
+                o.WriteShort((short)(color.Z * 256));
+                o.WriteShort((short)(color.W * 256));
             }
             Console.WriteLine("]\n");
         }
@@ -1266,16 +1265,16 @@ namespace SmashForge
         {
             Console.WriteLine($"Positions = [ // offset=0x{o.Size():X2}");
 
-            o.writeInt((int)TagType.Positions);
-            o.writeInt(Positions.Count * 2 + 1);
-            o.writeInt(Positions.Count);
+            o.WriteInt((int)TagType.Positions);
+            o.WriteInt(Positions.Count * 2 + 1);
+            o.WriteInt(Positions.Count);
 
             for (int i = 0; i < Positions.Count; i++)
             {
                 var position = Positions[i];
                 Console.WriteLine($"\t0x{i:X4}: [{position.X}, {position.Y}] // offset=0x{o.Size():X2}");
-                o.writeFloat(position.X);
-                o.writeFloat(position.Y);
+                o.WriteFloat(position.X);
+                o.WriteFloat(position.Y);
             }
             Console.WriteLine("]\n");
         }
@@ -1284,9 +1283,9 @@ namespace SmashForge
         {
             Console.WriteLine($"Transforms = [ // offset=0x{o.Size():X2}");
 
-            o.writeInt((int)TagType.Transforms);
-            o.writeInt(Transforms.Count * 6 + 1);
-            o.writeInt(Transforms.Count);
+            o.WriteInt((int)TagType.Transforms);
+            o.WriteInt(Transforms.Count * 6 + 1);
+            o.WriteInt(Transforms.Count);
 
             for (int i = 0; i < Transforms.Count; i++)
             {
@@ -1295,12 +1294,12 @@ namespace SmashForge
                 Console.WriteLine($"\t[{transform.M11:f2}, {transform.M21:f2}] // offset=0x{o.Size():X2}");
                 Console.WriteLine($"\t[{transform.M12:f2}, {transform.M22:f2}]");
                 Console.WriteLine($"\t[{transform.M41:f2}, {transform.M42:f2}]\n");
-                o.writeFloat(transform.M11);
-                o.writeFloat(transform.M21);
-                o.writeFloat(transform.M12);
-                o.writeFloat(transform.M22);
-                o.writeFloat(transform.M41);
-                o.writeFloat(transform.M42);
+                o.WriteFloat(transform.M11);
+                o.WriteFloat(transform.M21);
+                o.WriteFloat(transform.M12);
+                o.WriteFloat(transform.M22);
+                o.WriteFloat(transform.M41);
+                o.WriteFloat(transform.M42);
             }
 
             Console.WriteLine("]\n");
@@ -1310,19 +1309,19 @@ namespace SmashForge
         {
             Console.WriteLine($"Bounds = [ // offset=0x{o.Size():X2}");
 
-            o.writeInt((int)TagType.Bounds);
-            o.writeInt(Bounds.Count * 4 + 1);
-            o.writeInt(Bounds.Count);
+            o.WriteInt((int)TagType.Bounds);
+            o.WriteInt(Bounds.Count * 4 + 1);
+            o.WriteInt(Bounds.Count);
 
             for (int i = 0; i < Bounds.Count; i++)
             {
                 var bb = Bounds[i];
                 Console.WriteLine($"\t0x{i:X2}: {bb} // offset=0x{o.Size():X2}");
 
-                o.writeFloat(bb.TopLeft.X);
-                o.writeFloat(bb.TopLeft.Y);
-                o.writeFloat(bb.BottomRight.X);
-                o.writeFloat(bb.BottomRight.Y);
+                o.WriteFloat(bb.TopLeft.X);
+                o.WriteFloat(bb.TopLeft.Y);
+                o.WriteFloat(bb.BottomRight.X);
+                o.WriteFloat(bb.BottomRight.Y);
             }
 
             Console.WriteLine("]\n");
@@ -1332,9 +1331,9 @@ namespace SmashForge
         {
             Console.WriteLine($"TextureAtlases = [ // offset=0x{o.Size():X2}");
 
-            o.writeInt((int)TagType.TextureAtlases);
-            o.writeInt(Atlases.Count * 4 + 1);
-            o.writeInt(Atlases.Count);
+            o.WriteInt((int)TagType.TextureAtlases);
+            o.WriteInt(Atlases.Count * 4 + 1);
+            o.WriteInt(Atlases.Count);
 
             for (int i = 0; i < Atlases.Count; i++)
             {
@@ -1344,10 +1343,10 @@ namespace SmashForge
                 Console.WriteLine($"\t\tdimensions: {atlas.width}x{atlas.height}");
                 Console.WriteLine("\t}\n");
 
-                o.writeInt(atlas.id);
-                o.writeInt(atlas.nameId);
-                o.writeFloat(atlas.width);
-                o.writeFloat(atlas.height);
+                o.WriteInt(atlas.id);
+                o.WriteInt(atlas.nameId);
+                o.WriteFloat(atlas.width);
+                o.WriteFloat(atlas.height);
             }
             Console.WriteLine("]\n");
         }
@@ -1366,14 +1365,14 @@ namespace SmashForge
                 Console.WriteLine($"\tUnk3: 0x{shape.Unk3:X8}");
                 Console.WriteLine("\t[");
 
-                o.writeInt((int)TagType.Shape);
-                o.writeInt(5);
+                o.WriteInt((int)TagType.Shape);
+                o.WriteInt(5);
 
-                o.writeInt(shape.CharacterId);
-                o.writeInt(shape.Unk1);
-                o.writeInt(shape.BoundsId);
-                o.writeInt(shape.Unk3);
-                o.writeInt(shape.Graphics.Length);
+                o.WriteInt(shape.CharacterId);
+                o.WriteInt(shape.Unk1);
+                o.WriteInt(shape.BoundsId);
+                o.WriteInt(shape.Unk3);
+                o.WriteInt(shape.Graphics.Length);
 
 
                 foreach (var graphic in shape.Graphics)
@@ -1383,35 +1382,35 @@ namespace SmashForge
                     Console.WriteLine($"\t\t\tFillType: {graphic.FillType} (0x{(short)graphic.FillType:X2})");
 
                     var graphicTag = new FileOutput();
-                    graphicTag.writeInt(graphic.AtlasId);
-                    graphicTag.writeShort((short)graphic.FillType);
-                    graphicTag.writeShort((short)graphic.Verts.Length);
-                    graphicTag.writeInt(graphic.Indices.Length);
+                    graphicTag.WriteInt(graphic.AtlasId);
+                    graphicTag.WriteShort((short)graphic.FillType);
+                    graphicTag.WriteShort((short)graphic.Verts.Length);
+                    graphicTag.WriteInt(graphic.Indices.Length);
 
                     foreach (var vert in graphic.Verts)
                     {
                         Console.WriteLine($"\t\t\t\t{vert}");
-                        graphicTag.writeFloat(vert.X);
-                        graphicTag.writeFloat(vert.Y);
-                        graphicTag.writeFloat(vert.U);
-                        graphicTag.writeFloat(vert.V);
+                        graphicTag.WriteFloat(vert.X);
+                        graphicTag.WriteFloat(vert.Y);
+                        graphicTag.WriteFloat(vert.U);
+                        graphicTag.WriteFloat(vert.V);
                     }
 
                     Console.Write("\t\t\t[");
                     foreach (var index in graphic.Indices)
                     {
                         Console.Write($"{index}, ");
-                        graphicTag.writeShort((short)index);
+                        graphicTag.WriteShort((short)index);
                     }
                     Console.WriteLine("]");
 
                     Console.WriteLine("\t\t}\n");
 
                     if ((graphic.Indices.Length % 2) != 0)
-                        graphicTag.writeShort(0);
+                        graphicTag.WriteShort(0);
 
-                    o.writeInt((int)TagType.Graphic);
-                    o.writeInt(graphicTag.Size() / 4);
+                    o.WriteInt((int)TagType.Graphic);
+                    o.WriteInt(graphicTag.Size() / 4);
                     o.WriteOutput(graphicTag);
                 }
 
@@ -1480,13 +1479,13 @@ namespace SmashForge
             writeSprites(o);
             writeTexts(o);
 
-            o.writeInt((int)TagType.End);
-            o.writeInt(0);
+            o.WriteInt((int)TagType.End);
+            o.WriteInt(0);
 
             int padSize = (4 - (o.Size() % 4)) % 4;
             for (int i = 0; i < padSize; i++)
             {
-                o.writeByte(0);
+                o.WriteByte(0);
             }
 
             if (dump)
@@ -1497,7 +1496,7 @@ namespace SmashForge
             }
 
             Console.SetOut(oldOut);
-            o.save(Filename);
+            o.Save(Filename);
             return o.GetBytes();
         }
 

@@ -1,11 +1,9 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Syroot.NintenTools.Yaz0;
 using Syroot.NintenTools.NSW.Bfres;
 using Syroot.NintenTools.NSW.Bfres.GFX;
 using Syroot.NintenTools.NSW.Bfres.Helpers;
@@ -104,7 +102,7 @@ namespace SmashForge
                         box.Center = new Vector3(bnd.Center.X, bnd.Center.Y, bnd.Center.Z);
                         box.Extent = new Vector3(bnd.Extent.X, bnd.Extent.Y, bnd.Extent.Z);
 
-                        poly.boundingBoxes.Add(box); //Each box is by LOD mesh. This will be in a seperate class later so only one will be added
+                        poly.boundingBoxes.Add(box); //Each box is by LOD mesh. This will be in a separate class later so only one will be added
 
                     }
                     foreach (float r in shp.RadiusArray)

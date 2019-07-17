@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class DRPViewer
+    partial class DrpViewer
     {
         /// <summary>
         /// Required designer variable.
@@ -45,7 +45,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.Controls.Add(this.treeView1);
-            this.Name = "DRPViewer";
+            this.Name = "DrpViewer";
             this.Text = "DRP";
             this.ResumeLayout(false);
 

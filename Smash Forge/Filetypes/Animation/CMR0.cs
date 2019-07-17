@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using OpenTK;
 
 namespace SmashForge
@@ -13,15 +12,15 @@ namespace SmashForge
         public List<Matrix4> frames = new List<Matrix4>();
 
         public void read(FileData d){
-            d.Endian = System.IO.Endianness.Big;
-            d.skip(8);
-            int count = d.readInt();
+            d.endian = System.IO.Endianness.Big;
+            d.Skip(8);
+            int count = d.ReadInt();
             for (int i = 0; i < count; i++)
             {
                 Matrix4 m = new Matrix4(
-                    new Vector4(d.readFloat(), d.readFloat(), d.readFloat(), d.readFloat()),
-                    new Vector4(d.readFloat(), d.readFloat(), d.readFloat(), d.readFloat()),
-                    new Vector4(d.readFloat(), d.readFloat(), d.readFloat(), d.readFloat()),
+                    new Vector4(d.ReadFloat(), d.ReadFloat(), d.ReadFloat(), d.ReadFloat()),
+                    new Vector4(d.ReadFloat(), d.ReadFloat(), d.ReadFloat(), d.ReadFloat()),
+                    new Vector4(d.ReadFloat(), d.ReadFloat(), d.ReadFloat(), d.ReadFloat()),
                     new Vector4(0,0,0,1)
                 );
                 frames.Add(m);

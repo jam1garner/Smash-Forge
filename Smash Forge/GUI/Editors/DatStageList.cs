@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-using OpenTK;
 
 namespace SmashForge
 {
@@ -24,7 +16,7 @@ namespace SmashForge
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            MainForm.Instance.lvdEditor.Open((LVDEntry)e.Node.Tag, new TreeNode());
+            MainForm.Instance.lvdEditor.Open((LvdEntry)e.Node.Tag, new TreeNode());
         }
 
         private void DAT_stage_list_Load(object sender, EventArgs e)

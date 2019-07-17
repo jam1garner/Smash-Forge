@@ -11,7 +11,7 @@ using SFGraphics.GLObjects.Shaders;
 
 namespace SmashForge.Rendering
 {
-    static class OpenTKSharedResources
+    static class OpenTkSharedResources
     {
         public enum SharedResourceStatus
         {
@@ -42,11 +42,11 @@ namespace SmashForge.Rendering
                 GraphicsContext.ShareContexts = true;
                 dummyResourceWindow = CreateGameWindowContext();
 
-                if (Runtime.enableOpenTKDebugOutput)
-                    EnableOpenTKDebugOutput();
+                if (Runtime.enableOpenTkDebugOutput)
+                    EnableOpenTkDebugOutput();
 
                 RenderTools.LoadTextures();
-                GetOpenGLSystemInfo();
+                GetOpenGlSystemInfo();
                 ShaderTools.SetUpShaders();
 
                 SetupStatus = SharedResourceStatus.Initialized;
@@ -58,7 +58,7 @@ namespace SmashForge.Rendering
             }
         }
 
-        public static void EnableOpenTKDebugOutput()
+        public static void EnableOpenTkDebugOutput()
         {
 #if DEBUG
             // This isn't free, so skip this step when not debugging.
@@ -94,10 +94,10 @@ namespace SmashForge.Rendering
             return gameWindow;
         }
 
-        private static void GetOpenGLSystemInfo()
+        private static void GetOpenGlSystemInfo()
         {
             Runtime.renderer = GL.GetString(StringName.Renderer);
-            Runtime.openGLVersion = GL.GetString(StringName.Version);
+            Runtime.openGlVersion = GL.GetString(StringName.Version);
             Runtime.glslVersion = GL.GetString(StringName.ShadingLanguageVersion);
         }
     }

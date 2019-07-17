@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -160,7 +157,7 @@ namespace SmashForge
                                 if (zorder[i] == pos)
                                 {
                                     if (type == Tex_Formats.L4 || type == Tex_Formats.A4) { i /= 2; bw++; }
-                                    o.writeBytes(colors[i]);
+                                    o.WriteBytes(colors[i]);
                                     break;
                                 }
                         }

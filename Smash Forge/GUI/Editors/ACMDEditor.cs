@@ -1,49 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using WeifenLuo.WinFormsUI.Docking;
-using SALT.Moveset.AnimCMD;
 
 namespace SmashForge
 {
-    public partial class ACMDEditor : DockContent
+    public partial class AcmdEditor : DockContent
     {
-        public ACMDEditor(string filename,ProjectTree parent)
+        public AcmdEditor(string filename,ProjectTree parent)
         {
             InitializeComponent();
-            openFile(filename);
+            OpenFile(filename);
             parentProject = parent;
         }
 
         public string fname;
         private ProjectTree parentProject;
 
-        private void openFile(string filename)
+        private void OpenFile(string filename)
         {
             fname = filename;
             Text = Path.GetFileName(filename);
             richTextBox1.Text = File.ReadAllText(filename);
         }
 
-        public void save()
+        public void Save()
         {
             using (StreamWriter f = new StreamWriter(fname))
             {
                 f.Write(Encoding.ASCII.GetBytes(richTextBox1.Text));
                 if(Text.EndsWith("*"))
                     Text = Text.Substring(0, Text.Length - 1);
-                parentProject.build();
+                parentProject.Build();
             }
         }
 
-        private void edit(object sender, EventArgs e)
+        private void Edit(object sender, EventArgs e)
         {
             if (!Text.EndsWith("*"))
                 Text += "*";

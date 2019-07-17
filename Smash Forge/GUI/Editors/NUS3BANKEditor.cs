@@ -1,19 +1,9 @@
-﻿using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Globalization;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using OpenTK.Graphics.OpenGL;
+﻿using System.Windows.Forms;
 using System.IO;
-using System.Threading;
 
 namespace SmashForge
 {
-    public partial class NUS3BANKEditor : Form
+    public partial class Nus3BankEditor : Form
     {
         private NUS3BANK selected;
         private FileSystemWatcher fw;
@@ -21,7 +11,7 @@ namespace SmashForge
         //private Dictionary<string, NUT.NUD_Texture> textureFromFile = new Dictionary<string, NUT.NUD_Texture>();
         private bool dontModify;
 
-        public NUS3BANKEditor()
+        public Nus3BankEditor()
         {
             InitializeComponent();
             FillForm();
@@ -32,7 +22,7 @@ namespace SmashForge
         {
             bankListBox.Items.Clear();
             soundListBox.Items.Clear();
-            foreach (NUS3BANK n in Runtime.SoundContainers)
+            foreach (NUS3BANK n in Runtime.soundContainers)
             {
                 bankListBox.Items.Add(n);
             }

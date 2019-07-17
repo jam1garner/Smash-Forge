@@ -130,8 +130,8 @@ namespace SmashForge.Filetypes.Melee
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     GXVertexDecompressor decom = new GXVertexDecompressor(Root);
-                    SMD smd = new SMD();
-                    smd.Bones = RenderBones;
+                    Smd smd = new Smd();
+                    smd.bones = RenderBones;
 
                     foreach(MeleeDataObjectNode n in DataObjects.Nodes)
                     {
@@ -141,12 +141,12 @@ namespace SmashForge.Filetypes.Melee
 
                         for(int i = 0; i < ind.Length; i+=3)
                         {
-                            SMDTriangle t = new SMDTriangle();
-                            t.Material = "defaultmaterial";
+                            SmdTriangle t = new SmdTriangle();
+                            t.material = "defaultmaterial";
                             t.v1 = GXVertexToSMDVertex(verts[ind[i]]);
                             t.v2 = GXVertexToSMDVertex(verts[ind[i+1]]);
                             t.v3 = GXVertexToSMDVertex(verts[ind[i+2]]);
-                            smd.Triangles.Add(t);
+                            smd.triangles.Add(t);
                         }
                     }
 
@@ -155,17 +155,17 @@ namespace SmashForge.Filetypes.Melee
             }
         }
 
-        public SMDVertex GXVertexToSMDVertex(GXVertex v)
+        public SmdVertex GXVertexToSMDVertex(GXVertex v)
         {
-            SMDVertex smdv = new SMDVertex()
+            SmdVertex smdv = new SmdVertex()
             {
-                Parent = 0,
-                P = new Vector3(v.Pos.X, v.Pos.Y, v.Pos.Z),
-                N = new Vector3(v.Nrm.X, v.Nrm.Y, v.Nrm.Z),
-                UV = new Vector2(v.TX0.X, v.TX0.Y),
+                parent = 0,
+                p = new Vector3(v.Pos.X, v.Pos.Y, v.Pos.Z),
+                n = new Vector3(v.Nrm.X, v.Nrm.Y, v.Nrm.Z),
+                uv = new Vector2(v.TX0.X, v.TX0.Y),
             };
-            smdv.Bones = v.N;
-            smdv.Weights = v.W;
+            smdv.bones = v.N;
+            smdv.weights = v.W;
             return smdv;
         }
 

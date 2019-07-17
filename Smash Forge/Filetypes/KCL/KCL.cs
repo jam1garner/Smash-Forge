@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
 using Syroot.NintenTools.MarioKart8.Collisions;
 using System.Windows.Forms;
-using System.Windows;
 using System.Drawing;
 using SFGraphics.GLObjects.Shaders;
 using SmashForge.Rendering;
@@ -237,7 +234,7 @@ namespace SmashForge
 
         public void Render(Matrix4 view)
         {
-            shader = OpenTKSharedResources.shaders["KCL"];
+            shader = OpenTkSharedResources.shaders["KCL"];
 
             shader.UseProgram();
             shader.EnableVertexAttributes();

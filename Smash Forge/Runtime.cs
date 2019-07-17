@@ -1,6 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using SALT.PARAMS;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -47,41 +46,41 @@ namespace SmashForge
             DarkOliveGreen = 0xFF232C16
         }
 
-        public static string MarioOdysseyGamePath = "";
+        public static string marioOdysseyGamePath = "";
 
         //public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
-        public static List<NUT> TextureContainers = new List<NUT>();
-        public static List<BNTX> BNTXList = new List<BNTX>();
-        public static List<FTEXContainer> FTEXContainerList = new List<FTEXContainer>();
+        public static List<NUT> textureContainers = new List<NUT>();
+        public static List<BNTX> bntxList = new List<BNTX>();
+        public static List<FTEXContainer> ftexContainerList = new List<FTEXContainer>();
 
-        public static List<NUS3BANK> SoundContainers = new List<NUS3BANK>();
+        public static List<NUS3BANK> soundContainers = new List<NUS3BANK>();
 
         public static SortedList<string, FileBase> OpenedFiles { get; set; }
 
-        public static VBN TargetVBN { get; set; }
-        public static LVD TargetLVD { get; set; }
-        public static BYAML TargetBYAML { get; set; }
+        public static VBN TargetVbn { get; set; }
+        public static LVD TargetLvd { get; set; }
+        public static BYAML TargetByaml { get; set; }
         public static PathBin TargetPath { get; set; }
         public static LIGH.LighBin TargetLigh { get; set; }
-        public static CMR0 TargetCMR0 { get; set; }
-        public static List<MTA> TargetMTA = new List<MTA>();
-        public static HitboxList hitboxList { get; set; }
-        public static VariableList variableViewer { get; set; }
+        public static CMR0 TargetCmr0 { get; set; }
+        public static List<MTA> targetMta = new List<MTA>();
+        public static HitboxList HitboxList { get; set; }
+        public static VariableList VariableViewer { get; set; }
 
         public static Params.LightSetParam lightSetParam = new Params.LightSetParam();
         public static string lightSetDirectory = "";
 
         public static ParamFile stprmParam = null;
 
-        public static int SelectedHitboxID { get; set; } = -1;
-        public static int SelectedHurtboxID { get; set; } = -1;
+        public static int SelectedHitboxId { get; set; } = -1;
+        public static int SelectedHurtboxId { get; set; } = -1;
         //Hitboxes can be removed halfway on an animation and set again multiple times, this list contains the IDs of the hitboxes that aren't visible
         public static List<int> HiddenHitboxes { get; set; } = new List<int>();
 
         public enum ViewportModes
         {
-            NORMAL = 0,
-            EDITVERT = 1
+            Normal = 0,
+            Editvert = 1
         }
 
         // The messages are annoying when batch rendering.
@@ -93,7 +92,7 @@ namespace SmashForge
         public static bool renderBones = true;
         public static float renderBoneNodeSize = 0.1f;
 
-        public static bool renderLVD = true;
+        public static bool renderLvd = true;
 
         public static bool enableVSync = false;
 
@@ -112,19 +111,19 @@ namespace SmashForge
         public static bool renderSpawns = true;
         public static bool renderItemSpawners = true;
         public static bool renderGeneralPoints = true;
-        public static bool renderOtherLVDEntries = true;
+        public static bool renderOtherLvdEntries = true;
         public static bool renderSwagZ = false;
         public static bool renderSwagY = false;
         public static bool renderBoundingSphere;
         public static bool renderHurtboxes = true;
         public static bool renderHurtboxesZone = true;
-        public static bool renderECB = false;
+        public static bool renderEcb = false;
         public static bool renderIndicators = false;
         public static bool renderSpecialBubbles = true;
         public static bool renderLedgeGrabboxes = false;
         public static bool renderReverseLedgeGrabboxes = false;
         public static bool renderTetherLedgeGrabboxes = false;
-        public static int hitboxRenderMode = Hitbox.RENDER_KNOCKBACK;
+        public static int hitboxRenderMode = Hitbox.RenderKnockback;
         public static int hitboxAlpha = 130;
         public static int hurtboxAlpha = 80;
         public static Color hitboxAnglesColor = Color.White;
@@ -137,8 +136,8 @@ namespace SmashForge
         public static Color grabboxColor = Color.Purple;
         public static Color searchboxColor = Color.DarkOrange;
         public static bool renderHitboxesNoOverlap;
-        public static bool LoadAndRenderATKD = false;
-        public static string currentATKD = null;
+        public static bool loadAndRenderAtkd = false;
+        public static string currentAtkd = null;
         public static bool useFrameDuration = true;
 
         public static Color counterBubbleColor = Color.FromArgb(0x89, 0x89, 0x89);
@@ -241,11 +240,11 @@ namespace SmashForge
         public static bool renderG = true;
         public static bool renderB = true;
         public static bool renderAlpha = true;
-        public static UVChannel uvChannel = UVChannel.Channel1;
+        public static UvChannel uvChannel = UvChannel.Channel1;
         public static bool debug1 = false;
         public static bool debug2 = false;
 
-        public static bool enableOpenTKDebugOutput = false;
+        public static bool enableOpenTkDebugOutput = false;
 
         // ETC
         public static string fighterDir = "";
@@ -253,7 +252,7 @@ namespace SmashForge
 
         // OpenGL System Information
         public static string renderer = "";
-        public static string openGLVersion = "";
+        public static string openGlVersion = "";
         public static string glslVersion = "";
 
         // Texture creation needs to be delayed until we actually have a context.
@@ -271,15 +270,15 @@ namespace SmashForge
             NormalMap = 4,
             VertColor = 5,
             AmbientOcclusion = 6,
-            UVCoords = 7,
-            UVTestPattern = 8,
+            UvCoords = 7,
+            UvTestPattern = 8,
             Tangents = 9,
             Bitangents = 10,
             LightSet = 11,
             SelectedBoneWeights = 12
         }
 
-        public enum UVChannel
+        public enum UvChannel
         {
             Channel1 = 1,
             Channel2 = 2,
@@ -301,16 +300,16 @@ namespace SmashForge
         }
 
         public static string TargetAnimString { get; set; }
-        public static string TargetMTAString { get; set; }
+        public static string TargetMtaString { get; set; }
 
         public static Dictionary<string, Animation> Animations { get; set; }
         public static Dictionary<string, MTA> MaterialAnimations { get; set; }
         public static MovesetManager Moveset { get; set; }
         public static CharacterParamManager ParamManager { get; set; }
-        public static PARAMEditor ParamManagerHelper { get; set; }
+        public static ParamEditor ParamManagerHelper { get; set; }
         public static Dictionary<string, int> ParamMoveNameIdMapping { get; set; }
-        public static ACMDPreviewEditor acmdEditor;
-        public static ForgeACMDScript gameAcmdScript;
+        public static AcmdPreviewEditor acmdEditor;
+        public static ForgeAcmdScript gameAcmdScript;
         public static Dictionary<uint, string> Animnames { get; set; }
         public static int scriptId = -1;
 

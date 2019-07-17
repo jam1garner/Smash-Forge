@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace SmashForge
@@ -26,33 +22,33 @@ namespace SmashForge
 
             Files = new Dictionary<string, byte[]>();
             FileData data = new FileData(filename);
-            data.Endian = Endianness.Big;
+            data.endian = Endianness.Big;
 
             if (data != null)
             {
-                var magic = data.readString();
+                var magic = data.ReadString();
                 if (magic == "PACK")
                 {
-                    data.Endian = Endianness.Little;
+                    data.endian = Endianness.Little;
                 }
-                data.seek(0x08);
-                var count = data.readInt();
+                data.Seek(0x08);
+                var count = data.ReadInt();
 
                 for (int i = 0; i < count; i++)
                 {
-                    data.seek(0x10 + (i * 4));
-                    var strOffset = data.readInt();
-                    data.seek(strOffset);
-                    strings.Add(data.readString());
+                    data.Seek(0x10 + (i * 4));
+                    var strOffset = data.ReadInt();
+                    data.Seek(strOffset);
+                    strings.Add(data.ReadString());
 
-                    data.seek(0x10 + (count * 4) + (i * 4));
-                    offsets.Add(data.readInt());
+                    data.Seek(0x10 + (count * 4) + (i * 4));
+                    offsets.Add(data.ReadInt());
 
-                    data.seek((count * 4) + (count * 4) + (i * 4) + 0x10);
-                    sizes.Add(data.readInt());
+                    data.Seek((count * 4) + (count * 4) + (i * 4) + 0x10);
+                    sizes.Add(data.ReadInt());
 
-                    data.seek(offsets[i]);
-                    var b = data.read(sizes[i]);
+                    data.Seek(offsets[i]);
+                    var b = data.Read(sizes[i]);
                     Files.Add(strings[i], b);
                 }
             }

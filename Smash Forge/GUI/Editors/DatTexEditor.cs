@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -35,7 +29,7 @@ namespace SmashForge
             }
         }
 
-        public void refreshTextureList()
+        public void RefreshTextureList()
         {
             listBox1.Items.Clear();
             foreach(int image in dat.tobjLinker.Keys)
@@ -60,7 +54,7 @@ namespace SmashForge
 
         private void DatTexEditor_Load(object sender, EventArgs e)
         {
-            refreshTextureList();
+            RefreshTextureList();
         }
 
         private void listBox1_MouseClick(object sender, MouseEventArgs e)

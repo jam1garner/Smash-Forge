@@ -224,7 +224,7 @@
             this.stripPos.Size = new System.Drawing.Size(28, 28);
             this.stripPos.Text = "toolStripButton2";
             this.stripPos.ToolTipText = "Position";
-            this.stripPos.Click += new System.EventHandler(this.viewStripButtonsBone);
+            this.stripPos.Click += new System.EventHandler(this.ViewStripButtonsBone);
             // 
             // stripRot
             // 
@@ -235,7 +235,7 @@
             this.stripRot.Size = new System.Drawing.Size(28, 28);
             this.stripRot.Text = "toolStripButton3";
             this.stripRot.ToolTipText = "Rotation";
-            this.stripRot.Click += new System.EventHandler(this.viewStripButtonsBone);
+            this.stripRot.Click += new System.EventHandler(this.ViewStripButtonsBone);
             // 
             // stripSca
             // 
@@ -246,7 +246,7 @@
             this.stripSca.Size = new System.Drawing.Size(28, 28);
             this.stripSca.Text = "toolStripButton4";
             this.stripSca.ToolTipText = "Scale";
-            this.stripSca.Click += new System.EventHandler(this.viewStripButtonsBone);
+            this.stripSca.Click += new System.EventHandler(this.ViewStripButtonsBone);
             // 
             // toolStripSeparator4
             // 

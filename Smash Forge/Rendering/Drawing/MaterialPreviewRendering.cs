@@ -32,7 +32,7 @@ namespace SmashForge.Rendering
         public static void RenderMaterialPresetPreviewsToFilesThreaded()
         {
             // Shaders weren't loaded.
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             renderAllPresetsToFiles = Task.Run(() =>
@@ -43,11 +43,11 @@ namespace SmashForge.Rendering
 
         private static void RenderPresetsToFiles()
         {
-            using (GameWindow gameWindow = OpenTKSharedResources.CreateGameWindowContext(width, height))
+            using (GameWindow gameWindow = OpenTkSharedResources.CreateGameWindowContext(width, height))
             {
                 // Resource creation.
                 screenTriangle = ScreenDrawing.CreateScreenTriangle();
-                shader = OpenTKSharedResources.shaders["NudSphere"];
+                shader = OpenTkSharedResources.shaders["NudSphere"];
 
                 // Skip thumbnail generation if the shader didn't compile.
                 if (!shader.LinkStatusIsOk)
@@ -61,7 +61,7 @@ namespace SmashForge.Rendering
 
                 foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
                 {
-                    Nud.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
+                    Nud.Material material = NudMaterialEditor.ReadMaterialListFromPreset(file)[0];
                     string presetName = Path.GetFileNameWithoutExtension(file);
                     RenderMaterialPresetToFile(presetName, material, dummyTextures);
                 }
@@ -81,7 +81,7 @@ namespace SmashForge.Rendering
                     "Nud\\SmashShader.frag",
                     "Utility\\Utility.frag"
             };
-            OpenTKSharedResources.shaders.Remove("NudSphere");
+            OpenTkSharedResources.shaders.Remove("NudSphere");
             ShaderTools.CreateAndAddShader("NudSphere", nudMatShaders);
         }
 

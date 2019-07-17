@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class NUS3BANKEditor
+    partial class Nus3BankEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -130,7 +130,7 @@
             this.Controls.Add(this.bankListBox);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "NUS3BANKEditor";
+            this.Name = "Nus3BankEditor";
             this.Text = "NUS3BANKEditor";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

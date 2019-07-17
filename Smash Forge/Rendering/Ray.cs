@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 using System.Windows.Forms;
 using SFGraphics.Cameras;
@@ -13,8 +9,8 @@ namespace SmashForge.Rendering
     public class Ray
     {
         public Vector3 p1, p2;
-        private int Width, Height;
-        public float mouse_x, mouse_y;
+        private int width, height;
+        public float mouseX, mouseY;
 
         public Ray(Vector3 p1, Vector3 p2)
         {
@@ -22,33 +18,33 @@ namespace SmashForge.Rendering
             this.p2 = p2;
         }
 
-        public Ray(Camera Camera, GLControl Viewport)
+        public Ray(Camera camera, GLControl viewport)
         {
-            mouse_x = Viewport.PointToClient(Cursor.Position).X;
-            mouse_y = Viewport.PointToClient(Cursor.Position).Y;
+            mouseX = viewport.PointToClient(Cursor.Position).X;
+            mouseY = viewport.PointToClient(Cursor.Position).Y;
 
-            float x = (2.0f * mouse_x) / Viewport.Width - 1.0f;
-            float y = 1.0f - (2.0f * mouse_y) / Viewport.Height;
-            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), Camera.MvpMatrix.Inverted());
-            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), Camera.MvpMatrix.Inverted());
+            float x = (2.0f * mouseX) / viewport.Width - 1.0f;
+            float y = 1.0f - (2.0f * mouseY) / viewport.Height;
+            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), camera.MvpMatrix.Inverted());
+            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), camera.MvpMatrix.Inverted());
 
             p1 = va.Xyz;
             p2 = p1 - (va - (va + vb)).Xyz * 100;
 
-            Width = Viewport.Width;
-            Height = Viewport.Height;
+            width = viewport.Width;
+            height = viewport.Height;
         }
 
         public void Unproject(Camera camera)
         {
             p1 =  (camera.MvpMatrix.Inverted() * new Vector4(
-                2.0f * (mouse_x / Width) - 1.0f,
-                2.0f * ((Height - mouse_y) / Height) - 1.0f,
+                2.0f * (mouseX / width) - 1.0f,
+                2.0f * ((height - mouseY) / height) - 1.0f,
                 2.0f * 0 - 1.0f,
                 1.0f)).Xyz;
             p2 = (camera.MvpMatrix.Inverted() * new Vector4(
-                2.0f * (mouse_x / Width) - 1.0f,
-                2.0f * ((Height - mouse_y) / Height) - 1.0f,
+                2.0f * (mouseX / width) - 1.0f,
+                2.0f * ((height - mouseY) / height) - 1.0f,
                 2.0f * 1 - 1.0f,
                 1.0f)).Xyz;
         }
@@ -63,7 +59,7 @@ namespace SmashForge.Rendering
             return Math.Pow(closest.X - p1.X, 2) + Math.Pow(closest.Y - p1.Y, 2) + Math.Pow(closest.Z - p1.Z, 2);
         }
 
-        public bool intersectCircle(Vector3 pos, float r, int smooth)
+        public bool IntersectCircle(Vector3 pos, float r, int smooth)
         {
             float t = 2 * (float)Math.PI / smooth;
             float tf = (float)Math.Tan(t);

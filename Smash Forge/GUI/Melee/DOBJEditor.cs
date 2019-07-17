@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MeleeLib.GCX;
 using MeleeLib.DAT;
@@ -20,7 +15,7 @@ namespace SmashForge.Gui.Melee
         private MeleeDataObjectNode meleeDataObjectNode = null;
 
 
-        
+
         private DatDOBJ DOBJ;
         private Bitmap TempBitmap;
 
@@ -110,7 +105,7 @@ namespace SmashForge.Gui.Melee
                 //TempBitmap.Dispose();
                 TempBitmap = null;
             }
-                EnabledPanelContents(tabControl2, false);
+            EnabledPanelContents(tabControl2, false);
             ButtonChooseTexture.Enabled = false;
 
             if (textureListBox.SelectedItem != null)
@@ -122,7 +117,7 @@ namespace SmashForge.Gui.Melee
                     TempBitmap = selectedTexture.Texture.GetStaticBitmap();
 
                 textureFlagsTB.Text = selectedTexture.Texture.UnkFlags.ToString("X");
-                
+
                 CBWrapS.SelectedItem = (selectedTexture.Texture.WrapS);
                 CBWrapT.SelectedItem = (selectedTexture.Texture.WrapT);
 
@@ -203,7 +198,7 @@ namespace SmashForge.Gui.Melee
 
         private void buttonImportTexture_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void CBWrapT_SelectedIndexChanged(object sender, EventArgs e)
@@ -244,8 +239,8 @@ namespace SmashForge.Gui.Melee
 
         private void TBPixelFlags_TextChanged(object sender, EventArgs e)
         {
-            if(DOBJ.Material.PixelProcessing != null)
-            DOBJ.Material.PixelProcessing.Flags = (byte)GuiTools.TryParseTBInt(pixelFlagsTB, true);
+            if (DOBJ.Material.PixelProcessing != null)
+                DOBJ.Material.PixelProcessing.Flags = (byte)GuiTools.TryParseTBInt(pixelFlagsTB, true);
         }
 
         private void CBAlphaOp_SelectedValueChanged(object sender, EventArgs e)
@@ -316,21 +311,21 @@ namespace SmashForge.Gui.Melee
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(selectedTexture != null)
-            using (MeleeTextureSelector ts = new MeleeTextureSelector(meleeDataObjectNode, selectedTexture))
-            {
-                if(ts.ShowDialog() == DialogResult.OK)
+            if (selectedTexture != null)
+                using (MeleeTextureSelector ts = new MeleeTextureSelector(meleeDataObjectNode, selectedTexture))
                 {
-                    meleeDataObjectNode.RefreshRenderTextures();
-                    pictureBox1.Image = selectedTexture.Texture.GetStaticBitmap();
+                    if (ts.ShowDialog() == DialogResult.OK)
+                    {
+                        meleeDataObjectNode.RefreshRenderTextures();
+                        pictureBox1.Image = selectedTexture.Texture.GetStaticBitmap();
+                    }
                 }
-            }
         }
 
         private void TBBlending_TextChanged(object sender, EventArgs e)
         {
             float v;
-            if(float.TryParse(TBBlending.Text, out v))
+            if (float.TryParse(TBBlending.Text, out v))
                 selectedTexture.Texture.Blending = v;
         }
 
@@ -390,7 +385,7 @@ namespace SmashForge.Gui.Melee
             {
                 Control ctrl = cons.Dequeue();
                 ctrl.Enabled = enabled;
-                foreach(Control c in ctrl.Controls)
+                foreach (Control c in ctrl.Controls)
                     cons.Enqueue(c);
             }
         }
@@ -400,8 +395,8 @@ namespace SmashForge.Gui.Melee
             if (CBEnableLOD.Checked)
             {
                 EnabledPanelContents(tableLayoutPanel4, true);
-                if(selectedTexture.Texture.LOD == null)
-                        selectedTexture.Texture.LOD = new DatTextureLOD();
+                if (selectedTexture.Texture.LOD == null)
+                    selectedTexture.Texture.LOD = new DatTextureLOD();
                 CBAnisotrophy.SelectedItem = selectedTexture.Texture.LOD.Anisotropy;
                 CBMinFilter.SelectedItem = selectedTexture.Texture.LOD.MinFilter;
                 TBBias.Text = selectedTexture.Texture.LOD.Bias.ToString();

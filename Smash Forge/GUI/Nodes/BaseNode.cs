@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using System.IO;
 
 namespace SmashForge
@@ -25,9 +20,9 @@ namespace SmashForge
             ContextMenu.MenuItems.Add(openContain);
         }
 
-        public BaseNode(string FilePath) : this()
+        public BaseNode(string filePath) : this()
         {
-            FileInfo = new FileInfo(FilePath);
+            FileInfo = new FileInfo(filePath);
             Text = FileInfo.Name;
         }
 
@@ -37,9 +32,9 @@ namespace SmashForge
         }
     }
 
-    public class NUDNode : BaseNode
+    public class NudNode : BaseNode
     {
-        public NUDNode()
+        public NudNode()
         {
             ImageKey = "nud";
             SelectedImageKey = "nud";
@@ -49,16 +44,16 @@ namespace SmashForge
             
         }
 
-        public NUDNode(string FilePath) : this()
+        public NudNode(string filePath) : this()
         {
-            FileInfo = new FileInfo(FilePath);
+            FileInfo = new FileInfo(filePath);
             Text = FileInfo.Name;
         }
     }
 
-    public class NUTNode : BaseNode
+    public class NutNode : BaseNode
     {
-        public NUTNode()
+        public NutNode()
         {
             ImageKey = "nut";
             SelectedImageKey = "nut";
@@ -68,16 +63,16 @@ namespace SmashForge
             
         }
 
-        public NUTNode(string FilePath) : this()
+        public NutNode(string filePath) : this()
         {
-            FileInfo = new FileInfo(FilePath);
+            FileInfo = new FileInfo(filePath);
             Text = FileInfo.Name;
         }
     }
 
-    public class VBNNode : BaseNode
+    public class VbnNode : BaseNode
     {
-        public VBNNode()
+        public VbnNode()
         {
             ImageKey = "vbn";
             SelectedImageKey = "vbn";
@@ -87,9 +82,9 @@ namespace SmashForge
             
         }
 
-        public VBNNode(string FilePath) : this()
+        public VbnNode(string filePath) : this()
         {
-            FileInfo = new FileInfo(FilePath);
+            FileInfo = new FileInfo(filePath);
             Text = FileInfo.Name;
         }
     }

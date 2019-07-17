@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class PARAMEditor
+    partial class ParamEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -57,7 +57,7 @@
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView1.Size = new System.Drawing.Size(297, 457);
             this.dataGridView1.TabIndex = 5;
-            this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.edit);
+            this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.Edit);
             // 
             // treeView1
             // 
@@ -67,7 +67,7 @@
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(155, 457);
             this.treeView1.TabIndex = 6;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.select);
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.Select);
             this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
             this.treeView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseDown);
             // 
@@ -103,7 +103,7 @@
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.treeView1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "PARAMEditor";
+            this.Name = "ParamEditor";
             this.Text = "PARAM Editor";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);

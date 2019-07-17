@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL;
-using OpenTK;
 using Syroot.NintenTools.Bfres;
 using System.Windows.Forms;
 using SFTex = SFGraphics.GLObjects.Textures;
@@ -57,7 +52,7 @@ namespace SmashForge
             int swizzle = (int)tex.Swizzle;
             int pitch = (int)tex.Pitch;
 
-            texture.data = GTX.swizzleBC(tex.Data, texture.width, texture.height, format, (int)tex.TileMode, pitch, swizzle);
+            texture.data = Gtx.SwizzleBc(tex.Data, texture.width, texture.height, format, (int)tex.TileMode, pitch, swizzle);
             Text = tex.Name;
 
 
@@ -82,34 +77,34 @@ namespace SmashForge
 
             switch (format)
             {
-                case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM):
+                case ((int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTBc1Unorm):
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                     break;
-                case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_SRGB):
+                case ((int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTBc1Srgb):
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                     break;
-                case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_UNORM):
+                case ((int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTBc2Unorm):
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
                     break;
-                case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_SRGB):
+                case ((int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTBc2Srgb):
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
                     break;
-                case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_UNORM):
+                case ((int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTBc3Unorm):
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                     break;
-                case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_SRGB):
+                case ((int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTBc3Srgb):
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext;
                     break;
-                case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM):
+                case ((int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTBc4Unorm):
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedRedRgtc1;
                     break;
-                case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM):
+                case ((int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTBc4Snorm):
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedSignedRedRgtc1;
                     break;
-                case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_UNORM):
+                case ((int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTBc5Unorm):
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
                     break;
-                case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_SNORM):
+                case ((int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTBc5Snorm):
                     //OpenTK doesn't load BC5 SNORM textures right so I'll use the same decompress method bntx has
                     byte[] fixBC5 = DDS_Decompress.DecompressBC5(texture.data, texture.width, texture.height, true);
                     texture.data = fixBC5;
@@ -117,7 +112,7 @@ namespace SmashForge
                     texture.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
 
                     break;
-                case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM):
+                case ((int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTcsR8G8B8A8Unorm):
                     texture.pixelInternalFormat = PixelInternalFormat.Rgba;
                     texture.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;

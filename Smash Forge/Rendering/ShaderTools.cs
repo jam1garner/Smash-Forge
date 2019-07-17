@@ -26,7 +26,7 @@ namespace SmashForge.Rendering
                 DeleteShaderBinaries(forceBinaryUpdate);
 
             // Reset the shaders first so that shaders can be replaced.
-            OpenTKSharedResources.shaders.Clear();
+            OpenTkSharedResources.shaders.Clear();
             SetUpAllShaders();
 
             System.Diagnostics.Debug.WriteLine("Shader Setup: {0} ms", stopwatch.ElapsedMilliseconds);
@@ -145,10 +145,10 @@ namespace SmashForge.Rendering
         
         public static void CreateAndAddShader(string shaderProgramName, params string[] shaderRelativePaths)
         {
-            if (!OpenTKSharedResources.shaders.ContainsKey(shaderProgramName))
+            if (!OpenTkSharedResources.shaders.ContainsKey(shaderProgramName))
             {
                 Shader shader = CreateShader(shaderProgramName, shaderRelativePaths);
-                OpenTKSharedResources.shaders.Add(shaderProgramName, shader);
+                OpenTkSharedResources.shaders.Add(shaderProgramName, shader);
             }
         }
 
@@ -263,10 +263,10 @@ namespace SmashForge.Rendering
         {
             // Export error logs for all the shaders.
             List<String> compileErrorList = new List<String>(); 
-            int successfulCompilations = OpenTKSharedResources.shaders.Count;
-            foreach (string shaderName in OpenTKSharedResources.shaders.Keys)
+            int successfulCompilations = OpenTkSharedResources.shaders.Count;
+            foreach (string shaderName in OpenTkSharedResources.shaders.Keys)
             {
-                if (!OpenTKSharedResources.shaders[shaderName].LinkStatusIsOk)
+                if (!OpenTkSharedResources.shaders[shaderName].LinkStatusIsOk)
                 {
                     compileErrorList.Add(shaderName);
                     successfulCompilations -= 1;
@@ -278,13 +278,13 @@ namespace SmashForge.Rendering
                     Directory.CreateDirectory(errorLogDirectory);
 
                 // Export the error log.
-                string logExport = OpenTKSharedResources.shaders[shaderName].GetErrorLog();
+                string logExport = OpenTkSharedResources.shaders[shaderName].GetErrorLog();
                 File.WriteAllText(errorLogDirectory + shaderName + " Error Log.txt", logExport.Replace("\n", Environment.NewLine));
             }
 
             // Display how many shaders correctly compiled.
             string message = string.Format("{0} of {1} shaders compiled successfully. Error logs have been saved to the Shader Error Logs directory.\n",
-                successfulCompilations, OpenTKSharedResources.shaders.Count);
+                successfulCompilations, OpenTkSharedResources.shaders.Count);
 
             // Display the shaders that didn't compile.
             if (compileErrorList.Count > 0)

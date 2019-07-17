@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
 using System.ComponentModel;
 using System.IO;
@@ -80,27 +76,27 @@ namespace SmashForge
             VGMStreamNative.RenderVGMStream(buffer, buffer.Length / 2, vgm);
 
             FileOutput o = new FileOutput();
-            o.Endian = Endianness.Little;
+            o.endian = Endianness.Little;
 
             o.WriteString("RIFF");
-            o.writeInt(0);
+            o.WriteInt(0);
             o.WriteString("WAVEfmt ");
 
-            o.writeInt(0x10);
-            o.writeShort(1);
-            o.writeShort(channelCount);
-            o.writeInt(samplerate);
-            o.writeInt(size);
-            o.writeShort(2);
-            o.writeShort(0x10);
+            o.WriteInt(0x10);
+            o.WriteShort(1);
+            o.WriteShort(channelCount);
+            o.WriteInt(samplerate);
+            o.WriteInt(size);
+            o.WriteShort(2);
+            o.WriteShort(0x10);
 
             o.WriteString("data");
-            o.writeInt(buffer.Length);
+            o.WriteInt(buffer.Length);
 
             for (int i = 0; i < buffer.Length / 2; i++)
-                o.writeShort(buffer[i]);
+                o.WriteShort(buffer[i]);
 
-            o.writeIntAt(o.Size() - 8, 4);
+            o.WriteIntAt(o.Size() - 8, 4);
 
             VGMStreamNative.CloseVGMStream(vgm);
             File.Delete("temp.idsp");
@@ -110,26 +106,26 @@ namespace SmashForge
         public void Read(string fname)
         {
             FileData d = new FileData(fname);
-            d.Endian = System.IO.Endianness.Little;
+            d.endian = System.IO.Endianness.Little;
 
-            d.skip(4); // RIFF
-            int riffsize = d.readInt();
-            d.skip(4); //WAVE
+            d.Skip(4); // RIFF
+            int riffsize = d.ReadInt();
+            d.Skip(4); //WAVE
 
-            d.skip(4); //fmt
-            int formatsize = d.readInt();
-            int audio_format = d.readUShort();
-            int channelCount = d.readUShort();
-            int sampleRate = d.readInt();
-            int byte_rate = d.readInt();
-            int blockalign = d.readUShort();
-            int bps = d.readUShort();
+            d.Skip(4); //fmt
+            int formatsize = d.ReadInt();
+            int audio_format = d.ReadUShort();
+            int channelCount = d.ReadUShort();
+            int sampleRate = d.ReadInt();
+            int byte_rate = d.ReadInt();
+            int blockalign = d.ReadUShort();
+            int bps = d.ReadUShort();
 
-            d.skip(4); // data
-            int datasize = d.readInt();
+            d.Skip(4); // data
+            int datasize = d.ReadInt();
 
 
-            byte[] data = d.getSection(d.pos(), datasize);
+            byte[] data = d.GetSection(d.Pos(), datasize);
 
             Play(data, channelCount, bps, sampleRate);
         }

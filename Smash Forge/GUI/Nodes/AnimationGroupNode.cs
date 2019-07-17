@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
 using System.Windows.Forms;
-using System.ComponentModel;
-
 using System.IO;
 
 namespace SmashForge
 {
     public class AnimationGroupNode : TreeNode
     {
-        public bool UseGroupName = false;
+        public bool useGroupName = false;
 
         public AnimationGroupNode()
         {
@@ -57,7 +51,7 @@ namespace SmashForge
                 ofd.Title = "Animation Folder";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    String Files = ofd.SelectedPath;
+                    String files = ofd.SelectedPath;
 
                     string[] fls = Directory.GetFiles(ofd.SelectedPath);
 
@@ -125,9 +119,9 @@ namespace SmashForge
                         else if (filename.EndsWith(".smd"))
                         {
                             var anim = new Animation(filename);
-                            if (Runtime.TargetVBN == null)
-                                Runtime.TargetVBN = new VBN();
-                            SMD.read(filename, anim, Runtime.TargetVBN);
+                            if (Runtime.TargetVbn == null)
+                                Runtime.TargetVbn = new VBN();
+                            Smd.Read(filename, anim, Runtime.TargetVbn);
                             Nodes.Add(anim);
                         }
                         if (filename.EndsWith(".omo"))
@@ -137,50 +131,50 @@ namespace SmashForge
                             Nodes.Add(a);
                         }
                         if (filename.EndsWith(".chr0"))
-                            Nodes.Add(CHR0.read(new FileData(filename), Runtime.TargetVBN));
+                            Nodes.Add(CHR0.read(new FileData(filename), Runtime.TargetVbn));
                         if (filename.EndsWith(".anim"))
-                            Nodes.Add(ANIM.read(filename, Runtime.TargetVBN));
+                            Nodes.Add(ANIM.read(filename, Runtime.TargetVbn));
                     }
                 }
             }
         }
 
-        public static String FileName;
-        public static TreeNode Node;
+        public static String fileName;
+        public static TreeNode node;
 
         public void Save(object sender, EventArgs args)
         {
             //BackgroundWorker worker = sender as BackgroundWorker;
 
             float f = 1;
-            if (FileName.ToLower().EndsWith(".bch"))
+            if (fileName.ToLower().EndsWith(".bch"))
             {
                 List<Animation> anims = new List<Animation>();
-                foreach (Animation a in ((TreeNode)Node).Nodes)
+                foreach (Animation a in ((TreeNode)node).Nodes)
                 {
                     //worker.ReportProgress((int)((f / Node.Nodes.Count) * 100f));
                     f++;
                     anims.Add(a);
                 }
-                BCH_Animation.Rebuild(FileName, anims);
+                BCH_Animation.Rebuild(fileName, anims);
             }
-            if (FileName.ToLower().EndsWith(".pac"))
+            if (fileName.ToLower().EndsWith(".pac"))
             {
                 var pac = new PAC();
-                foreach (Animation anim in Node.Nodes)
+                foreach (Animation anim in node.Nodes)
                 {
                     //worker.ReportProgress((int)((f / Node.Nodes.Count) * 100f));
                     f++;
                     //Console.WriteLine("Working on " + anim.Text + " " + (anim.Tag is FileData));
                     var bytes = new byte[1];
                     if (anim.Tag != null && anim.Tag is FileData)
-                        bytes = ((FileData)anim.Tag).getSection(0, ((FileData)anim.Tag).size());
+                        bytes = ((FileData)anim.Tag).GetSection(0, ((FileData)anim.Tag).Size());
                     else
-                        bytes = OMOOld.CreateOMOFromAnimation(anim, Runtime.TargetVBN);
+                        bytes = OMOOld.CreateOMOFromAnimation(anim, Runtime.TargetVbn);
 
-                    pac.Files.Add((UseGroupName ? Text : "") + (anim.Text.EndsWith(".omo") ? anim.Text : anim.Text + ".omo"), bytes);
+                    pac.Files.Add((useGroupName ? Text : "") + (anim.Text.EndsWith(".omo") ? anim.Text : anim.Text + ".omo"), bytes);
                 }
-                pac.Save(FileName);
+                pac.Save(fileName);
             }
         }
         
@@ -188,7 +182,7 @@ namespace SmashForge
         {
             TreeNode n = this;
 
-            if(Runtime.TargetVBN == null)
+            if(Runtime.TargetVbn == null)
             {
                 MessageBox.Show("You must have a bone-set (VBN) selected to save animations.");
                 return;
@@ -208,8 +202,8 @@ namespace SmashForge
                         if (sf.FileName.ToLower().EndsWith(".bch"))
                             MessageBox.Show("Note: Only animations with linear interpolation are currently supported.");
 
-                        Node = n;
-                        FileName = sf.FileName;
+                        node = n;
+                        fileName = sf.FileName;
 
                         Save(null, null);
 

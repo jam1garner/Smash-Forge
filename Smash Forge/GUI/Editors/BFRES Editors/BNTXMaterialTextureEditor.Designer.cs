@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class BNTXMaterialTextureEditor
+    partial class BntxMaterialTextureEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -113,7 +113,7 @@
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.previewGroupBox);
-            this.Name = "BNTXMaterialTextureEditor";
+            this.Name = "BntxMaterialTextureEditor";
             this.Text = "UV Viewer";
             this.Load += new System.EventHandler(this.BNTXMaterialTextureEditor_Load);
             this.previewGroupBox.ResumeLayout(false);

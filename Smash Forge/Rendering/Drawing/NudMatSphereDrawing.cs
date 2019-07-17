@@ -1,6 +1,4 @@
-﻿using System;
-using OpenTK.Graphics.OpenGL;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
 using SFGenericModel.Materials;

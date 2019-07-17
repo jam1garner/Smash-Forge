@@ -14,7 +14,7 @@ namespace SmashForge
     {
 
         public static ImageList iconList = new ImageList();
-        private ContextMenu MainContextMenu;
+        private ContextMenu mainContextMenu;
 
         public MeshList()
         {
@@ -41,15 +41,15 @@ namespace SmashForge
             iconList.Images.Add("script", Properties.Resources.node_file);
             filesTreeView.ImageList = iconList;
 
-            MainContextMenu = new ContextMenu();
-            MenuItem newMC = new MenuItem("Create Blank Model");
-            newMC.Click += delegate (object sender, EventArgs e)
+            mainContextMenu = new ContextMenu();
+            MenuItem newMc = new MenuItem("Create Blank Model");
+            newMc.Click += delegate (object sender, EventArgs e)
             {
                 Console.WriteLine("Adding");
                 filesTreeView.Nodes.Add(new ModelContainer() { Text = "Model_" + filesTreeView.Nodes.Count });
                 RefreshNodes();
             };
-            MainContextMenu.MenuItems.Add(newMC);
+            mainContextMenu.MenuItems.Add(newMc);
 
         }
 
@@ -106,11 +106,11 @@ namespace SmashForge
             MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
-        private void polySelected(Nud.Polygon poly, string name)
+        private void PolySelected(Nud.Polygon poly, string name)
         {
             MainForm.Instance.OpenMats(poly,name);
         }
-        private void bfresShapeSelected(BFRES.Mesh poly, string name)
+        private void BfresShapeSelected(BFRES.Mesh poly, string name)
         {
             MainForm.Instance.OpenBfresMats(poly, name);
         }
@@ -138,17 +138,17 @@ namespace SmashForge
             }
             else if (e.Node is ModelContainer)
             {
-                Runtime.TargetVBN = ((ModelContainer)e.Node).VBN;
+                Runtime.TargetVbn = ((ModelContainer)e.Node).VBN;
             }
             else if (filesTreeView.SelectedNode is VBN)
             {
-                Runtime.TargetVBN = ((VBN)e.Node);
+                Runtime.TargetVbn = ((VBN)e.Node);
             }
             else if (filesTreeView.SelectedNode is BCH_Model)
             {
-                Runtime.TargetVBN = ((BCH_Model)e.Node).skeleton;
+                Runtime.TargetVbn = ((BCH_Model)e.Node).skeleton;
             }
-            else if (filesTreeView.SelectedNode is BCH_Texture)
+            else if (filesTreeView.SelectedNode is BchTexture)
             {
                 MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
             }
@@ -166,7 +166,7 @@ namespace SmashForge
             }
             else if (filesTreeView.SelectedNode is MeleeRootNode)
             {
-                Runtime.TargetVBN = ((MeleeRootNode)e.Node).RenderBones;
+                Runtime.TargetVbn = ((MeleeRootNode)e.Node).RenderBones;
             }
             else if (filesTreeView.SelectedNode is MeleeJointAnimationNode)
             {
@@ -350,7 +350,7 @@ namespace SmashForge
             }
         }
 
-        public void mergeModel()
+        public void MergeModel()
         {
             if (filesTreeView.SelectedNode is Nud)
             {
@@ -384,7 +384,7 @@ namespace SmashForge
                 // Check for null first to avoid exceptions.
                 if (filesTreeView.SelectedNode == null)
                 {
-                    MainContextMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
+                    mainContextMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
                 }
                 else if (filesTreeView.SelectedNode is Nud.Mesh)
                 {
@@ -450,7 +450,7 @@ namespace SmashForge
 
         private void editMaterialToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            polySelected((Nud.Polygon)filesTreeView.SelectedNode, $"{filesTreeView.SelectedNode.Parent.Text} {filesTreeView.SelectedNode.Text}");
+            PolySelected((Nud.Polygon)filesTreeView.SelectedNode, $"{filesTreeView.SelectedNode.Parent.Text} {filesTreeView.SelectedNode.Text}");
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -521,7 +521,7 @@ namespace SmashForge
             makeMetal.Show();
         }
 
-        private void merge(TreeNode n)
+        private void Merge(TreeNode n)
         {
             ModelContainer originalModelContainer = (ModelContainer)filesTreeView.SelectedNode;
             ModelContainer newModelContainer = (ModelContainer)n;
@@ -862,7 +862,7 @@ namespace SmashForge
             TreeNode n = filesTreeView.SelectedNode.NextNode;
             if (n != null)
             {
-                merge(n);
+                Merge(n);
             }
         }
 
@@ -871,7 +871,7 @@ namespace SmashForge
             TreeNode n = filesTreeView.SelectedNode.PrevNode;
             if (n != null)
             {
-                merge(n);
+                Merge(n);
             }
         }
 
@@ -1454,7 +1454,7 @@ namespace SmashForge
 
         private void openMaterialEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bfresShapeSelected((BFRES.Mesh)filesTreeView.SelectedNode, $"");
+            BfresShapeSelected((BFRES.Mesh)filesTreeView.SelectedNode, $"");
         }
 
         private void openPolygonEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1538,7 +1538,7 @@ namespace SmashForge
 
             BFRES.Mesh mesh = (BFRES.Mesh)filesTreeView.SelectedNode;
 
-            BFRESGenerateTanBitanAndFixVertType(mesh);
+            BfresGenerateTanBitanAndFixVertType(mesh);
 
             // Update the data for rendering.
             foreach (TreeNode con in filesTreeView.Nodes)
@@ -1551,7 +1551,7 @@ namespace SmashForge
             }
         }
 
-        private static void BFRESGenerateTanBitanAndFixVertType(BFRES.Mesh mesh)
+        private static void BfresGenerateTanBitanAndFixVertType(BFRES.Mesh mesh)
         {
             // This already checks for the appropriate vertex type.
             mesh.CalculateTangentBitangent();
@@ -1670,7 +1670,7 @@ namespace SmashForge
 
         }
 
-        public void UpdateBFRESMeshList()
+        public void UpdateBfresMeshList()
         {
 
             // Update the data for rendering.
@@ -1739,7 +1739,7 @@ namespace SmashForge
             BFRES.FMDL_Model mdl = (BFRES.FMDL_Model)filesTreeView.SelectedNode;
 
             mdl.GenerateTansBitansEachMesh();
-            UpdateBFRESMeshList();
+            UpdateBfresMeshList();
         }
 
         private void recalculateToolStripMenuItem3_Click(object sender, EventArgs e)
@@ -1750,7 +1750,7 @@ namespace SmashForge
             BFRES.FMDL_Model mdl = (BFRES.FMDL_Model)filesTreeView.SelectedNode;
 
             mdl.GenerateNormalEachMesh();
-            UpdateBFRESMeshList();
+            UpdateBfresMeshList();
         }
 
         private void smoothToolStripMenuItem3_Click(object sender, EventArgs e)
@@ -1761,7 +1761,7 @@ namespace SmashForge
             BFRES.FMDL_Model mdl = (BFRES.FMDL_Model)filesTreeView.SelectedNode;
 
             mdl.SmoothNormalEachMesh();
-            UpdateBFRESMeshList();
+            UpdateBfresMeshList();
         }
 
         private void copyChannel1To2ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1771,7 +1771,7 @@ namespace SmashForge
 
             BFRES.Mesh m = (BFRES.Mesh)filesTreeView.SelectedNode;
             m.CopyUVChannel2();
-            UpdateBFRESMeshList();
+            UpdateBfresMeshList();
         }
 
         private void singleBindToolStripMenuItem_Click(object sender, EventArgs e)

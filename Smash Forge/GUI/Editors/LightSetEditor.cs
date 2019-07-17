@@ -70,7 +70,7 @@ namespace SmashForge.Gui.Editors
             Bitmap colorImage = new Bitmap(64, 64);
             using (Graphics graph = Graphics.FromImage(colorImage))
             {
-                Rectangle ImageSize = new Rectangle(0, 0, 64, 64);
+                Rectangle imageSize = new Rectangle(0, 0, 64, 64);
                 graph.Clear(Nud.lightSetColorByIndex[groupIndex]);
             }
 
@@ -854,7 +854,7 @@ namespace SmashForge.Gui.Editors
 
         private void charDifColorGLControl_Load(object sender, EventArgs e)
         {
-            OpenTKSharedResources.InitializeSharedResources();
+            OpenTkSharedResources.InitializeSharedResources();
         }
 
         private void charLightsTab_Click(object sender, EventArgs e)
@@ -940,7 +940,7 @@ namespace SmashForge.Gui.Editors
 
         private void charDifColorGLControl_Paint(object sender, PaintEventArgs e)
         {
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             charDifColorGLControl.MakeCurrent();
@@ -958,7 +958,7 @@ namespace SmashForge.Gui.Editors
 
         private void areaColorGLControl_Paint(object sender, PaintEventArgs e)
         {
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             areaColorGLControl.MakeCurrent();

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Windows.Forms;
 using OpenTK;
-using System.Drawing;
 
 namespace SmashForge
 {
@@ -20,7 +18,7 @@ namespace SmashForge
 
         public MBN mbn;
         public List<BCH_Model> models = new List<BCH_Model>();
-        public Dictionary<string, BCH_Texture> textures = new Dictionary<string, BCH_Texture>();
+        public Dictionary<string, BchTexture> textures = new Dictionary<string, BchTexture>();
         public List<TreeNode> tree = new List<TreeNode>();
         public VBN bones = new VBN();
 
@@ -31,109 +29,109 @@ namespace SmashForge
         {
             bchHeader header = new bchHeader();
             FileData f = new FileData(filename);
-            f.Endian = System.IO.Endianness.Little;
+            f.endian = System.IO.Endianness.Little;
 
-            f.skip(4);
-            header.backwardCompatibility = f.readByte();
-            header.forwardCompatibility = f.readByte();
-            header.version = f.readUShort();
+            f.Skip(4);
+            header.backwardCompatibility = f.ReadByte();
+            header.forwardCompatibility = f.ReadByte();
+            header.version = f.ReadUShort();
 
-            header.mainHeaderOffset = f.readInt();
-            header.stringTableOffset = f.readInt();
-            header.gpuCommandsOffset = f.readInt();
-            header.dataOffset = f.readInt();
-            if (header.backwardCompatibility > 0x20) header.dataExtendedOffset = f.readInt();
-            header.relocationTableOffset = f.readInt();
+            header.mainHeaderOffset = f.ReadInt();
+            header.stringTableOffset = f.ReadInt();
+            header.gpuCommandsOffset = f.ReadInt();
+            header.dataOffset = f.ReadInt();
+            if (header.backwardCompatibility > 0x20) header.dataExtendedOffset = f.ReadInt();
+            header.relocationTableOffset = f.ReadInt();
 
-            header.mainHeaderLength = f.readInt();
-            header.stringTableLength = f.readInt();
-            header.gpuCommandsLength = f.readInt();
-            header.dataLength = f.readInt();
-            if (header.backwardCompatibility > 0x20) header.dataExtendedLength = f.readInt();
-            header.relocationTableLength = f.readInt();
+            header.mainHeaderLength = f.ReadInt();
+            header.stringTableLength = f.ReadInt();
+            header.gpuCommandsLength = f.ReadInt();
+            header.dataLength = f.ReadInt();
+            if (header.backwardCompatibility > 0x20) header.dataExtendedLength = f.ReadInt();
+            header.relocationTableLength = f.ReadInt();
 
-            header.uninitializedDataSectionLength = f.readInt();
-            header.uninitializedDescriptionSectionLength = f.readInt();
+            header.uninitializedDataSectionLength = f.ReadInt();
+            header.uninitializedDescriptionSectionLength = f.ReadInt();
 
             if (header.backwardCompatibility > 7)
             {
-                header.flags = f.readUShort();
-                header.addressCount = f.readUShort();
+                header.flags = f.ReadUShort();
+                header.addressCount = f.ReadUShort();
             }
 
             // Relocation table
             for (int i = 0; i < header.relocationTableLength; i += 4)
             {
-                f.seek(header.relocationTableOffset + i);
-                int val = f.readInt();
+                f.Seek(header.relocationTableOffset + i);
+                int val = f.ReadInt();
                 int off = val & 0x1FFFFFF;
                 byte flag = (byte)(val >> 25);
 
                 switch (flag)
                 {
                     case 0:
-                        f.seek((off * 4) + header.mainHeaderOffset);
-                        f.writeInt((off * 4) + header.mainHeaderOffset, f.readInt() + header.mainHeaderOffset);
+                        f.Seek((off * 4) + header.mainHeaderOffset);
+                        f.WriteInt((off * 4) + header.mainHeaderOffset, f.ReadInt() + header.mainHeaderOffset);
                         break;
 
                     case 1:
-                        f.seek(off + header.mainHeaderOffset);
-                        f.writeInt((off) + header.mainHeaderOffset, f.readInt() + header.stringTableOffset);
+                        f.Seek(off + header.mainHeaderOffset);
+                        f.WriteInt((off) + header.mainHeaderOffset, f.ReadInt() + header.stringTableOffset);
                         break;
 
                     case 2:
-                        f.seek((off * 4) + header.mainHeaderOffset);
-                        f.writeInt((off * 4) + header.mainHeaderOffset, f.readInt() + header.gpuCommandsOffset);
+                        f.Seek((off * 4) + header.mainHeaderOffset);
+                        f.WriteInt((off * 4) + header.mainHeaderOffset, f.ReadInt() + header.gpuCommandsOffset);
                         break;
 
                     case 0xc:
-                        f.seek((off * 4) + header.mainHeaderOffset);
-                        f.writeInt((off * 4) + header.mainHeaderOffset, f.readInt() + header.dataOffset);
+                        f.Seek((off * 4) + header.mainHeaderOffset);
+                        f.WriteInt((off * 4) + header.mainHeaderOffset, f.ReadInt() + header.dataOffset);
                         break;
                 }
 
-                f.seek((off * 4) + header.gpuCommandsOffset);
+                f.Seek((off * 4) + header.gpuCommandsOffset);
                 if (header.backwardCompatibility < 6)
                 {
                     switch (flag)
                     {
-                        case 0x23: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Texture
-                        case 0x25: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Vertex
+                        case 0x23: f.WriteInt((off * 4) + header.gpuCommandsOffset, f.ReadInt() + header.dataOffset); break; //Texture
+                        case 0x25: f.WriteInt((off * 4) + header.gpuCommandsOffset, f.ReadInt() + header.dataOffset); break; //Vertex
                         //case 0x26: f.writeInt((off * 4) + header.gpuCommandsOffset, ((f.readInt() + header.dataOffset) & 0x7fffffff) | 0x80000000); break; //Index 16 bits mode
-                        case 0x27: f.writeInt((off * 4) + header.gpuCommandsOffset, (f.readInt() + header.dataOffset) & 0x7fffffff); break; //Index 8 bits mode
+                        case 0x27: f.WriteInt((off * 4) + header.gpuCommandsOffset, (f.ReadInt() + header.dataOffset) & 0x7fffffff); break; //Index 8 bits mode
                     }
                 }
                 else if (header.backwardCompatibility < 8)
                 {
                     switch (flag)
                     {
-                        case 0x24: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Texture
-                        case 0x26: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Vertex
+                        case 0x24: f.WriteInt((off * 4) + header.gpuCommandsOffset, f.ReadInt() + header.dataOffset); break; //Texture
+                        case 0x26: f.WriteInt((off * 4) + header.gpuCommandsOffset, f.ReadInt() + header.dataOffset); break; //Vertex
                         //case 0x27: writer.Write(((peek(input) + header.dataOffset) & 0x7fffffff) | 0x80000000); break; //Index 16 bits mode
-                        case 0x28: f.writeInt((off * 4) + header.gpuCommandsOffset, (f.readInt() + header.dataOffset) & 0x7fffffff); break; //Index 8 bits mode
+                        case 0x28: f.WriteInt((off * 4) + header.gpuCommandsOffset, (f.ReadInt() + header.dataOffset) & 0x7fffffff); break; //Index 8 bits mode
                     }
                 }
                 else if (header.backwardCompatibility < 0x21)
                 {
                     switch (flag)
                     {
-                        case 0x25: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Texture
-                        case 0x27: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Vertex
+                        case 0x25: f.WriteInt((off * 4) + header.gpuCommandsOffset, f.ReadInt() + header.dataOffset); break; //Texture
+                        case 0x27: f.WriteInt((off * 4) + header.gpuCommandsOffset, f.ReadInt() + header.dataOffset); break; //Vertex
                         //case 0x28: writer.Write(((peek(input) + header.dataOffset) & 0x7fffffff) | 0x80000000); break; //Index 16 bits mode
-                        case 0x29: f.writeInt((off * 4) + header.gpuCommandsOffset, (f.readInt() + header.dataOffset) & 0x7fffffff); break; //Index 8 bits mode
+                        case 0x29: f.WriteInt((off * 4) + header.gpuCommandsOffset, (f.ReadInt() + header.dataOffset) & 0x7fffffff); break; //Index 8 bits mode
                     }
                 }
                 else
                 {
                     switch (flag)
                     {
-                        case 0x25: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Texture
-                        case 0x26: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataOffset); break; //Vertex relative to Data Offset
+                        case 0x25: f.WriteInt((off * 4) + header.gpuCommandsOffset, f.ReadInt() + header.dataOffset); break; //Texture
+                        case 0x26: f.WriteInt((off * 4) + header.gpuCommandsOffset, f.ReadInt() + header.dataOffset); break; //Vertex relative to Data Offset
                         //case 0x27: writer.Write(((peek(input) + header.dataOffset) & 0x7fffffff) | 0x80000000); break; //Index 16 bits mode relative to Data Offset
-                        case 0x28: f.writeInt((off * 4) + header.gpuCommandsOffset, (f.readInt() + header.dataOffset) & 0x7fffffff); break; //Index 8 bits mode relative to Data Offset
-                        case 0x2b: f.writeInt((off * 4) + header.gpuCommandsOffset, f.readInt() + header.dataExtendedOffset); break; //Vertex relative to Data Extended Offset
+                        case 0x28: f.WriteInt((off * 4) + header.gpuCommandsOffset, (f.ReadInt() + header.dataOffset) & 0x7fffffff); break; //Index 8 bits mode relative to Data Offset
+                        case 0x2b: f.WriteInt((off * 4) + header.gpuCommandsOffset, f.ReadInt() + header.dataExtendedOffset); break; //Vertex relative to Data Extended Offset
                         //case 0x2c: writer.Write(((peek(input) + header.dataExtendedOffset) & 0x7fffffff) | 0x80000000); break; //Index 16 bits mode relative to Data Extended Offset
-                        case 0x2d: f.writeInt((off * 4) + header.gpuCommandsOffset, (f.readInt() + header.dataExtendedOffset) & 0x7fffffff); break; //Index 8 bits mode relative to Data Extended Offset
+                        case 0x2d: f.WriteInt((off * 4) + header.gpuCommandsOffset, (f.ReadInt() + header.dataExtendedOffset) & 0x7fffffff); break; //Index 8 bits mode relative to Data Extended Offset
                     }
                 }
 
@@ -141,72 +139,72 @@ namespace SmashForge
 
 
             // Content Header
-            f.seek(header.mainHeaderOffset);
+            f.Seek(header.mainHeaderOffset);
             bchContentHeader content = new bchContentHeader();
             {
-                content.modelsPointerTableOffset = f.readInt();
-                content.modelsPointerTableEntries = f.readInt();
-                content.modelsNameOffset = f.readInt();
-                content.materialsPointerTableOffset = f.readInt();
-                content.materialsPointerTableEntries = f.readInt();
-                content.materialsNameOffset = f.readInt();
-                content.shadersPointerTableOffset = f.readInt();
-                content.shadersPointerTableEntries = f.readInt();
-                content.shadersNameOffset = f.readInt();
-                content.texturesPointerTableOffset = f.readInt();
-                content.texturesPointerTableEntries = f.readInt();
-                content.texturesNameOffset = f.readInt();
-                content.materialsLUTPointerTableOffset = f.readInt();
-                content.materialsLUTPointerTableEntries = f.readInt();
-                content.materialsLUTNameOffset = f.readInt();
-                content.lightsPointerTableOffset = f.readInt();
-                content.lightsPointerTableEntries = f.readInt();
-                content.lightsNameOffset = f.readInt();
-                content.camerasPointerTableOffset = f.readInt();
-                content.camerasPointerTableEntries = f.readInt();
-                content.camerasNameOffset = f.readInt();
-                content.fogsPointerTableOffset = f.readInt();
-                content.fogsPointerTableEntries = f.readInt();
-                content.fogsNameOffset = f.readInt();
-                content.skeletalAnimationsPointerTableOffset = f.readInt();
-                content.skeletalAnimationsPointerTableEntries = f.readInt();
-                content.skeletalAnimationsNameOffset = f.readInt();
-                content.materialAnimationsPointerTableOffset = f.readInt();
-                content.materialAnimationsPointerTableEntries = f.readInt();
-                content.materialAnimationsNameOffset = f.readInt();
-                content.visibilityAnimationsPointerTableOffset = f.readInt();
-                content.visibilityAnimationsPointerTableEntries = f.readInt();
-                content.visibilityAnimationsNameOffset = f.readInt();
-                content.lightAnimationsPointerTableOffset = f.readInt();
-                content.lightAnimationsPointerTableEntries = f.readInt();
-                content.lightAnimationsNameOffset = f.readInt();
-                content.cameraAnimationsPointerTableOffset = f.readInt();
-                content.cameraAnimationsPointerTableEntries = f.readInt();
-                content.cameraAnimationsNameOffset = f.readInt();
-                content.fogAnimationsPointerTableOffset = f.readInt();
-                content.fogAnimationsPointerTableEntries = f.readInt();
-                content.fogAnimationsNameOffset = f.readInt();
-                content.scenePointerTableOffset = f.readInt();
-                content.scenePointerTableEntries = f.readInt();
-                content.sceneNameOffset = f.readInt();
+                content.modelsPointerTableOffset = f.ReadInt();
+                content.modelsPointerTableEntries = f.ReadInt();
+                content.modelsNameOffset = f.ReadInt();
+                content.materialsPointerTableOffset = f.ReadInt();
+                content.materialsPointerTableEntries = f.ReadInt();
+                content.materialsNameOffset = f.ReadInt();
+                content.shadersPointerTableOffset = f.ReadInt();
+                content.shadersPointerTableEntries = f.ReadInt();
+                content.shadersNameOffset = f.ReadInt();
+                content.texturesPointerTableOffset = f.ReadInt();
+                content.texturesPointerTableEntries = f.ReadInt();
+                content.texturesNameOffset = f.ReadInt();
+                content.materialsLUTPointerTableOffset = f.ReadInt();
+                content.materialsLUTPointerTableEntries = f.ReadInt();
+                content.materialsLUTNameOffset = f.ReadInt();
+                content.lightsPointerTableOffset = f.ReadInt();
+                content.lightsPointerTableEntries = f.ReadInt();
+                content.lightsNameOffset = f.ReadInt();
+                content.camerasPointerTableOffset = f.ReadInt();
+                content.camerasPointerTableEntries = f.ReadInt();
+                content.camerasNameOffset = f.ReadInt();
+                content.fogsPointerTableOffset = f.ReadInt();
+                content.fogsPointerTableEntries = f.ReadInt();
+                content.fogsNameOffset = f.ReadInt();
+                content.skeletalAnimationsPointerTableOffset = f.ReadInt();
+                content.skeletalAnimationsPointerTableEntries = f.ReadInt();
+                content.skeletalAnimationsNameOffset = f.ReadInt();
+                content.materialAnimationsPointerTableOffset = f.ReadInt();
+                content.materialAnimationsPointerTableEntries = f.ReadInt();
+                content.materialAnimationsNameOffset = f.ReadInt();
+                content.visibilityAnimationsPointerTableOffset = f.ReadInt();
+                content.visibilityAnimationsPointerTableEntries = f.ReadInt();
+                content.visibilityAnimationsNameOffset = f.ReadInt();
+                content.lightAnimationsPointerTableOffset = f.ReadInt();
+                content.lightAnimationsPointerTableEntries = f.ReadInt();
+                content.lightAnimationsNameOffset = f.ReadInt();
+                content.cameraAnimationsPointerTableOffset = f.ReadInt();
+                content.cameraAnimationsPointerTableEntries = f.ReadInt();
+                content.cameraAnimationsNameOffset = f.ReadInt();
+                content.fogAnimationsPointerTableOffset = f.ReadInt();
+                content.fogAnimationsPointerTableEntries = f.ReadInt();
+                content.fogAnimationsNameOffset = f.ReadInt();
+                content.scenePointerTableOffset = f.ReadInt();
+                content.scenePointerTableEntries = f.ReadInt();
+                content.sceneNameOffset = f.ReadInt();
             }
 
 
             //Skeletal animation
             for (int index1 = 0; index1 < content.skeletalAnimationsPointerTableEntries; index1++)
             {
-                f.seek(content.skeletalAnimationsPointerTableOffset + (index1 * 4));
-                int dataOffset = f.readInt();
-                f.seek(dataOffset);
+                f.Seek(content.skeletalAnimationsPointerTableOffset + (index1 * 4));
+                int dataOffset = f.ReadInt();
+                f.Seek(dataOffset);
 
 
-                string skeletalAnimationName = f.readString(f.readInt(), -1);
-                int animationFlags = f.readInt();
+                string skeletalAnimationName = f.ReadString(f.ReadInt(), -1);
+                int animationFlags = f.ReadInt();
                 //int skeletalAnimationloopMode = f.readByte();  //pas �a du tout
-                float skeletalAnimationframeSize = f.readFloat();
-                int boneTableOffset = f.readInt();
-                int boneTableEntries = f.readInt();
-                int metaDataPointerOffset = f.readInt();
+                float skeletalAnimationframeSize = f.ReadFloat();
+                int boneTableOffset = f.ReadInt();
+                int boneTableEntries = f.ReadInt();
+                int metaDataPointerOffset = f.ReadInt();
 
                 //Debug.WriteLine("Animation Name: " + skeletalAnimationName);
                 //Debug.WriteLine("BonetableOffset: " + boneTableOffset.ToString("X"));
@@ -214,22 +212,22 @@ namespace SmashForge
 
                 for (int i = 0; i < boneTableEntries; i++)
                 {
-                    f.seek(boneTableOffset + (i * 4));
-                    int offset = f.readInt();
+                    f.Seek(boneTableOffset + (i * 4));
+                    int offset = f.ReadInt();
 
                     OSkeletalAnimationBone bone = new OSkeletalAnimationBone();
 
-                    f.seek(offset);
-                    bone.name = f.readString(f.readInt(), -1);
+                    f.Seek(offset);
+                    bone.name = f.ReadString(f.ReadInt(), -1);
                     Console.WriteLine("Bone Name: " + bone.name);
-                    int animationTypeFlags = f.readInt();
-                    int flags = f.readInt();
+                    int animationTypeFlags = f.ReadInt();
+                    int flags = f.ReadInt();
 
                     OSegmentType segmentType = (OSegmentType)((animationTypeFlags >> 16) & 0xf);
                     switch (segmentType)
                     {
                         case OSegmentType.transform:
-                            f.seek(offset + 0x18);
+                            f.Seek(offset + 0x18);
 
                             int notExistMask = 0x80000;
                             int constantMask = 0x200;
@@ -248,19 +246,19 @@ namespace SmashForge
                                         if (constant)
                                         {
                                             frame.interpolation = OInterpolationMode.linear;
-                                            frame.keyFrames.Add(new OAnimationKeyFrame(f.readFloat(), 0));
+                                            frame.keyFrames.Add(new OAnimationKeyFrame(f.ReadFloat(), 0));
                                         }
                                         else
                                         {
-                                            int frameOffset = f.readInt();
-                                            int position = f.pos();
-                                            f.seek(frameOffset);
+                                            int frameOffset = f.ReadInt();
+                                            int position = f.Pos();
+                                            f.Seek(frameOffset);
                                             //getAnimationKeyFrame(input, frame);
-                                            f.seek(position);
+                                            f.Seek(position);
                                         }
                                     }
                                     else
-                                        f.seek(f.pos() + 0x04);
+                                        f.Seek(f.Pos() + 0x04);
 
                                     if (j == 0)
                                     {
@@ -292,39 +290,39 @@ namespace SmashForge
                         case OSegmentType.transformQuaternion:
                             bone.isFrameFormat = true;
 
-                            int scaleOffset = f.readInt();
-                            int rotationOffset = f.readInt();
-                            int translationOffset = f.readInt();
+                            int scaleOffset = f.ReadInt();
+                            int rotationOffset = f.ReadInt();
+                            int translationOffset = f.ReadInt();
 
                             if ((flags & 0x20) == 0)
                             {
                                 bone.scale.exists = true;
-                                f.seek(scaleOffset);
+                                f.Seek(scaleOffset);
 
                                 if ((flags & 4) > 0)
                                 {
                                     bone.scale.vector.Add(new Vector4(
-                                        f.readFloat(),
-                                        f.readFloat(),
-                                        f.readFloat(),
+                                        f.ReadFloat(),
+                                        f.ReadFloat(),
+                                        f.ReadFloat(),
                                         0));
                                 }
                                 else
                                 {
-                                    bone.scale.startFrame = f.readFloat();
-                                    bone.scale.endFrame = f.readFloat();
+                                    bone.scale.startFrame = f.ReadFloat();
+                                    bone.scale.endFrame = f.ReadFloat();
 
-                                    int scaleFlags = f.readInt();
-                                    int scaleDataOffset = f.readInt();
-                                    int scaleEntries = f.readInt();
+                                    int scaleFlags = f.ReadInt();
+                                    int scaleDataOffset = f.ReadInt();
+                                    int scaleEntries = f.ReadInt();
 
-                                    f.seek(scaleDataOffset);
+                                    f.Seek(scaleDataOffset);
                                     for (int j = 0; j < scaleEntries; j++)
                                     {
                                         bone.scale.vector.Add(new Vector4(
-                                            f.readFloat(),
-                                            f.readFloat(),
-                                            f.readFloat(),
+                                            f.ReadFloat(),
+                                            f.ReadFloat(),
+                                            f.ReadFloat(),
                                             0));
                                     }
                                 }
@@ -333,33 +331,33 @@ namespace SmashForge
                             if ((flags & 0x10) == 0)
                             {
                                 bone.rotationQuaternion.exists = true;
-                                f.seek(rotationOffset);
+                                f.Seek(rotationOffset);
 
                                 if ((flags & 2) > 0)
                                 {
                                     bone.rotationQuaternion.vector.Add(new Vector4(
-                                        f.readFloat(),
-                                        f.readFloat(),
-                                        f.readFloat(),
-                                        f.readFloat()));
+                                        f.ReadFloat(),
+                                        f.ReadFloat(),
+                                        f.ReadFloat(),
+                                        f.ReadFloat()));
                                 }
                                 else
                                 {
-                                    bone.rotationQuaternion.startFrame = f.readFloat();
-                                    bone.rotationQuaternion.endFrame = f.readFloat();
+                                    bone.rotationQuaternion.startFrame = f.ReadFloat();
+                                    bone.rotationQuaternion.endFrame = f.ReadFloat();
 
-                                    int rotationFlags = f.readInt();
-                                    int rotationDataOffset = f.readInt();
-                                    int rotationEntries = f.readInt();
+                                    int rotationFlags = f.ReadInt();
+                                    int rotationDataOffset = f.ReadInt();
+                                    int rotationEntries = f.ReadInt();
 
-                                    f.seek(rotationDataOffset);
+                                    f.Seek(rotationDataOffset);
                                     for (int j = 0; j < rotationEntries; j++)
                                     {
                                         bone.rotationQuaternion.vector.Add(new Vector4(
-                                            f.readFloat(),
-                                            f.readFloat(),
-                                            f.readFloat(),
-                                            f.readFloat()));
+                                            f.ReadFloat(),
+                                            f.ReadFloat(),
+                                            f.ReadFloat(),
+                                            f.ReadFloat()));
                                     }
                                 }
                             }
@@ -367,32 +365,32 @@ namespace SmashForge
                             if ((flags & 8) == 0)
                             {
                                 bone.translation.exists = true;
-                                f.seek(translationOffset);
+                                f.Seek(translationOffset);
 
                                 if ((flags & 1) > 0)
                                 {
                                     bone.translation.vector.Add(new Vector4(
-                                        f.readFloat(),
-                                        f.readFloat(),
-                                        f.readFloat(),
+                                        f.ReadFloat(),
+                                        f.ReadFloat(),
+                                        f.ReadFloat(),
                                         0));
                                 }
                                 else
                                 {
-                                    bone.translation.startFrame = f.readFloat();
-                                    bone.translation.endFrame = f.readFloat();
+                                    bone.translation.startFrame = f.ReadFloat();
+                                    bone.translation.endFrame = f.ReadFloat();
 
-                                    int translationFlags = f.readInt();
-                                    int translationDataOffset = f.readInt();
-                                    int translationEntries = f.readInt();
+                                    int translationFlags = f.ReadInt();
+                                    int translationDataOffset = f.ReadInt();
+                                    int translationEntries = f.ReadInt();
 
-                                    f.seek(translationDataOffset);
+                                    f.Seek(translationDataOffset);
                                     for (int j = 0; j < translationEntries; j++)
                                     {
                                         bone.translation.vector.Add(new Vector4(
-                                            f.readFloat(),
-                                            f.readFloat(),
-                                            f.readFloat(),
+                                            f.ReadFloat(),
+                                            f.ReadFloat(),
+                                            f.ReadFloat(),
                                             0));
                                     }
                                 }
@@ -402,12 +400,12 @@ namespace SmashForge
                         case OSegmentType.transformMatrix:
                             bone.isFullBakedFormat = true;
 
-                            f.readInt();
-                            f.readInt();
-                            int matrixOffset = f.readInt();
-                            int entries = f.readInt();
+                            f.ReadInt();
+                            f.ReadInt();
+                            int matrixOffset = f.ReadInt();
+                            int entries = f.ReadInt();
 
-                            f.seek(matrixOffset);
+                            f.Seek(matrixOffset);
                             for (int j = 0; j < entries; j++)
                             {
                                 /*OMatrix transform = new OMatrix();
@@ -445,40 +443,40 @@ namespace SmashForge
             //Shaders (unused for now, until someone wants to add them)
             for (int index = 0; index < content.shadersPointerTableEntries; index++)
             {
-                f.seek(content.shadersPointerTableOffset + (index * 4));
-                int dataOffset = f.readInt();
-                f.seek(dataOffset);
+                f.Seek(content.shadersPointerTableOffset + (index * 4));
+                int dataOffset = f.ReadInt();
+                f.Seek(dataOffset);
 
-                int shaderDataOffset = f.readInt();
-                int shaderDataLength = f.readInt();
+                int shaderDataOffset = f.ReadInt();
+                int shaderDataLength = f.ReadInt();
             }
 
             // Textures
             // WIP Section
             for (int index = 0; index < content.texturesPointerTableEntries; index++)
             {
-                f.seek(content.texturesPointerTableOffset + (index * 4));
-                int dOffset = f.readInt();
-                f.seek(dOffset);
+                f.Seek(content.texturesPointerTableOffset + (index * 4));
+                int dOffset = f.ReadInt();
+                f.Seek(dOffset);
 
-                int textureCommandsOffset = f.readInt();
-                int textureCommandsWordCount = f.readInt();
+                int textureCommandsOffset = f.ReadInt();
+                int textureCommandsWordCount = f.ReadInt();
 
-                f.seek(f.pos() + 0x14);
-                String textureName = f.readString(f.readInt(), -1);
-                f.seek(textureCommandsOffset);
-                BCH_Texture tex = new BCH_Texture();
+                f.Seek(f.Pos() + 0x14);
+                String textureName = f.ReadString(f.ReadInt(), -1);
+                f.Seek(textureCommandsOffset);
+                BchTexture tex = new BchTexture();
                 textures.Add(textureName, tex);
 
-                tex.Height = f.readUShort();
-                tex.Width = f.readUShort();
-                f.skip(12);
-                int doffset = f.readInt();
-                f.skip(4);
-                tex.type = f.readInt();
-                tex.data = f.getSection(doffset, f.size() - doffset);
+                tex.height = f.ReadUShort();
+                tex.width = f.ReadUShort();
+                f.Skip(12);
+                int doffset = f.ReadInt();
+                f.Skip(4);
+                tex.type = f.ReadInt();
+                tex.data = f.GetSection(doffset, f.Size() - doffset);
 
-                tex.texture = _3DS.DecodeImage(tex.data, tex.Width, tex.Height, (_3DS.Tex_Formats)tex.type);
+                tex.texture = _3DS.DecodeImage(tex.data, tex.width, tex.height, (_3DS.Tex_Formats)tex.type);
                 //Texture texture = new Texture2D(tex.texture);
                 //tex.display = texture.Id;
             }
@@ -487,56 +485,56 @@ namespace SmashForge
 
             for (int modelIndex = 0; modelIndex < content.modelsPointerTableEntries; modelIndex++)
             {
-                f.seek(content.modelsPointerTableOffset + (modelIndex * 4));
-                int objectsHeaderOffset = f.readInt();
+                f.Seek(content.modelsPointerTableOffset + (modelIndex * 4));
+                int objectsHeaderOffset = f.ReadInt();
 
                 // Objects
-                f.seek(objectsHeaderOffset);
+                f.Seek(objectsHeaderOffset);
                 BCH_Model model = new BCH_Model();
                 models.Add(model);
 
-                model.flags = f.readByte();
-                model.skeletonScaleType = f.readByte();
-                model.silhouetteMaterialEntries = f.readUShort();
+                model.flags = f.ReadByte();
+                model.skeletonScaleType = f.ReadByte();
+                model.silhouetteMaterialEntries = f.ReadUShort();
 
-                model.worldTransform = new Matrix4(f.readFloat(), f.readFloat(), f.readFloat(), f.readFloat()
-                    , f.readFloat(), f.readFloat(), f.readFloat(), f.readFloat()
-                    , f.readFloat(), f.readFloat(), f.readFloat(), f.readFloat()
+                model.worldTransform = new Matrix4(f.ReadFloat(), f.ReadFloat(), f.ReadFloat(), f.ReadFloat()
+                    , f.ReadFloat(), f.ReadFloat(), f.ReadFloat(), f.ReadFloat()
+                    , f.ReadFloat(), f.ReadFloat(), f.ReadFloat(), f.ReadFloat()
                     , 0, 0, 0, 1);
 
-                int materialsTableOffset = f.readInt();
-                int materialsTableEntries = f.readInt();
-                int materialsNameOffset = f.readInt();
-                int verticesTableOffset = f.readInt();
-                int verticesTableEntries = f.readInt();
-                f.skip(0x28);
-                int skeletonOffset = f.readInt();
-                int skeletonEntries = f.readInt();
-                int skeletonNameOffset = f.readInt();
-                int objectsNodeVisibilityOffset = f.readInt();
-                int objectsNodeCount = f.readInt();
-                String name = f.readString(f.readInt(), -1);
-                int objectsNodeNameEntries = f.readInt();
-                int objectsNodeNameOffset = f.readInt();
-                f.readInt(); //0x0
-                int metaDataPointerOffset = f.readInt();
+                int materialsTableOffset = f.ReadInt();
+                int materialsTableEntries = f.ReadInt();
+                int materialsNameOffset = f.ReadInt();
+                int verticesTableOffset = f.ReadInt();
+                int verticesTableEntries = f.ReadInt();
+                f.Skip(0x28);
+                int skeletonOffset = f.ReadInt();
+                int skeletonEntries = f.ReadInt();
+                int skeletonNameOffset = f.ReadInt();
+                int objectsNodeVisibilityOffset = f.ReadInt();
+                int objectsNodeCount = f.ReadInt();
+                String name = f.ReadString(f.ReadInt(), -1);
+                int objectsNodeNameEntries = f.ReadInt();
+                int objectsNodeNameOffset = f.ReadInt();
+                f.ReadInt(); //0x0
+                int metaDataPointerOffset = f.ReadInt();
 
-                f.seek(objectsNodeVisibilityOffset);
-                int nodeVisibility = f.readInt();
+                f.Seek(objectsNodeVisibilityOffset);
+                int nodeVisibility = f.ReadInt();
 
                 string[] objectName = new string[objectsNodeNameEntries];
-                f.seek(objectsNodeNameOffset);
-                int rootReferenceBit = f.readInt(); //Radix tree
-                int rootLeftNode = f.readUShort();
-                int rootRightNode = f.readUShort();
-                int rootNameOffset = f.readInt();
+                f.Seek(objectsNodeNameOffset);
+                int rootReferenceBit = f.ReadInt(); //Radix tree
+                int rootLeftNode = f.ReadUShort();
+                int rootRightNode = f.ReadUShort();
+                int rootNameOffset = f.ReadInt();
 
                 for (int i = 0; i < objectsNodeNameEntries; i++)
                 {
-                    int referenceBit = f.readInt();
-                    short leftNode = f.readShort();
-                    short rightNode = f.readShort();
-                    objectName[i] = f.readString(f.readInt(), -1);
+                    int referenceBit = f.ReadInt();
+                    short leftNode = f.ReadShort();
+                    short rightNode = f.ReadShort();
+                    objectName[i] = f.ReadString(f.ReadInt(), -1);
                 }
 
                 // Materials
@@ -545,22 +543,22 @@ namespace SmashForge
                 String[] materialNames = new String[materialsTableEntries];
                 for (int index = 0; index < materialsTableEntries; index++)
                 {
-                    f.seek(materialsTableOffset + (index * 0x2c));
+                    f.Seek(materialsTableOffset + (index * 0x2c));
 
-                    int materialParametersOffset = f.readInt();
-                    f.readInt();
-                    f.readInt();
-                    f.readInt();
-                    int textureCommandsOffset = f.readInt();
-                    int textureCommandsWordCount = f.readInt();
+                    int materialParametersOffset = f.ReadInt();
+                    f.ReadInt();
+                    f.ReadInt();
+                    f.ReadInt();
+                    int textureCommandsOffset = f.ReadInt();
+                    int textureCommandsWordCount = f.ReadInt();
 
-                    int materialMapperOffset = f.readInt();
-                    materialNames[index] = f.readString(f.readInt(), -1);
+                    int materialMapperOffset = f.ReadInt();
+                    materialNames[index] = f.ReadString(f.ReadInt(), -1);
                 }
 
                 // Object Descriptions...
                 // Assumes MBN is already loaded for now
-                f.seek(verticesTableOffset);
+                f.Seek(verticesTableOffset);
                 List<objDes> objDescriptors = new List<objDes>();
                 if (mbn == null)
                 {
@@ -571,62 +569,62 @@ namespace SmashForge
                 }
                 for (int index = 0; index < mbn.mesh.Count; index++)
                 {
-                    int i = f.readUShort();
+                    int i = f.ReadUShort();
                     if (index > mbn.mesh.Count) break;
                     if (i > materialNames.Length) break;
                     mbn.mesh[index].texId = textures[materialNames[i]].display;
                     Console.WriteLine("Tex index" + mbn.mesh[index].texId);
-                    f.skip(2); // flags
-                    int nameId = f.readUShort();
+                    f.Skip(2); // flags
+                    int nameId = f.ReadUShort();
                     mbn.mesh[index].Text = objectName[nameId];
 
                     // node visibility TODO: finish...
                     mbn.mesh[index].Checked = ((nodeVisibility & (1 << nameId)) > 0);
 
-                    mbn.mesh[index].renderPriority = f.readUShort();
+                    mbn.mesh[index].renderPriority = f.ReadUShort();
 
                     objDes des = new objDes();
                     objDescriptors.Add(des);
-                    des.vshAttBufferCommandOffset = f.readInt();
-                    des.vshAttBufferCommandCount = f.readInt();
-                    des.faceOffset = f.readInt();
-                    des.faceCount = f.readInt();
-                    des.vshAttBufferCommandOffsetEx = f.readInt();
-                    des.vshAttBufferCommandCountEx = f.readInt();
+                    des.vshAttBufferCommandOffset = f.ReadInt();
+                    des.vshAttBufferCommandCount = f.ReadInt();
+                    des.faceOffset = f.ReadInt();
+                    des.faceCount = f.ReadInt();
+                    des.vshAttBufferCommandOffsetEx = f.ReadInt();
+                    des.vshAttBufferCommandCountEx = f.ReadInt();
 
-                    f.skip(12);// center vector
-                    f.skip(4); // flagsOffset
-                    f.skip(4); // 0?
-                    f.readInt(); //bbOffsets[i]
+                    f.Skip(12);// center vector
+                    f.Skip(4); // flagsOffset
+                    f.Skip(4); // 0?
+                    f.ReadInt(); //bbOffsets[i]
                 }
 
                 //Skeleton
-                f.seek(skeletonOffset);
+                f.Seek(skeletonOffset);
                 for (int index = 0; index < skeletonEntries; index++)
                 {
                     Bone bone = new Bone(model.skeleton);
-                    int boneFlags = f.readInt();
-                    bone.parentIndex = f.readShort();
-                    short boneSpace = f.readShort();
+                    int boneFlags = f.ReadInt();
+                    bone.parentIndex = f.ReadShort();
+                    short boneSpace = f.ReadShort();
                     bone.scale = new float[3];
                     bone.rotation = new float[3];
                     bone.position = new float[3];
-                    bone.scale[0] = f.readFloat();
-                    bone.scale[1] = f.readFloat();
-                    bone.scale[2] = f.readFloat();
-                    bone.rotation[0] = f.readFloat();
-                    bone.rotation[1] = f.readFloat();
-                    bone.rotation[2] = f.readFloat();
-                    bone.position[0] = f.readFloat();
-                    bone.position[1] = f.readFloat();
-                    bone.position[2] = f.readFloat();
+                    bone.scale[0] = f.ReadFloat();
+                    bone.scale[1] = f.ReadFloat();
+                    bone.scale[2] = f.ReadFloat();
+                    bone.rotation[0] = f.ReadFloat();
+                    bone.rotation[1] = f.ReadFloat();
+                    bone.rotation[2] = f.ReadFloat();
+                    bone.position[0] = f.ReadFloat();
+                    bone.position[1] = f.ReadFloat();
+                    bone.position[2] = f.ReadFloat();
 
                     // bone matrix... not really needed to be stored per say
-                    f.skip(4 * 4 * 3);
+                    f.Skip(4 * 4 * 3);
 
-                    bone.Text = f.readString(f.readInt(), -1);
+                    bone.Text = f.ReadString(f.ReadInt(), -1);
 
-                    f.skip(4); // Meta data
+                    f.Skip(4); // Meta data
                     bones.bones.Add(bone);
 
 

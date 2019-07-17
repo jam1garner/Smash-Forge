@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SmashForge
 {
     public partial class BfresMeshEditor : Form
     {
-        public BFRES.Mesh Mesh = null;
-        public BFRES.FMDL_Model Model = null;
+        public BFRES.Mesh mesh = null;
+        public BFRES.FMDL_Model model = null;
         public BFRES bfres = null;
 
         public BfresMeshEditor(BFRES.Mesh p, BFRES.FMDL_Model mdl, BFRES b)
@@ -27,8 +21,8 @@ namespace SmashForge
             skinCountLabel.Text = skinCountLabel.Text + " " + p.VertexSkinCount.ToString();
             label3.Text = label3.Text + " " + mdl.skeleton.bones[p.boneIndx].ToString();
 
-            Mesh = p;
-            Model = mdl;
+            mesh = p;
+            model = mdl;
             bfres = b;
 
 
@@ -50,7 +44,7 @@ namespace SmashForge
             }
 
 
-            int Height = 2;
+            int height = 2;
             foreach (BFRES.Mesh.VertexAttribute att in p.vertexAttributes)
             {
                 comboBox1.Items.Add(att);
@@ -65,11 +59,11 @@ namespace SmashForge
         private void LODcomboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
             BFRES.Mesh.LOD_Mesh msh = (BFRES.Mesh.LOD_Mesh)LODcomboBox3.SelectedItem;
-            Mesh.DisplayLODIndex = LODcomboBox3.SelectedIndex;
+            mesh.DisplayLODIndex = LODcomboBox3.SelectedIndex;
 
             bfres.UpdateRenderMeshes();
 
-            PolyCountlabel3.Text = "Poly Count " + Mesh.lodMeshes[Mesh.DisplayLODIndex].displayFaceSize.ToString();
+            PolyCountlabel3.Text = "Poly Count " + mesh.lodMeshes[mesh.DisplayLODIndex].displayFaceSize.ToString();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -81,7 +75,7 @@ namespace SmashForge
         private void button4_Click(object sender, EventArgs e)
         {
             MeshBoneList mb = new MeshBoneList();
-            mb.SetMeshBoneList(((BFRES.FMDL_Model)Mesh.Parent), Mesh); //Fmdl stores node array
+            mb.SetMeshBoneList(((BFRES.FMDL_Model)mesh.Parent), mesh); //Fmdl stores node array
             mb.Show();
         }
 
@@ -89,7 +83,7 @@ namespace SmashForge
         {
             BFRES.Mesh.VertexAttribute attrb = (BFRES.Mesh.VertexAttribute)comboBox1.SelectedItem;
             BufferList buff = new BufferList();
-            buff.SetVertexBufferList(Mesh, attrb.Name, Model);
+            buff.SetVertexBufferList(mesh, attrb.Name, model);
             buff.Show();
         }
 

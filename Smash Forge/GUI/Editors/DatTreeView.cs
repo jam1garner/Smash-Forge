@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -16,18 +9,18 @@ namespace SmashForge
         public DatTreeView()
         {
             InitializeComponent();
-            refresh();
+            Refresh();
         }
 
         private DAT dat;
 
-        public void setDAT(DAT d)
+        public void SetDat(DAT d)
         {
             dat = d;
-            refresh();
+            Refresh();
         }
 
-        public void refresh()
+        public void Refresh()
         {
             treeView1.Nodes.Clear();
 

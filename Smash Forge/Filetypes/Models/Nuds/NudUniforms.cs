@@ -6,7 +6,6 @@ using SFGraphics.GLObjects.Textures;
 using SFGraphics.GlUtils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SmashForge.Rendering;
 
 namespace SmashForge.Filetypes.Models.Nuds
@@ -124,7 +123,7 @@ namespace SmashForge.Filetypes.Models.Nuds
         public static Texture GetTexture(int hash, Nud.MatTexture matTexture, int loc, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             // Look through all loaded textures and not just the current modelcontainer.
-            foreach (NUT nut in Runtime.TextureContainers)
+            foreach (NUT nut in Runtime.textureContainers)
             {
                 Texture texture;
                 if (nut.glTexByHashId.TryGetValue(hash, out texture))

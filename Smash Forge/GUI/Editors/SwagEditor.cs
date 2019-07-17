@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace SmashForge
 {
@@ -16,7 +9,7 @@ namespace SmashForge
         public SwagEditor(SB swag)
         {
             InitializeComponent();
-            this.swag = swag;
+            this.Swag = swag;
             buttons = new BoneButton[] {boneButton2, boneButton3, boneButton4, boneButton5, boneButton6, boneButton7, boneButton8, boneButton9};
             boneButton1.BoneChanged += new EventHandler(BoneChange);
             foreach(BoneButton b in buttons)
@@ -27,8 +20,8 @@ namespace SmashForge
             Edited = false;
         }
 
-        private SB swag { get { return _swag; } set { _swag = value; vbn = ((VBN)_swag.Parent); } }
-        private SB _swag;
+        private SB Swag { get { return swag; } set { swag = value; vbn = ((VBN)swag.Parent); } }
+        private SB swag;
         
         private VBN vbn;
         private BoneButton[] buttons;
@@ -36,15 +29,15 @@ namespace SmashForge
 
         public override void Save()
         {
-            if (String.IsNullOrEmpty(FilePath))
+            if (string.IsNullOrEmpty(FilePath))
             {
                 SaveAs();
                 return;
             }
             FileOutput o = new FileOutput();
-            byte[] n = swag.Rebuild();
-            o.writeBytes(n);
-            o.save(FilePath);
+            byte[] n = Swag.Rebuild();
+            o.WriteBytes(n);
+            o.Save(FilePath);
             Edited = false;
         }
 
@@ -111,7 +104,7 @@ namespace SmashForge
 
         private void SwagEditor_Load(object sender, EventArgs e)
         {
-            foreach (SB.SBEntry swagEntry in swag.bones)
+            foreach (SB.SBEntry swagEntry in Swag.bones)
                 listBox1.Items.Add(swagEntry);
             if (listBox1.Items.Count >= 1)
                 listBox1.SelectedItem = listBox1.Items[0];
@@ -127,18 +120,7 @@ namespace SmashForge
                 sbEntry.boneHashes[i] = buttons[i].boneId;
         }
 
-        public void save()
-        {
-            using (SaveFileDialog sfd = new SaveFileDialog())
-            {
-                sfd.Filter = "Swing Bone Physics (.sb)|*.sb";
-
-                if (sfd.ShowDialog() == DialogResult.OK)
-                    swag.Save(sfd.FileName);
-            }
-        }
-
-        private void valueChanged(object sender, EventArgs e)
+        private void ValueChanged(object sender, EventArgs e)
         {
             if (!dontChange)
             {
@@ -177,14 +159,14 @@ namespace SmashForge
         private void addEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SB.SBEntry newEntry = new SB.SBEntry();
-            swag.bones.Add(newEntry);
+            Swag.bones.Add(newEntry);
             listBox1.Items.Add(newEntry);
             Edited = true;
         }
 
         private void removeEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            swag.bones.Remove((SB.SBEntry)listBox1.SelectedItem);
+            Swag.bones.Remove((SB.SBEntry)listBox1.SelectedItem);
             listBox1.Items.Remove(listBox1.SelectedItem);
         }
 

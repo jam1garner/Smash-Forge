@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class UIPreview
+    partial class UiPreview
     {
         /// <summary>
         /// Required designer variable.
@@ -89,7 +89,7 @@
             this.Controls.Add(this.chr_11_renderer);
             this.Controls.Add(this.chr_00_renderer);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "UIPreview";
+            this.Name = "UiPreview";
             this.Text = "UIPreview";
             this.ResumeLayout(false);
 

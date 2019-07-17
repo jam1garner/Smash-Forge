@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
-using System.Diagnostics;
 using SFGraphics.GLObjects.Textures;
 
 namespace SmashForge.Gui.Menus
@@ -39,7 +37,7 @@ namespace SmashForge.Gui.Menus
         private void AddImagesFromAllTextureContainers()
         {
             // Reuse the same context to avoid CPU bottlenecks.
-            using (OpenTK.GameWindow window = Rendering.OpenTKSharedResources.CreateGameWindowContext(imageWidth, imageHeight))
+            using (OpenTK.GameWindow window = Rendering.OpenTkSharedResources.CreateGameWindowContext(imageWidth, imageHeight))
             {
                 RenderTexturesAddToImageList();
             }
@@ -47,7 +45,7 @@ namespace SmashForge.Gui.Menus
 
         private void RenderTexturesAddToImageList()
         {
-            foreach (NUT nut in Runtime.TextureContainers)
+            foreach (NUT nut in Runtime.textureContainers)
             {
                 foreach (var texture in nut.glTexByHashId)
                 {

@@ -1,23 +1,21 @@
-﻿using System;
+﻿using Octokit;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Octokit;
-using System.Threading;
-using System.Net;
-using System.IO.Compression;
 using System.IO;
+using System.IO.Compression;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Forge_Updater
 {
-    class Program
+    internal class Program
     {
-        static Release[] releases;
-        static string executableDir;
-        static string forgeDir;
+        private static Release[] releases;
+        private static string executableDir;
+        private static string forgeDir;
 
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             try
             {
@@ -153,15 +151,15 @@ namespace Forge_Updater
             
         }
 
-        static async Task GetReleases(GitHubClient client)
+        private static async Task GetReleases(GitHubClient client)
         {
-            List<Release> Releases = new List<Release>();
+            List<Release> releases = new List<Release>();
             foreach (Release r in await client.Repository.Release.GetAll("jam1garner", "Smash-Forge"))
-                Releases.Add(r);
-            releases = Releases.ToArray();
+                releases.Add(r);
+            Program.releases = releases.ToArray();
         }
 
-        static int DownloadRelease(string downloadUrl, string downloadName, string versionTime)
+        private static int DownloadRelease(string downloadUrl, string downloadName, string versionTime)
         {
             try
             {

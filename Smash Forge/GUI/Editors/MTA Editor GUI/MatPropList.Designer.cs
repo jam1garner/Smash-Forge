@@ -61,7 +61,7 @@
             this.numericUpDown3.Name = "numericUpDown3";
             this.numericUpDown3.Size = new System.Drawing.Size(88, 20);
             this.numericUpDown3.TabIndex = 28;
-            this.numericUpDown3.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown3.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // numericUpDown4
             // 
@@ -81,7 +81,7 @@
             this.numericUpDown4.Name = "numericUpDown4";
             this.numericUpDown4.Size = new System.Drawing.Size(88, 20);
             this.numericUpDown4.TabIndex = 27;
-            this.numericUpDown4.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown4.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // numericUpDown2
             // 
@@ -101,7 +101,7 @@
             this.numericUpDown2.Name = "numericUpDown2";
             this.numericUpDown2.Size = new System.Drawing.Size(88, 20);
             this.numericUpDown2.TabIndex = 26;
-            this.numericUpDown2.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown2.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // label4
             // 
@@ -161,7 +161,7 @@
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(88, 20);
             this.numericUpDown1.TabIndex = 21;
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.ValueChanged);
             // 
             // listBox1
             // 

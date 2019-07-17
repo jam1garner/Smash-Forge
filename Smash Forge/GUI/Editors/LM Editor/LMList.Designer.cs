@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class LMList
+    partial class LmList
     {
         /// <summary>
         /// Required designer variable.
@@ -66,7 +66,7 @@
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.treeView1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "LMList";
+            this.Name = "LmList";
             this.Text = "LMList";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);

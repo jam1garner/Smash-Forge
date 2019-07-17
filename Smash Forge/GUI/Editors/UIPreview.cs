@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 using WeifenLuo.WinFormsUI.Docking;
@@ -15,23 +9,23 @@ using SmashForge.Rendering.Meshes;
 
 namespace SmashForge
 {
-    public partial class UIPreview : DockContent
+    public partial class UiPreview : DockContent
     {
-        public string chr_00_loc, chr_11_loc, chr_13_loc, stock_90_loc;
+        public string chr00Loc, chr11Loc, chr13Loc, stock90Loc;
 
         private Mesh3D screenTriangle;
 
-        public UIPreview(NUT chr_00, NUT chr_11, NUT chr_13, NUT stock_90)
+        public UiPreview(NUT chr00, NUT chr11, NUT chr13, NUT stock90)
         {
             InitializeComponent();
-            if (chr_00 == null) chr_00 = new NUT();
-            if (chr_11 == null) chr_11 = new NUT();
-            if (chr_13 == null) chr_13 = new NUT();
-            if (stock_90 == null) stock_90 = new NUT();
-            this.chr_00 = chr_00;
-            this.chr_11 = chr_11;
-            this.chr_13 = chr_13;
-            this.stock_90 = stock_90;
+            if (chr00 == null) chr00 = new NUT();
+            if (chr11 == null) chr11 = new NUT();
+            if (chr13 == null) chr13 = new NUT();
+            if (stock90 == null) stock90 = new NUT();
+            this.chr00 = chr00;
+            this.chr11 = chr11;
+            this.chr13 = chr13;
+            this.stock90 = stock90;
 
             ContextMenu cm = new ContextMenu();
             MenuItem snapShot = new MenuItem("Begin Snapshot");
@@ -51,7 +45,7 @@ namespace SmashForge
             //stock_90_renderer.ContextMenu = cm;
         }
 
-        NUT chr_00, chr_11, chr_13, stock_90;
+        NUT chr00, chr11, chr13, stock90;
 
         private void LetsDance(object sender, EventArgs e)
         {
@@ -63,13 +57,13 @@ namespace SmashForge
 
             NUT n = null;
             if (((MenuItem)sender).GetContextMenu().SourceControl == stock_90_renderer)
-                n = stock_90;
+                n = stock90;
             if (((MenuItem)sender).GetContextMenu().SourceControl == chr_00_renderer)
-                n = chr_00;
+                n = chr00;
             if (((MenuItem)sender).GetContextMenu().SourceControl == chr_11_renderer)
-                n = chr_11;
+                n = chr11;
             if (((MenuItem)sender).GetContextMenu().SourceControl == chr_13_renderer)
-                n = chr_13;
+                n = chr13;
             if (n == null) return;
 
             byte[] data = RenderTools.DXT5ScreenShot(view.glViewport, view.shootX, view.shootY, view.shootWidth, view.shootHeight);
@@ -81,7 +75,7 @@ namespace SmashForge
             tex.Width = view.shootWidth;
             tex.Height = view.shootHeight;
             tex.surfaces.Add(new TextureSurface());
-            tex.surfaces[0].mipmaps.Add(FlipDXT5(data, tex.Width, tex.Height));
+            tex.surfaces[0].mipmaps.Add(FlipDxt5(data, tex.Width, tex.Height));
             tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
             tex.HashId = id;
             n.Nodes.Add(tex);
@@ -90,27 +84,27 @@ namespace SmashForge
 
             if (((MenuItem)sender).GetContextMenu().SourceControl == stock_90_renderer)
             {
-                if (stock_90_loc != null)
-                    stock_90.Save(stock_90_loc);
+                if (stock90Loc != null)
+                    stock90.Save(stock90Loc);
             }
             if (((MenuItem)sender).GetContextMenu().SourceControl == chr_00_renderer)
             {
-                if (chr_00_loc != null)
-                    chr_00.Save(chr_00_loc);
+                if (chr00Loc != null)
+                    chr00.Save(chr00Loc);
             }
             if (((MenuItem)sender).GetContextMenu().SourceControl == chr_11_renderer)
             {
-                if (chr_11_loc != null)
-                    chr_11.Save(chr_13_loc);
+                if (chr11Loc != null)
+                    chr11.Save(chr13Loc);
             }
             if (((MenuItem)sender).GetContextMenu().SourceControl == chr_13_renderer)
             {
-                if (chr_13_loc != null)
-                    chr_13.Save(chr_13_loc);
+                if (chr13Loc != null)
+                    chr13.Save(chr13Loc);
             }
         }
 
-        public byte[] FlipDXT5(byte[] i, int width, int height)
+        public byte[] FlipDxt5(byte[] i, int width, int height)
         {
             // oh dear lord why god flipping dxt5 alpha channel
 
@@ -193,17 +187,17 @@ namespace SmashForge
 
         private void chr_00_renderer_Paint(object sender, PaintEventArgs e)
         {
-            RenderTexture(chr_00_renderer, chr_00);
+            RenderTexture(chr_00_renderer, chr00);
         }
 
         private void chr_11_renderer_Paint(object sender, PaintEventArgs e)
         {
-            RenderTexture(chr_11_renderer, chr_11);
+            RenderTexture(chr_11_renderer, chr11);
         }
 
         private void chr_13_renderer_Paint(object sender, PaintEventArgs e)
         {
-            RenderTexture(chr_13_renderer, chr_13);                                                           /*Grady, look!*/
+            RenderTexture(chr_13_renderer, chr13);                                                           /*Grady, look!*/
         }
 
         private void PSButton_Click(object sender, EventArgs e)
@@ -220,33 +214,33 @@ namespace SmashForge
                 {
                     if (filePath.ToLower().EndsWith(".dds"))
                     {
-                        DDS dds = new DDS(new FileData(filePath));
+                        Dds dds = new Dds(new FileData(filePath));
                         if(sender == chr_13_renderer)
                         {
-                            chr_13 = ReplaceTexture(dds.ToNutTexture(), 416, 416, chr_13);
-                            if (chr_13_loc != null)
-                                chr_13.Save(chr_13_loc);
+                            chr13 = ReplaceTexture(dds.ToNutTexture(), 416, 416, chr13);
+                            if (chr13Loc != null)
+                                chr13.Save(chr13Loc);
                         }
                         if (sender == chr_00_renderer)
                         {
-                            chr_00 = ReplaceTexture(dds.ToNutTexture(), 128, 128, chr_00);
-                            if (chr_00_loc != null)
-                                chr_00.Save(chr_00_loc);
+                            chr00 = ReplaceTexture(dds.ToNutTexture(), 128, 128, chr00);
+                            if (chr00Loc != null)
+                                chr00.Save(chr00Loc);
                         }
                         if (sender == chr_11_renderer)
                         {
-                            chr_11 = ReplaceTexture(dds.ToNutTexture(), 384, 384, chr_13);
-                            if (chr_11_loc != null)
-                                chr_11.Save(chr_11_loc);
+                            chr11 = ReplaceTexture(dds.ToNutTexture(), 384, 384, chr13);
+                            if (chr11Loc != null)
+                                chr11.Save(chr11Loc);
                         }
                     }
                     if (filePath.ToLower().EndsWith(".png"))
                     {
                         if (sender == stock_90_renderer)
                         {
-                            stock_90 = ReplaceTexture(NUTEditor.fromPNG(filePath, 0), 64, 64, chr_13);
-                            if (stock_90_loc != null)
-                                stock_90.Save(stock_90_loc);
+                            stock90 = ReplaceTexture(NutEditor.FromPng(filePath, 0), 64, 64, chr13);
+                            if (stock90Loc != null)
+                                stock90.Save(stock90Loc);
                         }
                     }
                 }
@@ -295,7 +289,7 @@ namespace SmashForge
 
         private void stock_90_renderer_Paint(object sender, PaintEventArgs e)
         {
-            RenderTexture(stock_90_renderer, stock_90);
+            RenderTexture(stock_90_renderer, stock90);
         }
         
         private void RenderTexture(GLControl glControl1, NUT nut)

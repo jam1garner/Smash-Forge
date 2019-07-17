@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using SFGraphics.GLObjects;
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.GLObjectManagement;
 using SFGraphics.GLObjects.Shaders;
@@ -26,8 +25,8 @@ namespace SmashForge.Gui.Menus
 
         private void glControl1_Load(object sender, EventArgs e)
         {
-            OpenTKSharedResources.InitializeSharedResources();
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            OpenTkSharedResources.InitializeSharedResources();
+            if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Initialized)
             {
                 if (sourceNud != null)
                 {
@@ -41,7 +40,7 @@ namespace SmashForge.Gui.Menus
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             RenderUvs();
@@ -67,7 +66,7 @@ namespace SmashForge.Gui.Menus
 
         private void DrawPolygonUvs()
         {
-            Shader shader = OpenTKSharedResources.shaders["UV"];
+            Shader shader = OpenTkSharedResources.shaders["UV"];
             shader.UseProgram();
             Matrix4 matrix = Matrix4.CreateOrthographicOffCenter(0, 1, 1, 0, -1, 1);
             shader.SetMatrix4x4("mvpMatrix", ref matrix);

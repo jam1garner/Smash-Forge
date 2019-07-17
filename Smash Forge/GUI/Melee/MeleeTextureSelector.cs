@@ -83,13 +83,13 @@ namespace SmashForge.Gui.Melee
                         Selected = SelectedTexture.Texture;
                         if ((TPL_TextureFormat)CBFormat.SelectedItem == TPL_TextureFormat.CMP)
                         {
-                            DDS d = new DDS(new FileData(ofd.FileName));
-                            if (d.header.ddspf.fourCC != 0x31545844)
+                            Dds d = new Dds(new FileData(ofd.FileName));
+                            if (d.header.ddspf.fourCc != 0x31545844)
                             {
                                 MessageBox.Show("Error Importing Texture:\nOnly DXT1 Files are supported currently");
                                 return;
                             }
-                            Selected.SetFromDXT1(new FileData(d.bdata).getSection(0, (int)(d.header.width * d.header.height / 2)), (int)d.header.width, (int)d.header.height);
+                            Selected.SetFromDXT1(new FileData(d.bdata).GetSection(0, (int)(d.header.width * d.header.height / 2)), (int)d.header.width, (int)d.header.height);
                         }
                         else
                         {

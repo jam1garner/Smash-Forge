@@ -1,6 +1,6 @@
 ﻿namespace SmashForge
 {
-    partial class NUTEditor
+    partial class NutEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -400,7 +400,7 @@
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(2);
-            this.Name = "NUTEditor";
+            this.Name = "NutEditor";
             this.Text = "NUT Editor";
             this.Load += new System.EventHandler(this.NUTEditor_Load);
             this.menuStrip1.ResumeLayout(false);

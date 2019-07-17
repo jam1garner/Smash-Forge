@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using OpenTK;
 
 namespace SmashForge
 {
@@ -22,7 +16,7 @@ namespace SmashForge
             int i, j;
 
             FileOutput o = new FileOutput();
-            o.Endian = System.IO.Endianness.Little;
+            o.endian = System.IO.Endianness.Little;
 
             for (i = 0; i < height; i += 8)
             {
@@ -36,7 +30,7 @@ namespace SmashForge
                         for (y = j; y < j + 4; y++)
                             temp[pi++] = b.GetPixel(y, x);
 
-                    o.writeBytes(GenETC1(temp));
+                    o.WriteBytes(GenETC1(temp));
 
 
                     temp = new Color[16];
@@ -45,7 +39,7 @@ namespace SmashForge
                         for (y = j + 4; y < j + 8; y++)
                             temp[pi++] = b.GetPixel(y, x);
                     
-                    o.writeBytes(GenETC1(temp));
+                    o.WriteBytes(GenETC1(temp));
 
 
                     temp = new Color[16];
@@ -54,7 +48,7 @@ namespace SmashForge
                         for (y = j; y < j + 4; y++)
                             temp[pi++] = b.GetPixel(y, x);
 
-                    o.writeBytes(GenETC1(temp));
+                    o.WriteBytes(GenETC1(temp));
 
 
                     temp = new Color[16];
@@ -63,7 +57,7 @@ namespace SmashForge
                         for (y = j + 4; y < j + 8; y++)
                             temp[pi++] = b.GetPixel(y, x);
 
-                    o.writeBytes(GenETC1(temp));
+                    o.WriteBytes(GenETC1(temp));
                 }
             }
 
@@ -109,7 +103,7 @@ namespace SmashForge
             int i, j;
 
             FileOutput o = new FileOutput();
-            o.Endian = System.IO.Endianness.Little;
+            o.endian = System.IO.Endianness.Little;
 
             for (i = 0; i < height; i += 8)
             {
@@ -129,10 +123,10 @@ namespace SmashForge
                             int a = (temp[ax + ay * 4].A >> 4);
                             ay++;
                             a |= (temp[ax + ay * 4].A >> 4) << 4;
-                            o.writeByte(a);
+                            o.WriteByte(a);
                         }
 
-                    o.writeBytes(GenETC1(temp));
+                    o.WriteBytes(GenETC1(temp));
                     
                     temp = new Color[16];
                     pi = 0;
@@ -146,10 +140,10 @@ namespace SmashForge
                             int a = (temp[ax + ay * 4].A >> 4);
                             ay++;
                             a |= (temp[ax + ay * 4].A >> 4) << 4;
-                            o.writeByte(a);
+                            o.WriteByte(a);
                         }
 
-                    o.writeBytes(GenETC1(temp));
+                    o.WriteBytes(GenETC1(temp));
 
                     temp = new Color[16];
                     pi = 0;
@@ -163,10 +157,10 @@ namespace SmashForge
                             int a = (temp[ax + ay * 4].A >> 4);
                             ay++;
                             a |= (temp[ax + ay * 4].A >> 4) << 4;
-                            o.writeByte(a);
+                            o.WriteByte(a);
                         }
 
-                    o.writeBytes(GenETC1(temp));
+                    o.WriteBytes(GenETC1(temp));
 
                     temp = new Color[16];
                     pi = 0;
@@ -180,10 +174,10 @@ namespace SmashForge
                             int a = (temp[ax + ay * 4].A >> 4);
                             ay++;
                             a |= (temp[ax + ay * 4].A >> 4) << 4;
-                            o.writeByte(a);
+                            o.WriteByte(a);
                         }
 
-                    o.writeBytes(GenETC1(temp));
+                    o.WriteBytes(GenETC1(temp));
                 }
             }
 

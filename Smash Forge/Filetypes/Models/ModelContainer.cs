@@ -319,7 +319,7 @@ namespace SmashForge
             Shader shader;
 
             // 3DS MBN
-            shader = OpenTKSharedResources.shaders["Mbn"];
+            shader = OpenTkSharedResources.shaders["Mbn"];
             shader.UseProgram();
             SetMbnUniforms(camera, shader);
 
@@ -341,7 +341,7 @@ namespace SmashForge
 
             if (Kcl != null)
             {
-                shader = OpenTKSharedResources.shaders["KCL"];
+                shader = OpenTkSharedResources.shaders["KCL"];
                 if (!shader.LinkStatusIsOk)
                     return;
 
@@ -358,15 +358,15 @@ namespace SmashForge
                 Bfres.Render(camera, Runtime.drawNudColorIdPass);
             }
 
-            if (NUD != null && OpenTKSharedResources.shaders["Nud"].LinkStatusIsOk && OpenTKSharedResources.shaders["NudDebug"].LinkStatusIsOk)
+            if (NUD != null && OpenTkSharedResources.shaders["Nud"].LinkStatusIsOk && OpenTkSharedResources.shaders["NudDebug"].LinkStatusIsOk)
             {
                 // Choose the appropriate shader.
                 if (drawShadow)
-                    shader = OpenTKSharedResources.shaders["Shadow"];
+                    shader = OpenTkSharedResources.shaders["Shadow"];
                 else if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                    shader = OpenTKSharedResources.shaders["NudDebug"];
+                    shader = OpenTkSharedResources.shaders["NudDebug"];
                 else
-                    shader = OpenTKSharedResources.shaders["Nud"];
+                    shader = OpenTkSharedResources.shaders["Nud"];
 
                 shader.UseProgram();
 
@@ -514,8 +514,8 @@ namespace SmashForge
             // fresnel sky/ground color for characters & stages
             ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.fresnelLight.groundColor, "fresGroundColor");
             ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.fresnelLight.skyColor, "fresSkyColor");
-            shader.SetVector3("fresSkyDirection", Runtime.lightSetParam.fresnelLight.getSkyDirection());
-            shader.SetVector3("fresGroundDirection", Runtime.lightSetParam.fresnelLight.getGroundDirection());
+            shader.SetVector3("fresSkyDirection", Runtime.lightSetParam.fresnelLight.GetSkyDirection());
+            shader.SetVector3("fresGroundDirection", Runtime.lightSetParam.fresnelLight.GetGroundDirection());
 
             // reflection color for characters & stages
             float refR, refG, refB = 1.0f;

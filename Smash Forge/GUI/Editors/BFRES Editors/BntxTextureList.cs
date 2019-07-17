@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SmashForge.Rendering.Meshes;
 
@@ -19,15 +13,15 @@ namespace SmashForge
         public ImageList il = new ImageList();
         public List<Bitmap> texturesCol = new List<Bitmap>();
 
-        private bool _loadedC = false;
-        private bool _loadedA = false;
+        private bool loadedC = false;
+        private bool loadedA = false;
 
         private Mesh3D screenTriangle;
-        public string CurrentTextureOpen = "";
+        public string currentTextureOpen = "";
 
         public void LoadTexture(string texture)
         {
-            CurrentTextureOpen = texture;
+            currentTextureOpen = texture;
         }
 
         public BntxTextureList()
@@ -36,11 +30,11 @@ namespace SmashForge
 
             int count = 0;
 
-            foreach (BNTX bntx in Runtime.BNTXList)
+            foreach (BNTX bntx in Runtime.bntxList)
             {
                 foreach (BRTI tex in bntx.textures)
                 {
-                    Bitmap color = new Bitmap(BfresMaterialEditor.textureRGBA(tex.texture, tex.display));
+                    Bitmap color = new Bitmap(BfresMaterialEditor.TextureRgba(tex.texture, tex.display));
 
                     il.Images.Add(color);
                     texturesCol.Add(color);
@@ -54,8 +48,8 @@ namespace SmashForge
             il.ImageSize = new Size(30, 30);
             listView1.SmallImageList = il;
 
-            Rendering.OpenTKSharedResources.InitializeSharedResources();
-            if (Rendering.OpenTKSharedResources.SetupStatus == Rendering.OpenTKSharedResources.SharedResourceStatus.Initialized)
+            Rendering.OpenTkSharedResources.InitializeSharedResources();
+            if (Rendering.OpenTkSharedResources.SetupStatus == Rendering.OpenTkSharedResources.SharedResourceStatus.Initialized)
             {
                 screenTriangle = Rendering.ScreenDrawing.CreateScreenTriangle();
             }
@@ -65,16 +59,16 @@ namespace SmashForge
         {
             if (listView1.SelectedItems.Count > 0)
             {
-                string TexName = listView1.SelectedItems[0].Text;
+                string texName = listView1.SelectedItems[0].Text;
             }
         }
 
         private void RenderTextureColor(BRTI tex)
         {
-            if (!_loadedC || glControl1 == null)
+            if (!loadedC || glControl1 == null)
                 return;
 
-            if (Rendering.OpenTKSharedResources.SetupStatus != Rendering.OpenTKSharedResources.SharedResourceStatus.Initialized)
+            if (Rendering.OpenTkSharedResources.SetupStatus != Rendering.OpenTkSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             glControl1.MakeCurrent();
@@ -95,10 +89,10 @@ namespace SmashForge
         }
         private void RenderTextureAlpha(BRTI tex)
         {
-            if (!_loadedA || glControl2 == null)
+            if (!loadedA || glControl2 == null)
                 return;
 
-            if (Rendering.OpenTKSharedResources.SetupStatus != Rendering.OpenTKSharedResources.SharedResourceStatus.Initialized)
+            if (Rendering.OpenTkSharedResources.SetupStatus != Rendering.OpenTkSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             glControl2.MakeCurrent();
@@ -133,12 +127,12 @@ namespace SmashForge
 
         private void glControl1_Load(object sender, EventArgs e)
         {
-            _loadedC = true;
+            loadedC = true;
         }
 
         private void glControl2_Load(object sender, EventArgs e)
         {
-            _loadedA = true;
+            loadedA = true;
         }
 
         private void BNTX_TextureList_Load(object sender, EventArgs e)

@@ -1,28 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace SmashForge
 {
-    public partial class ATKD_Editor : EditorBase
+    public partial class AtkdEditor : EditorBase
     {
-        public ATKD_Editor(string atkdPath) 
+        public AtkdEditor(string atkdPath) 
         {
             InitializeComponent();
             filePath = atkdPath;
             atkd = new ATKD().Read(filePath);
             InitDataGridTable();
         }
-        public ATKD_Editor(string atkdPath, ModelViewport mvp)
+        public AtkdEditor(string atkdPath, ModelViewport mvp)
         {
             InitializeComponent();
             filePath = atkdPath;
@@ -73,7 +66,7 @@ namespace SmashForge
             if (mvp != null)
             {
                 mvp.atkdEditor = null;
-                Runtime.currentATKD = null;
+                Runtime.currentAtkd = null;
             }
         }
 
@@ -186,13 +179,13 @@ namespace SmashForge
             }
         }
 
-        public void Viewport_Render(VBN Skeleton)
+        public void Viewport_Render(VBN skeleton)
         {
-            if (Skeleton == null || mvp.CurrentAnimation == null || mvp.acmdScript == null)
+            if (skeleton == null || mvp.CurrentAnimation == null || mvp.acmdScript == null)
                 return;
 
             ATKD.Entry entry = FindEntry(mvp.scriptId);
-            float frame = mvp.acmdScript.animationFrame;
+            float frame = mvp.acmdScript.AnimationFrame;
 
             if (entry == null)
                 return;

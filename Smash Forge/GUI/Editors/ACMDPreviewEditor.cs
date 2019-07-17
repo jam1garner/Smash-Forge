@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using SALT.Moveset.AnimCMD;
@@ -13,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace SmashForge
 {
-    public partial class ACMDPreviewEditor : DockContent
+    public partial class AcmdPreviewEditor : DockContent
     {
         public uint crc;
         public bool set = false;
@@ -21,9 +17,9 @@ namespace SmashForge
         private bool ignoreTextChangedEvent = false;
         private Dictionary<uint, string> crcDict = new Dictionary<uint, string>();
 
-        public ModelViewport Owner;
+        public ModelViewport owner;
 
-        public ACMDPreviewEditor()
+        public AcmdPreviewEditor()
         {
             InitializeComponent();
         }
@@ -31,33 +27,33 @@ namespace SmashForge
         public void SetManualScript(uint crc)
         {
             bool changed = false;
-            if (cb_section.Text.Equals("GAME") && Owner.MovesetManager.Game.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("GAME") && owner.MovesetManager.Game.Scripts.ContainsKey(crc))
             {
                 //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
                 changed = true;
             }
-            if (cb_section.Text.Equals("SOUND") && Owner.MovesetManager.Sound.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("SOUND") && owner.MovesetManager.Sound.Scripts.ContainsKey(crc))
             {
                 //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Sound.Scripts[crc]);
                 changed = true;
             }
-            if (cb_section.Text.Equals("EXPRESSION") && Owner.MovesetManager.Expression.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("EXPRESSION") && owner.MovesetManager.Expression.Scripts.ContainsKey(crc))
             {
                 //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Expression.Scripts[crc]);
                 changed = true;
             }
-            if (cb_section.Text.Equals("EFFECT") && Owner.MovesetManager.Effect.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("EFFECT") && owner.MovesetManager.Effect.Scripts.ContainsKey(crc))
             {
                 //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Effect.Scripts[crc]);
                 changed = true;
             }
 
-            if (Owner.MovesetManager.ScriptsHashList.Contains(crc))
-                Owner.scriptId = Owner.MovesetManager.ScriptsHashList.IndexOf(crc);
+            if (owner.MovesetManager.ScriptsHashList.Contains(crc))
+                owner.scriptId = owner.MovesetManager.ScriptsHashList.IndexOf(crc);
 
-            if (Owner.MovesetManager.Game.Scripts.ContainsKey(crc))
+            if (owner.MovesetManager.Game.Scripts.ContainsKey(crc))
             {
-                Owner.acmdScript = new ForgeACMDScript((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
+                owner.acmdScript = new ForgeAcmdScript((ACMDScript)owner.MovesetManager.Game.Scripts[crc]);
                 //if (Runtime.vbnViewport != null && Runtime.TargetAnim != null)
                 //    Runtime.vbnViewport.setAnimMaxFrames(Runtime.TargetAnim);
             }
@@ -89,22 +85,22 @@ namespace SmashForge
                 cb_crc.Text = crcDict[crc];
 
             bool changed = false;
-            if (cb_section.Text.Equals("GAME") && Owner.MovesetManager.Game.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("GAME") && owner.MovesetManager.Game.Scripts.ContainsKey(crc))
             {
                 //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
                 changed = true;
             }
-            if (cb_section.Text.Equals("SOUND") && Owner.MovesetManager.Sound.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("SOUND") && owner.MovesetManager.Sound.Scripts.ContainsKey(crc))
             {
                 //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Sound.Scripts[crc]);
                 changed = true;
             }
-            if (cb_section.Text.Equals("EXPRESSION") && Owner.MovesetManager.Expression.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("EXPRESSION") && owner.MovesetManager.Expression.Scripts.ContainsKey(crc))
             {
                 //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Expression.Scripts[crc]);
                 changed = true;
             }
-            if (cb_section.Text.Equals("EFFECT") && Owner.MovesetManager.Effect.Scripts.ContainsKey(crc))
+            if (cb_section.Text.Equals("EFFECT") && owner.MovesetManager.Effect.Scripts.ContainsKey(crc))
             {
                 //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Effect.Scripts[crc]);
                 changed = true;
@@ -121,7 +117,7 @@ namespace SmashForge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if(Owner.MovesetManager != null && cb_section.SelectedIndex >= 0)
+            if(owner.MovesetManager != null && cb_section.SelectedIndex >= 0)
             {
                 // need to split into lines
                 string[] line = richTextBox1.Text.Split('\n');
@@ -143,13 +139,13 @@ namespace SmashForge
 
                     SortedList<uint, SALT.Moveset.IScript> scriptList = null;
                     if (cb_section.Text.Equals("GAME"))
-                        scriptList = Owner.MovesetManager.Game.Scripts;
+                        scriptList = owner.MovesetManager.Game.Scripts;
                     else if (cb_section.Text.Equals("SOUND"))
-                        scriptList = Owner.MovesetManager.Sound.Scripts;
+                        scriptList = owner.MovesetManager.Sound.Scripts;
                     else if (cb_section.Text.Equals("EXPRESSION"))
-                        scriptList = Owner.MovesetManager.Expression.Scripts;
+                        scriptList = owner.MovesetManager.Expression.Scripts;
                     else if (cb_section.Text.Equals("EFFECT"))
-                        scriptList = Owner.MovesetManager.Effect.Scripts;
+                        scriptList = owner.MovesetManager.Effect.Scripts;
 
                     //Update script if it already exists
                     if (scriptList.ContainsKey(crc))
@@ -157,8 +153,8 @@ namespace SmashForge
 
                     if (cb_section.Text.Equals("GAME"))
                     {
-                        Owner.acmdScript = new ForgeACMDScript(script);
-                        Owner.acmdScript.processToFrame(0);
+                        owner.acmdScript = new ForgeAcmdScript(script);
+                        owner.acmdScript.ProcessToFrame(0);
                     }
                 } catch (Exception)
                 {
@@ -209,7 +205,7 @@ namespace SmashForge
                 SetAnimation(crc);
         }
 
-        private void updateSelection(object sender, EventArgs e)
+        private void UpdateSelection(object sender, EventArgs e)
         {
             if(set)
                 SetAnimation(crc);
@@ -225,16 +221,16 @@ namespace SmashForge
             //HighlightSyntax();
         }
 
-        public void updateCrcList()
+        public void UpdateCrcList()
         {
             cb_crc.Items.Clear();
             crcDict.Clear();
             List<uint> crcs = new List<uint>();
             List<string> list = new List<string>();
-            if (Owner.MovesetManager != null)
+            if (owner.MovesetManager != null)
             {
                 //Get unique crc
-                crcs = Owner.MovesetManager.ScriptsHashList.Distinct().ToList();
+                crcs = owner.MovesetManager.ScriptsHashList.Distinct().ToList();
                 for (int i = 0; i < crcs.Count; i++)
                 {
                     string s = "";
@@ -251,7 +247,7 @@ namespace SmashForge
             }
         }
 
-        private void updateCrc(object sender, EventArgs e)
+        private void UpdateCrc(object sender, EventArgs e)
         {
             //Ignore if this was done by setAnmation
             if (ignoreTextChangedEvent)

@@ -38,49 +38,49 @@ namespace SmashForge
 
         public void Read(FileData d)
         {
-            d.Endian = Endianness.Big;
+            d.endian = Endianness.Big;
 
-            d.skip(4);
+            d.Skip(4);
 
             header = new OMOHeader()
             {
-                verHi = d.readUShort(),
-                verLow = d.readUShort(),
-                flags = d.readInt(),
-                unk1 = d.readUShort(),
-                boneCount = d.readUShort(),
-                frameCount = d.readUShort(),
-                frameSize = d.readUShort(),
-                nodeOffset = d.readInt(),
-                interOffset = d.readInt(),
-                keyOffset = d.readInt()
+                verHi = d.ReadUShort(),
+                verLow = d.ReadUShort(),
+                flags = d.ReadInt(),
+                unk1 = d.ReadUShort(),
+                boneCount = d.ReadUShort(),
+                frameCount = d.ReadUShort(),
+                frameSize = d.ReadUShort(),
+                nodeOffset = d.ReadInt(),
+                interOffset = d.ReadInt(),
+                keyOffset = d.ReadInt()
             };
 
-            d.seek(header.nodeOffset);
+            d.Seek(header.nodeOffset);
             for (int i = 0; i < header.boneCount; i++)
             {
                 OMONode node = new OMONode()
                 {
-                    flags = d.readInt(),
-                    hash = (uint)d.readInt(),
-                    interOffset = d.readInt(),
-                    keyOffset = d.readInt()
+                    flags = d.ReadInt(),
+                    hash = (uint)d.ReadInt(),
+                    interOffset = d.ReadInt(),
+                    keyOffset = d.ReadInt()
                 };
-                int temp = d.pos();
-                d.seek(header.interOffset + node.interOffset);
+                int temp = d.Pos();
+                d.Seek(header.interOffset + node.interOffset);
                 Console.WriteLine(node.hash.ToString("x") + " " + (header.interOffset + node.interOffset).ToString("x"));
                 node.Read(d);
-                d.seek(temp);
+                d.Seek(temp);
                 Nodes.Add(node);
             }
 
-            d.seek(header.keyOffset);
+            d.Seek(header.keyOffset);
             for (int i = 0; i < header.frameCount; i++)
             {
                 OMOFrame frame = new OMOFrame();
                 // /2 because size of short
                 for (int j = 0; j < header.frameSize / 2; j++)
-                    frame.keys.Add(d.readUShort());
+                    frame.keys.Add(d.ReadUShort());
                 Frames.Add(frame);
             }
         }
@@ -239,14 +239,14 @@ namespace SmashForge
                     if (hasFlag(flags, OMOFlags.PosConst))
                     {
                         posType = OMOFlags.PosConst;
-                        pos_min = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        pos_min = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
                     }
 
                     if (hasFlag(flags, OMOFlags.PosInter))
                     {
                         posType = OMOFlags.PosInter;
-                        pos_min = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
-                        pos_max = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        pos_min = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
+                        pos_max = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
                     }
                 }
                 if (hasFlag(flags, OMOFlags.hasRot))
@@ -254,18 +254,18 @@ namespace SmashForge
                     if (hasFlag(flags, OMOFlags.RotConst))
                     {
                         rotType = OMOFlags.RotConst;
-                        rot_min = calcW(new Vector4(d.readFloat(), d.readFloat(), d.readFloat(), 0));
+                        rot_min = calcW(new Vector4(d.ReadFloat(), d.ReadFloat(), d.ReadFloat(), 0));
                     }
                     if (hasFlag(flags, OMOFlags.RotFConst))
                     {
                         rotType = OMOFlags.RotFConst;
-                        rot_min = new Vector4(d.readFloat(), d.readFloat(), d.readFloat(), d.readFloat());
+                        rot_min = new Vector4(d.ReadFloat(), d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
                     }
                     if (hasFlag(flags, OMOFlags.RotInter))
                     {
                         rotType = OMOFlags.RotInter;
-                        rot_min = new Vector4(d.readFloat(), d.readFloat(), d.readFloat(), 0);
-                        rot_max = new Vector4(d.readFloat(), d.readFloat(), d.readFloat(), 0);
+                        rot_min = new Vector4(d.ReadFloat(), d.ReadFloat(), d.ReadFloat(), 0);
+                        rot_max = new Vector4(d.ReadFloat(), d.ReadFloat(), d.ReadFloat(), 0);
                     }
                     if (hasFlag(flags, OMOFlags.RotFrame))
                         rotType = OMOFlags.RotFrame;
@@ -278,14 +278,14 @@ namespace SmashForge
                         scaType = OMOFlags.ScaConst;
                         if (hasFlag(flags, OMOFlags.ScaConst2))
                             scaType = OMOFlags.ScaConst2;
-                        sca_min = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        sca_min = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
                     }
 
                     if (hasFlag(flags, OMOFlags.ScaInter))
                     {
                         scaType = OMOFlags.ScaInter;
-                        sca_min = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
-                        sca_max = new Vector3(d.readFloat(), d.readFloat(), d.readFloat());
+                        sca_min = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
+                        sca_max = new Vector3(d.ReadFloat(), d.ReadFloat(), d.ReadFloat());
                     }
                 }
             }

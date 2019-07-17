@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace SmashForge
@@ -40,46 +37,46 @@ namespace SmashForge
 
         public void Read(FileData f)
         {
-            f.Endian = endianess;
-            if (f.size() < 4) return;
-            int entryCount = f.readInt();
-            int otherCount = f.readInt();
-            int startOffset = f.readInt();
-            int unk = f.readInt();//0x20 - Entry size?
-            int unk2 = f.readInt();//0x8? - values per entry?
-            int unk3 = f.readInt();//0x30? - start offset again?
-            int otherStartOffset = f.readInt();
+            f.endian = endianess;
+            if (f.Size() < 4) return;
+            int entryCount = f.ReadInt();
+            int otherCount = f.ReadInt();
+            int startOffset = f.ReadInt();
+            int unk = f.ReadInt();//0x20 - Entry size?
+            int unk2 = f.ReadInt();//0x8? - values per entry?
+            int unk3 = f.ReadInt();//0x30? - start offset again?
+            int otherStartOffset = f.ReadInt();
 
             if (unk != 0x20 || unk2 != 0x8 || unk3 != 0x30)
                 throw new Exception("Unexpected Unkowns Please Report to Jam");
 
-            f.seek(startOffset);
+            f.Seek(startOffset);
             for (int i = 0; i < entryCount; i++)
             {
                 Entry temp = new Entry();
                 temp.values = new int[8];
                 for (int j = 0; j < 8; j++)
-                    temp.values[j] = f.readInt();
+                    temp.values[j] = f.ReadInt();
 
-                int returnOffset = f.pos();
-                f.seek(temp.values[0]);
-                temp.name = f.readString();
-                f.seek(returnOffset);
+                int returnOffset = f.Pos();
+                f.Seek(temp.values[0]);
+                temp.name = f.ReadString();
+                f.Seek(returnOffset);
                 entries.Add(temp);
             }
 
-            f.seek(otherStartOffset);
+            f.Seek(otherStartOffset);
             for (int i = 0; i < otherCount; i++)
             {
                 Entry temp = new Entry();
                 temp.values = new int[2];
                 for (int j = 0; j < 2; j++)
-                    temp.values[j] = f.readInt();
+                    temp.values[j] = f.ReadInt();
 
-                int returnOffset = f.pos();
-                f.seek(temp.values[0]);
-                temp.name = f.readString();
-                f.seek(returnOffset);
+                int returnOffset = f.Pos();
+                f.Seek(temp.values[0]);
+                temp.name = f.ReadString();
+                f.Seek(returnOffset);
                 otherEntries.Add(temp);
             }
         }
@@ -88,24 +85,24 @@ namespace SmashForge
         {
             List<int> nameOffsets = new List<int>();
             int nameTableOffset = 0x30 + (0x20 * entries.Count);
-            FileOutput nameTable = new FileOutput() { Endian = Endianness.Big };
+            FileOutput nameTable = new FileOutput() { endian = Endianness.Big };
             foreach (Entry entry in entries)
             {
-                nameOffsets.Add(nameTableOffset + nameTable.pos());
+                nameOffsets.Add(nameTableOffset + nameTable.Pos());
                 nameTable.WriteString(entry.name);
-                nameTable.writeBytes(new byte[4 - (entry.name.Length % 4)]); //Pad to next word
+                nameTable.WriteBytes(new byte[4 - (entry.name.Length % 4)]); //Pad to next word
             }
-            while (nameTable.pos() % 0x10 != 0)
-                nameTable.writeByte(0);
+            while (nameTable.Pos() % 0x10 != 0)
+                nameTable.WriteByte(0);
 
             for (int i = 0; i < entries.Count; i++)
                 entries[i].values[0] = nameOffsets[i];
 
             foreach (Entry entry in entries)
                 foreach (int value in entry.values)
-                    f.writeInt(value);
+                    f.WriteInt(value);
 
-            f.writeBytes(nameTable.GetBytes());
+            f.WriteBytes(nameTable.GetBytes());
 
             return f.GetBytes();
         }
@@ -114,24 +111,24 @@ namespace SmashForge
         {
             List<int> nameOffsets = new List<int>();
             int nameTableOffset = startOffset + (8 * otherEntries.Count);
-            FileOutput nameTable = new FileOutput() { Endian = Endianness.Big };
+            FileOutput nameTable = new FileOutput() { endian = Endianness.Big };
             foreach (Entry entry in otherEntries)
             {
-                nameOffsets.Add(nameTableOffset + nameTable.pos());
+                nameOffsets.Add(nameTableOffset + nameTable.Pos());
                 nameTable.WriteString(entry.name);
-                nameTable.writeBytes(new byte[4 - (entry.name.Length % 4)]); //Pad to next word
+                nameTable.WriteBytes(new byte[4 - (entry.name.Length % 4)]); //Pad to next word
             }
-            while (nameTable.pos() % 0x10 != 0)
-                nameTable.writeByte(0);
+            while (nameTable.Pos() % 0x10 != 0)
+                nameTable.WriteByte(0);
 
             for (int i = 0; i < otherEntries.Count; i++)
                 otherEntries[i].values[0] = nameOffsets[i];
 
             foreach (Entry entry in otherEntries)
                 foreach (int value in entry.values)
-                    f.writeInt(value);
+                    f.WriteInt(value);
 
-            f.writeBytes(nameTable.GetBytes());
+            f.WriteBytes(nameTable.GetBytes());
 
             return f.GetBytes();
         }
@@ -139,19 +136,19 @@ namespace SmashForge
         public override byte[] Rebuild()
         {
             FileOutput f = new FileOutput();
-            f.Endian = endianess;
+            f.endian = endianess;
 
-            f.writeInt(entries.Count);
-            f.writeInt(otherEntries.Count);
-            f.writeInt(0x30);
-            f.writeInt(0x20);
-            f.writeInt(0x8);
-            f.writeInt(0x30);
+            f.WriteInt(entries.Count);
+            f.WriteInt(otherEntries.Count);
+            f.WriteInt(0x30);
+            f.WriteInt(0x20);
+            f.WriteInt(0x8);
+            f.WriteInt(0x30);
             byte[] entryData = RebuildEntries(new FileOutput());
-            f.writeInt(entryData.Length + 0x30);
-            f.writeBytes(new byte[0x14]);
-            f.writeBytes(entryData);
-            f.writeBytes(RebuildOtherEntries(new FileOutput(),f.pos()));
+            f.WriteInt(entryData.Length + 0x30);
+            f.WriteBytes(new byte[0x14]);
+            f.WriteBytes(entryData);
+            f.WriteBytes(RebuildOtherEntries(new FileOutput(),f.Pos()));
 
             return f.GetBytes();
         }

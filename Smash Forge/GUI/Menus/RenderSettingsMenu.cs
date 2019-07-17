@@ -45,7 +45,7 @@ namespace SmashForge.Gui
             renderHitboxesCB.Checked = Runtime.renderHitboxes;
             nudHitboxAlpha.Value = Runtime.hitboxAlpha;
             pbHitboxAnglesColor.BackColor = Runtime.hitboxAnglesColor;
-            loadRenderATKD.Checked = Runtime.LoadAndRenderATKD;
+            loadRenderATKD.Checked = Runtime.loadAndRenderAtkd;
 
             // Hurtbox Settings
             renderHurtboxesCB.Checked = Runtime.renderHurtboxes;
@@ -58,7 +58,7 @@ namespace SmashForge.Gui
             pbHurtboxColorSelected.BackColor = Runtime.hurtboxColorSelected;
 
             // Misc Hitbox/Hurtbox Settings
-            renderEnvCollisionBoxCB.Checked = Runtime.renderECB;
+            renderEnvCollisionBoxCB.Checked = Runtime.renderEcb;
             renderInterpHitboxCB.Checked = Runtime.renderInterpolatedHitboxes;
             renderSpecialBubblesCB.Checked = Runtime.renderSpecialBubbles;
             renderPriorityTopCB.Checked = Runtime.renderHitboxesNoOverlap;
@@ -93,7 +93,7 @@ namespace SmashForge.Gui
             userModCheckbox.Checked = DiscordSettings.useUserModName;
 
             // LVD Settings
-            renderLvdCB.Checked = Runtime.renderLVD;
+            renderLvdCB.Checked = Runtime.renderLvd;
             CheckBoxChanged();
 
             renderCollisionsCB.Checked = Runtime.renderCollisions;
@@ -168,7 +168,7 @@ namespace SmashForge.Gui
                 Runtime.renderHitboxes = renderHitboxesCB.Checked;
                 Runtime.renderPath = renderCameraPathCB.Checked;
                 Runtime.renderFloor = renderFloorCB.Checked;
-                Runtime.renderLVD = renderLvdCB.Checked;
+                Runtime.renderLvd = renderLvdCB.Checked;
                 Runtime.renderCollisions = renderCollisionsCB.Checked;
                 Runtime.renderSpawns = renderSpawnsCB.Checked;
                 Runtime.renderRespawns = renderRespawnsCB.Checked;
@@ -177,7 +177,7 @@ namespace SmashForge.Gui
                 Runtime.renderCollisionNormals = renderPassthroughCB.Checked;
                 Runtime.renderHurtboxes = renderHurtboxesCB.Checked;
                 Runtime.renderHurtboxesZone = renderHurtboxZonesCB.Checked;
-                Runtime.renderECB = renderEnvCollisionBoxCB.Checked;
+                Runtime.renderEcb = renderEnvCollisionBoxCB.Checked;
                 Runtime.renderInterpolatedHitboxes = renderInterpHitboxCB.Checked;
                 Runtime.renderSpecialBubbles = renderSpecialBubblesCB.Checked;
                 Runtime.renderHitboxesNoOverlap = renderPriorityTopCB.Checked;
@@ -211,15 +211,15 @@ namespace SmashForge.Gui
             
             switch (Runtime.hitboxRenderMode)
             {
-                case Hitbox.RENDER_NORMAL:
+                case Hitbox.RenderNormal:
                     // disable controls
                     hitboxColors = new List<Color>();
                     break;
-                case Hitbox.RENDER_KNOCKBACK:
+                case Hitbox.RenderKnockback:
                     // enable controls
                     hitboxColors = Runtime.hitboxKnockbackColors;
                     break;
-                case Hitbox.RENDER_ID:
+                case Hitbox.RenderId:
                     // enable controls
                     hitboxColors = Runtime.hitboxIdColors;
                     break;
@@ -261,7 +261,7 @@ namespace SmashForge.Gui
                     
                     debugRadioTableLayout.Visible = false;
                     break;
-                case Runtime.RenderTypes.UVTestPattern:
+                case Runtime.RenderTypes.UvTestPattern:
                     debug1CB.Visible = false;
 
                     debugRadioTableLayout.Visible = true;
@@ -269,7 +269,7 @@ namespace SmashForge.Gui
                     radioButton2.Text = "UV2";
                     radioButton3.Text = "UV3";
                     break;
-                case Runtime.RenderTypes.UVCoords:
+                case Runtime.RenderTypes.UvCoords:
                     debug1CB.Visible = false;
 
                     debugRadioTableLayout.Visible = true;
@@ -322,9 +322,9 @@ namespace SmashForge.Gui
 
             debug1CB.Visible = false;
 
-            radioButton1.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel1 && Runtime.renderType != Runtime.RenderTypes.Shaded;
-            radioButton2.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel2 && Runtime.renderType != Runtime.RenderTypes.Shaded;
-            radioButton3.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel3 && Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton1.Checked = Runtime.uvChannel == Runtime.UvChannel.Channel1 && Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton2.Checked = Runtime.uvChannel == Runtime.UvChannel.Channel2 && Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton3.Checked = Runtime.uvChannel == Runtime.UvChannel.Channel3 && Runtime.renderType != Runtime.RenderTypes.Shaded;
         }
 
         private void swagViewing_CheckedChanged(object sender, EventArgs e)
@@ -747,19 +747,19 @@ namespace SmashForge.Gui
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.uvChannel = Runtime.UVChannel.Channel1;
+            Runtime.uvChannel = Runtime.UvChannel.Channel1;
             MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.uvChannel = Runtime.UVChannel.Channel2;
+            Runtime.uvChannel = Runtime.UvChannel.Channel2;
             MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.uvChannel = Runtime.UVChannel.Channel3;
+            Runtime.uvChannel = Runtime.UvChannel.Channel3;
             MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
@@ -1057,7 +1057,7 @@ namespace SmashForge.Gui
 
         private void loadRenderATKD_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.LoadAndRenderATKD = loadRenderATKD.Checked;
+            Runtime.loadAndRenderAtkd = loadRenderATKD.Checked;
         }
 
         private void RenderSettingsMenu_FormClosed(object sender, FormClosedEventArgs e)

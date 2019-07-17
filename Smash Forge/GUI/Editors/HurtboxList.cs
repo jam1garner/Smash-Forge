@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-using SALT.Moveset.AnimCMD;
-using System.Text.RegularExpressions;
 
 namespace SmashForge
 {
@@ -20,10 +12,10 @@ namespace SmashForge
         public HurtboxList()
         {
             InitializeComponent();
-            refresh();
+            Refresh();
         }
 
-        public void refresh()
+        public void Refresh()
         {
             treeView1.BeginUpdate();
             treeView1.Nodes.Clear();
@@ -63,9 +55,9 @@ namespace SmashForge
                 hurtboxData.Rows.Add("X Stretch", hurtbox.X2);
                 hurtboxData.Rows.Add("Y Stretch", hurtbox.Y2);
                 hurtboxData.Rows.Add("Z Stretch", hurtbox.Z2);
-                hurtboxData.Rows.Add("Zone", hurtbox.Zone == Hurtbox.LW_ZONE ? "Low" : hurtbox.Zone == Hurtbox.HI_ZONE ? "High" : "Mid");
+                hurtboxData.Rows.Add("Zone", hurtbox.Zone == Hurtbox.LwZone ? "Low" : hurtbox.Zone == Hurtbox.HiZone ? "High" : "Mid");
 
-                Runtime.SelectedHurtboxID = hurtbox.Id;
+                Runtime.SelectedHurtboxId = hurtbox.Id;
             }
         }
 
@@ -85,36 +77,36 @@ namespace SmashForge
                 Hurtbox hurtbox = Runtime.ParamManager.Hurtboxes[treeView1.SelectedNode.Index];
 
                 int bone = hurtbox.Bone;
-                float X = hurtbox.X, Y = hurtbox.Y, Z = hurtbox.Z, X2 = hurtbox.X2, Y2 = hurtbox.Y2, Z2 = hurtbox.Z2, Size = hurtbox.Size;
-                string Zone = hurtbox.Zone == Hurtbox.LW_ZONE ? "Low" : hurtbox.Zone == Hurtbox.HI_ZONE ? "High" : "Mid";
+                float x = hurtbox.X, y = hurtbox.Y, z = hurtbox.Z, x2 = hurtbox.X2, y2 = hurtbox.Y2, z2 = hurtbox.Z2, size = hurtbox.Size;
+                string zone = hurtbox.Zone == Hurtbox.LwZone ? "Low" : hurtbox.Zone == Hurtbox.HiZone ? "High" : "Mid";
 
                 int.TryParse(hurtboxData.Rows[0][1].ToString(), out bone);
 
-                float.TryParse(hurtboxData.Rows[1][1].ToString(), out Size);
-                float.TryParse(hurtboxData.Rows[2][1].ToString(), out X);
-                float.TryParse(hurtboxData.Rows[3][1].ToString(), out Y);
-                float.TryParse(hurtboxData.Rows[4][1].ToString(), out Z);
-                float.TryParse(hurtboxData.Rows[5][1].ToString(), out X2);
-                float.TryParse(hurtboxData.Rows[6][1].ToString(), out Y2);
-                float.TryParse(hurtboxData.Rows[7][1].ToString(), out Z2);
+                float.TryParse(hurtboxData.Rows[1][1].ToString(), out size);
+                float.TryParse(hurtboxData.Rows[2][1].ToString(), out x);
+                float.TryParse(hurtboxData.Rows[3][1].ToString(), out y);
+                float.TryParse(hurtboxData.Rows[4][1].ToString(), out z);
+                float.TryParse(hurtboxData.Rows[5][1].ToString(), out x2);
+                float.TryParse(hurtboxData.Rows[6][1].ToString(), out y2);
+                float.TryParse(hurtboxData.Rows[7][1].ToString(), out z2);
 
-                Zone = hurtboxData.Rows[8][1].ToString();
+                zone = hurtboxData.Rows[8][1].ToString();
 
                 hurtbox.Bone = bone;
-                hurtbox.Size = Size;
-                hurtbox.X = X;
-                hurtbox.Y = Y;
-                hurtbox.Z = Z;
-                hurtbox.X2 = X2;
-                hurtbox.Y2 = Y2;
-                hurtbox.Z2 = Z2;
+                hurtbox.Size = size;
+                hurtbox.X = x;
+                hurtbox.Y = y;
+                hurtbox.Z = z;
+                hurtbox.X2 = x2;
+                hurtbox.Y2 = y2;
+                hurtbox.Z2 = z2;
 
-                if (Zone == "Low")
-                    hurtbox.Zone = Hurtbox.LW_ZONE;
-                else if (Zone == "Mid")
-                    hurtbox.Zone = Hurtbox.N_ZONE;
-                else if (Zone == "High")
-                    hurtbox.Zone = Hurtbox.HI_ZONE;
+                if (zone == "Low")
+                    hurtbox.Zone = Hurtbox.LwZone;
+                else if (zone == "Mid")
+                    hurtbox.Zone = Hurtbox.NZone;
+                else if (zone == "High")
+                    hurtbox.Zone = Hurtbox.HiZone;
 
                 if (hurtbox.X == hurtbox.X2 && hurtbox.Y == hurtbox.Y2 && hurtbox.Z == hurtbox.Z2)
                     hurtbox.IsSphere = true;

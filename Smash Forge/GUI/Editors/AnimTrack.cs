@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
 
@@ -180,9 +174,9 @@ namespace SmashForge
 
                     node.hash = skel.bones[i].boneId;
 
-                    node.t_type = 1;
-                    node.r_type = 1;
-                    node.s_type = 1;
+                    node.tType = 1;
+                    node.rType = 1;
+                    node.sType = 1;
 
                     node.t.X = f.x != -99 ? f.x : skel.bones[i].position[0];
                     node.t.Y = f.y != -99 ? f.y : skel.bones[i].position[1];
@@ -401,18 +395,18 @@ namespace SmashForge
             return frames;
         }
 
-        public float Interpolate(float offset, float span, float _value, float _nvalue, float tan, float ntan)
+        public float Interpolate(float offset, float span, float value, float nvalue, float tan, float ntan)
         {
             //Return this value if no offset from this keyframe
             if (offset == 0)
-                return _value;
+                return value;
 
             //Return next value if offset is to the next keyframe
             if (offset == span)
-                return _nvalue;
+                return nvalue;
 
             //Get the difference in values
-            float diff = _nvalue - _value;
+            float diff = nvalue - value;
 
             //Calculate a percentage from this keyframe to the next
             float time = offset / span; //Normalized, 0 to 1
@@ -428,15 +422,15 @@ namespace SmashForge
 
             //Interpolate using a hermite curve
             float inv = time - 1.0f; //-1 to 0
-            return _value
+            return value
                 + (offset * inv * ((inv * tan) + (time * ntan)))
                 + ((time * time) * (3.0f - 2.0f * time) * diff);
         }
 
-        public Animation toAnimation(VBN vbn)
+        public Animation ToAnimation(VBN vbn)
         {
             Animation animation = new Animation(anim.Name);
-            animation.FrameCount = anim.frameCount;
+            animation.frameCount = anim.frameCount;
 
             int i = 0;
             foreach (Bone b in vbn.bones)
@@ -448,53 +442,53 @@ namespace SmashForge
                     List<DAT_Animation.DATAnimTrack> tracks = anim.nodes[i];
                     
                     Animation.KeyNode node = new Animation.KeyNode(b.Text);
-                    node.RotType = Animation.RotationType.EULER;
+                    node.rotType = Animation.RotationType.Euler;
 
                     foreach (DAT_Animation.DATAnimTrack track in tracks)
                     {
                         switch (track.type)
                         {
                             case DAT_Animation.AnimType.XPOS:
-                                node.XPOS = CreateKeyGroup(i, track, false);
+                                node.xpos = CreateKeyGroup(i, track, false);
                                 break;
                             case DAT_Animation.AnimType.YPOS:
-                                node.YPOS = CreateKeyGroup(i, track, false);
+                                node.ypos = CreateKeyGroup(i, track, false);
                                 break;
                             case DAT_Animation.AnimType.ZPOS:
-                                node.ZPOS = CreateKeyGroup(i, track, false);
+                                node.zpos = CreateKeyGroup(i, track, false);
                                 break;
                             case DAT_Animation.AnimType.XROT:
-                                node.XROT = CreateKeyGroup(i, track, false);
+                                node.xrot = CreateKeyGroup(i, track, false);
                                 break;
                             case DAT_Animation.AnimType.YROT:
-                                node.YROT = CreateKeyGroup(i, track, false);
+                                node.yrot = CreateKeyGroup(i, track, false);
                                 break;
                             case DAT_Animation.AnimType.ZROT:
-                                node.ZROT = CreateKeyGroup(i, track, false);
+                                node.zrot = CreateKeyGroup(i, track, false);
                                 break;
                             case DAT_Animation.AnimType.XSCA:
-                                node.XSCA = CreateKeyGroup(i, track, false);
+                                node.xsca = CreateKeyGroup(i, track, false);
                                 break;
                             case DAT_Animation.AnimType.YSCA:
-                                node.YSCA = CreateKeyGroup(i, track, false);
+                                node.ysca = CreateKeyGroup(i, track, false);
                                 break;
                             case DAT_Animation.AnimType.ZSCA:
-                                node.ZSCA = CreateKeyGroup(i, track, false);
+                                node.zsca = CreateKeyGroup(i, track, false);
                                 break;
                         }
                     }
 
-                    if(node.XSCA.HasAnimation() || node.YSCA.HasAnimation() || node.ZSCA.HasAnimation()
-                        || node.XPOS.HasAnimation() || node.YPOS.HasAnimation() || node.ZPOS.HasAnimation()
-                        || node.XROT.HasAnimation() || node.YROT.HasAnimation() || node.ZROT.HasAnimation())
-                        animation.Bones.Add(node);
+                    if(node.xsca.HasAnimation() || node.ysca.HasAnimation() || node.zsca.HasAnimation()
+                        || node.xpos.HasAnimation() || node.ypos.HasAnimation() || node.zpos.HasAnimation()
+                        || node.xrot.HasAnimation() || node.yrot.HasAnimation() || node.zrot.HasAnimation())
+                        animation.bones.Add(node);
                 }
             }
 
             return animation;
         }
 
-        public void createANIM(string fname, VBN vbn)
+        public void CreateAnim(string fname, VBN vbn)
         {
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(@fname))
             {
@@ -652,7 +646,7 @@ namespace SmashForge
                 {
                     cvalue = no.value;
                     ctan = curve.tan;
-                    group.Keys.Add(new Animation.KeyFrame() { Weighted = true, Frame = time, Value = cvalue, In = no.tan, Out = ctan, InterType = Animation.InterpolationType.HERMITE});
+                    group.keys.Add(new Animation.KeyFrame() { weighted = true, Frame = time, Value = cvalue, In = no.tan, Out = ctan, interType = Animation.InterpolationType.Hermite});
                     //file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 {1:N6} 1 {2:N6} 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1), no.tan, ctan);
                 }
                 else
@@ -662,7 +656,7 @@ namespace SmashForge
                             {
                                 cvalue = no.value;
                                 ctan = no.tan;
-                                group.Keys.Add(new Animation.KeyFrame() { Weighted = true, Frame = time, Value = cvalue, In = ctan, Out = ctan, InterType = Animation.InterpolationType.HERMITE });
+                                group.keys.Add(new Animation.KeyFrame() { weighted = true, Frame = time, Value = cvalue, In = ctan, Out = ctan, interType = Animation.InterpolationType.Hermite });
                                 //file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 {1:N6} 1 {2:N6} 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1), ctan, ctan);
                             }
                             break;
@@ -670,21 +664,21 @@ namespace SmashForge
                             {
                                 cvalue = no.value;
                                 ctan = 0;
-                                group.Keys.Add(new Animation.KeyFrame() { Weighted = true, Frame = time, Value = cvalue, In = ctan, Out = ctan, InterType = Animation.InterpolationType.HERMITE });
+                                group.keys.Add(new Animation.KeyFrame() { weighted = true, Frame = time, Value = cvalue, In = ctan, Out = ctan, interType = Animation.InterpolationType.Hermite });
                                 //file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 {1:N6} 1 {2:N6} 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1), ctan, ctan);
                             }
                             break;
                         case DAT_Animation.InterpolationType.Step:
                             {
                                 cvalue = no.value;
-                                group.Keys.Add(new Animation.KeyFrame() { Weighted = false, Frame = time, Value = cvalue, InterType = Animation.InterpolationType.STEP });
+                                group.keys.Add(new Animation.KeyFrame() { weighted = false, Frame = time, Value = cvalue, interType = Animation.InterpolationType.Step });
                                 //file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 0 1 0 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1));
                             }
                             break;
                         case DAT_Animation.InterpolationType.Linear:
                             {
                                 cvalue = no.value;
-                                group.Keys.Add(new Animation.KeyFrame() { Weighted = false, Frame = time, Value = cvalue, InterType = Animation.InterpolationType.LINEAR });
+                                group.keys.Add(new Animation.KeyFrame() { weighted = false, Frame = time, Value = cvalue, interType = Animation.InterpolationType.Linear });
                                 //file.WriteLine(" " + (time + 1) + " {0:N6} linear linear 1 1 0", cvalue * (rotation ? 180 / (float)Math.PI : 1));
                             }
                             break;

@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SmashForge
 {
-    public partial class LVDList : DockContent
+    public partial class LvdList : DockContent
     {
-        public LVD TargetLVD;
-        public LVDEditor lvdEditor;
+        public LVD targetLvd;
+        public LvdEditor lvdEditor;
 
-        ContextMenu ElementCM;
-        ContextMenu CollisionCM;
-        public LVDList()
+        ContextMenu elementCm;
+        ContextMenu collisionCm;
+        public LvdList()
         {
             InitializeComponent();
             treeView1.Nodes.Add(collisionNode);
@@ -36,220 +28,220 @@ namespace SmashForge
             {
                 collisionNode.ContextMenu = new ContextMenu();
 
-                MenuItem AddCollision = new MenuItem("Add New Collision");
-                AddCollision.Click += delegate
+                MenuItem addCollision = new MenuItem("Add New Collision");
+                addCollision.Click += delegate
                 {
-                    TargetLVD.collisions.Add(new Collision() { name = "COL_00_NewCollision", subname = "00_NewCollision" });
-                    fillList();
+                    targetLvd.collisions.Add(new Collision() { Name = "COL_00_NewCollision", Subname = "00_NewCollision" });
+                    FillList();
                 };
-                collisionNode.ContextMenu.MenuItems.Add(AddCollision);
+                collisionNode.ContextMenu.MenuItems.Add(addCollision);
 
-                MenuItem GenCliffs = new MenuItem("Regenerate Cliffs");
-                GenCliffs.Click += delegate
+                MenuItem genCliffs = new MenuItem("Regenerate Cliffs");
+                genCliffs.Click += delegate
                 {
-                    foreach (Collision c in TargetLVD.collisions)
+                    foreach (Collision c in targetLvd.collisions)
                     {
                         LVD.GenerateCliffs(c);
                     }
-                    fillList();
+                    FillList();
                 };
-                collisionNode.ContextMenu.MenuItems.Add(GenCliffs);
+                collisionNode.ContextMenu.MenuItems.Add(genCliffs);
             }
             //---------------------------------------------
             {
                 spawnNode.ContextMenu = new ContextMenu();
-                MenuItem Add = new MenuItem("Add New Spawn");
-                Add.Click += delegate
+                MenuItem add = new MenuItem("Add New Spawn");
+                add.Click += delegate
                 {
-                    string newNum = (TargetLVD.spawns.Count + 1).ToString().PadLeft(2, '0');
-                    TargetLVD.spawns.Add(new Spawn() { name = "START_00_P" + newNum, subname = "00_P" + newNum });
-                    fillList();
+                    string newNum = (targetLvd.spawns.Count + 1).ToString().PadLeft(2, '0');
+                    targetLvd.spawns.Add(new Spawn() { Name = "START_00_P" + newNum, Subname = "00_P" + newNum });
+                    FillList();
                 };
-                spawnNode.ContextMenu.MenuItems.Add(Add);
+                spawnNode.ContextMenu.MenuItems.Add(add);
             }
             //---------------------------------------------
             {
                 TreeNode node = respawnNode;
                 node.ContextMenu = new ContextMenu();
-                MenuItem Add = new MenuItem("Add New Respawn");
-                Add.Click += delegate
+                MenuItem add = new MenuItem("Add New Respawn");
+                add.Click += delegate
                 {
-                    string newNum = (TargetLVD.respawns.Count + 1).ToString().PadLeft(2, '0');
-                    TargetLVD.respawns.Add(new Spawn() { name = "RESTART_00_P" + newNum, subname = "00_P" + newNum });
-                    fillList();
+                    string newNum = (targetLvd.respawns.Count + 1).ToString().PadLeft(2, '0');
+                    targetLvd.respawns.Add(new Spawn() { Name = "RESTART_00_P" + newNum, Subname = "00_P" + newNum });
+                    FillList();
                 };
-                node.ContextMenu.MenuItems.Add(Add);
+                node.ContextMenu.MenuItems.Add(add);
             }
             //---------------------------------------------
             {
                 TreeNode node = camNode;
                 node.ContextMenu = new ContextMenu();
-                MenuItem Add = new MenuItem("Add New Camera Bounds");
-                Add.Click += delegate
+                MenuItem add = new MenuItem("Add New Camera Bounds");
+                add.Click += delegate
                 {
-                    TargetLVD.cameraBounds.Add(new Bounds() { name = "CAMERA_00", subname = "00" });
-                    fillList();
+                    targetLvd.cameraBounds.Add(new Bounds() { Name = "CAMERA_00", Subname = "00" });
+                    FillList();
                 };
-                node.ContextMenu.MenuItems.Add(Add);
+                node.ContextMenu.MenuItems.Add(add);
             }
             //---------------------------------------------
             {
                 TreeNode node = deathNode;
                 node.ContextMenu = new ContextMenu();
-                MenuItem Add = new MenuItem("Add New Blastzones");
-                Add.Click += delegate
+                MenuItem add = new MenuItem("Add New Blastzones");
+                add.Click += delegate
                 {
-                    TargetLVD.blastzones.Add(new Bounds() { name = "DEATH_00", subname = "00" });
-                    fillList();
+                    targetLvd.blastzones.Add(new Bounds() { Name = "DEATH_00", Subname = "00" });
+                    FillList();
                 };
-                node.ContextMenu.MenuItems.Add(Add);
+                node.ContextMenu.MenuItems.Add(add);
             }
             //---------------------------------------------
             {
                 TreeNode node = itemNode;
                 node.ContextMenu = new ContextMenu();
-                MenuItem Add = new MenuItem("Add New Item Spawner");
-                Add.Click += delegate
+                MenuItem add = new MenuItem("Add New Item Spawner");
+                add.Click += delegate
                 {
-                    TargetLVD.itemSpawns.Add(new ItemSpawner() { name = "ItemPopup_NEW", subname = "00_Item" });
-                    fillList();
+                    targetLvd.itemSpawns.Add(new ItemSpawner() { Name = "ItemPopup_NEW", Subname = "00_Item" });
+                    FillList();
                 };
-                node.ContextMenu.MenuItems.Add(Add);
+                node.ContextMenu.MenuItems.Add(add);
             }
             //---------------------------------------------
             {
                 TreeNode node = shapeNode;
                 node.ContextMenu = new ContextMenu();
 
-                MenuItem AddPoint = new MenuItem("Add New General Shape (Point)");
-                AddPoint.Click += delegate
+                MenuItem addPoint = new MenuItem("Add New General Shape (Point)");
+                addPoint.Click += delegate
                 {
-                    TargetLVD.generalShapes.Add(new GeneralShape(1) { name = "GeneralPoint_NEW", subname = "00_NEW"});
-                    fillList();
+                    targetLvd.generalShapes.Add(new GeneralShape(1) { Name = "GeneralPoint_NEW", Subname = "00_NEW"});
+                    FillList();
                 };
-                node.ContextMenu.MenuItems.Add(AddPoint);
+                node.ContextMenu.MenuItems.Add(addPoint);
 
-                MenuItem AddCircle = new MenuItem("Add New General Shape (Circle)");
-                AddCircle.Click += delegate
+                MenuItem addCircle = new MenuItem("Add New General Shape (Circle)");
+                addCircle.Click += delegate
                 {
-                    TargetLVD.generalShapes.Add(new GeneralShape(2) { name = "GeneralCircle_NEW", subname = "00_NEW"});
-                    fillList();
+                    targetLvd.generalShapes.Add(new GeneralShape(2) { Name = "GeneralCircle_NEW", Subname = "00_NEW"});
+                    FillList();
                 };
-                node.ContextMenu.MenuItems.Add(AddCircle);
+                node.ContextMenu.MenuItems.Add(addCircle);
 
-                MenuItem AddRect = new MenuItem("Add New General Shape (Rectangle)");
-                AddRect.Click += delegate
+                MenuItem addRect = new MenuItem("Add New General Shape (Rectangle)");
+                addRect.Click += delegate
                 {
-                    TargetLVD.generalShapes.Add(new GeneralShape(3) { name = "GeneralRect_NEW", subname = "00_NEW"});
-                    fillList();
+                    targetLvd.generalShapes.Add(new GeneralShape(3) { Name = "GeneralRect_NEW", Subname = "00_NEW"});
+                    FillList();
                 };
-                node.ContextMenu.MenuItems.Add(AddRect);
+                node.ContextMenu.MenuItems.Add(addRect);
 
-                MenuItem AddPath = new MenuItem("Add New General Shape (Path)");
-                AddPath.Click += delegate
+                MenuItem addPath = new MenuItem("Add New General Shape (Path)");
+                addPath.Click += delegate
                 {
-                    TargetLVD.generalShapes.Add(new GeneralShape(4) { name = "GeneralPath_NEW", subname = "00_NEW"});
-                    fillList();
+                    targetLvd.generalShapes.Add(new GeneralShape(4) { Name = "GeneralPath_NEW", Subname = "00_NEW"});
+                    FillList();
                 };
-                node.ContextMenu.MenuItems.Add(AddPath);
+                node.ContextMenu.MenuItems.Add(addPath);
             }
             //---------------------------------------------
             {
                 TreeNode node = pointNode;
                 node.ContextMenu = new ContextMenu();
-                MenuItem Add = new MenuItem("Add New General Point");
-                Add.Click += delegate
+                MenuItem add = new MenuItem("Add New General Point");
+                add.Click += delegate
                 {
-                    TargetLVD.generalPoints.Add(new GeneralPoint() { name = "GeneralPoint3D_NEW", subname = "00_NEW" });
-                    fillList();
+                    targetLvd.generalPoints.Add(new GeneralPoint() { Name = "GeneralPoint3D_NEW", Subname = "00_NEW" });
+                    FillList();
                 };
-                node.ContextMenu.MenuItems.Add(Add);
+                node.ContextMenu.MenuItems.Add(add);
             }
             //---------------------------------------------
             {
                 TreeNode node = hurtNode;
                 node.ContextMenu = new ContextMenu();
 
-                MenuItem AddSphere = new MenuItem("Add New Damage Sphere");
-                AddSphere.Click += delegate
+                MenuItem addSphere = new MenuItem("Add New Damage Sphere");
+                addSphere.Click += delegate
                 {
-                    TargetLVD.damageShapes.Add(new DamageShape() { name = "DamageeSphere_00_NEW", subname = "00_NEW", type = 2 });
-                    fillList();
+                    targetLvd.damageShapes.Add(new DamageShape() { Name = "DamageeSphere_00_NEW", Subname = "00_NEW", type = 2 });
+                    FillList();
                 };
-                node.ContextMenu.MenuItems.Add(AddSphere);
+                node.ContextMenu.MenuItems.Add(addSphere);
 
-                MenuItem AddCapsule = new MenuItem("Add New Damage Capsule");
-                AddCapsule.Click += delegate
+                MenuItem addCapsule = new MenuItem("Add New Damage Capsule");
+                addCapsule.Click += delegate
                 {
-                    TargetLVD.damageShapes.Add(new DamageShape() { name = "DamageeCapsule_00_NEW", subname = "00_NEW", type = 3 });
-                    fillList();
+                    targetLvd.damageShapes.Add(new DamageShape() { Name = "DamageeCapsule_00_NEW", Subname = "00_NEW", type = 3 });
+                    FillList();
                 };
-                node.ContextMenu.MenuItems.Add(AddCapsule);
+                node.ContextMenu.MenuItems.Add(addCapsule);
             }
             //---------------------------------------------
             {
                 TreeNode node = enemyNode;
                 node.ContextMenu = new ContextMenu();
-                MenuItem Add = new MenuItem("Add New Enemy Generator");
-                Add.Click += delegate
+                MenuItem add = new MenuItem("Add New Enemy Generator");
+                add.Click += delegate
                 {
-                    TargetLVD.enemyGenerators.Add(new EnemyGenerator() { name = "EnemyGenerator_NEW", subname = "00_NEW" });
-                    fillList();
+                    targetLvd.enemyGenerators.Add(new EnemyGenerator() { Name = "EnemyGenerator_NEW", Subname = "00_NEW" });
+                    FillList();
                 };
-                node.ContextMenu.MenuItems.Add(Add);
+                node.ContextMenu.MenuItems.Add(add);
             }
 
             {
-                ElementCM = new ContextMenu();
+                elementCm = new ContextMenu();
 
-                MenuItem Delete = new MenuItem("Delete Entry");
-                Delete.Click += delegate
+                MenuItem delete = new MenuItem("Delete Entry");
+                delete.Click += delegate
                 {
-                    deleteSelected();
+                    DeleteSelected();
                 };
-                ElementCM.MenuItems.Add(Delete);
+                elementCm.MenuItems.Add(delete);
             }
 
             {
-                CollisionCM = new ContextMenu();
+                collisionCm = new ContextMenu();
 
-                MenuItem Delete = new MenuItem("Delete Entry");
-                Delete.Click += delegate
+                MenuItem delete = new MenuItem("Delete Entry");
+                delete.Click += delegate
                 {
-                    deleteSelected();
+                    DeleteSelected();
                 };
-                CollisionCM.MenuItems.Add(Delete);
+                collisionCm.MenuItems.Add(delete);
 
-                MenuItem GenPassthru = new MenuItem("Regenerate Passthrough Angles");
-                GenPassthru.Click += delegate
+                MenuItem genPassthru = new MenuItem("Regenerate Passthrough Angles");
+                genPassthru.Click += delegate
                 {
                     if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag is Collision)
                     {
                         LVD.GeneratePassthroughs((Collision)treeView1.SelectedNode.Tag, true);
                     }
                 };
-                CollisionCM.MenuItems.Add(GenPassthru);
+                collisionCm.MenuItems.Add(genPassthru);
 
-                MenuItem FlipNormals = new MenuItem("Flip Passthrough Angles");
-                FlipNormals.Click += delegate
+                MenuItem flipNormals = new MenuItem("Flip Passthrough Angles");
+                flipNormals.Click += delegate
                 {
                     if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag is Collision)
                     {
                         LVD.FlipPassthroughs((Collision)treeView1.SelectedNode.Tag);
                     }
                 };
-                CollisionCM.MenuItems.Add(FlipNormals);
+                collisionCm.MenuItems.Add(flipNormals);
 
-                MenuItem GenCliffs = new MenuItem("Regenerate Cliffs");
-                GenCliffs.Click += delegate
+                MenuItem genCliffs = new MenuItem("Regenerate Cliffs");
+                genCliffs.Click += delegate
                 {
                     if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag is Collision)
                     {
                         LVD.GenerateCliffs((Collision)treeView1.SelectedNode.Tag);
                     }
-                    fillList();
+                    FillList();
                 };
-                CollisionCM.MenuItems.Add(GenCliffs);
+                collisionCm.MenuItems.Add(genCliffs);
             }
 
             treeView1.NodeMouseClick += (sender, args) => treeView1.SelectedNode = args.Node;
@@ -266,7 +258,7 @@ namespace SmashForge
         public TreeNode hurtNode = new TreeNode("Hurtboxes");
         public TreeNode enemyNode = new TreeNode("Enemy Generators");
 
-        public void fillList()
+        public void FillList()
         {
             collisionNode.Nodes.Clear();
             spawnNode.Nodes.Clear();
@@ -279,61 +271,61 @@ namespace SmashForge
             enemyNode.Nodes.Clear();
             shapeNode.Nodes.Clear();
 
-            if(TargetLVD != null)
+            if(targetLvd != null)
             {
-                foreach (Collision c in TargetLVD.collisions)
+                foreach (Collision c in targetLvd.collisions)
                 {
-                    TreeNode newNode = new TreeNode(c.name) { Tag = c, ContextMenu = CollisionCM };
+                    TreeNode newNode = new TreeNode(c.Name) { Tag = c, ContextMenu = collisionCm };
                     foreach (CollisionCliff d in c.cliffs)
                     {
-                        newNode.Nodes.Add(new TreeNode(d.name) { Tag = d, ContextMenu = ElementCM });
+                        newNode.Nodes.Add(new TreeNode(d.Name) { Tag = d, ContextMenu = elementCm });
                     }
                     collisionNode.Nodes.Add(newNode);
                 }
 
-                foreach (Spawn c in TargetLVD.spawns)
+                foreach (Spawn c in targetLvd.spawns)
                 {
-                    spawnNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
+                    spawnNode.Nodes.Add(new TreeNode(c.Name) { Tag = c, ContextMenu = elementCm });
                 }
 
-                foreach (Spawn c in TargetLVD.respawns)
+                foreach (Spawn c in targetLvd.respawns)
                 {
-                    respawnNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
+                    respawnNode.Nodes.Add(new TreeNode(c.Name) { Tag = c, ContextMenu = elementCm });
                 }
 
-                foreach (Bounds c in TargetLVD.cameraBounds)
+                foreach (Bounds c in targetLvd.cameraBounds)
                 {
-                    camNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
+                    camNode.Nodes.Add(new TreeNode(c.Name) { Tag = c, ContextMenu = elementCm });
                 }
 
-                foreach (Bounds c in TargetLVD.blastzones)
+                foreach (Bounds c in targetLvd.blastzones)
                 {
-                    deathNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
+                    deathNode.Nodes.Add(new TreeNode(c.Name) { Tag = c, ContextMenu = elementCm });
                 }
 
-                foreach (ItemSpawner c in TargetLVD.itemSpawns)
+                foreach (ItemSpawner c in targetLvd.itemSpawns)
                 {
-                    itemNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
+                    itemNode.Nodes.Add(new TreeNode(c.Name) { Tag = c, ContextMenu = elementCm });
                 }
 
-                foreach (GeneralPoint c in TargetLVD.generalPoints)
+                foreach (GeneralPoint c in targetLvd.generalPoints)
                 {
-                    pointNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
+                    pointNode.Nodes.Add(new TreeNode(c.Name) { Tag = c, ContextMenu = elementCm });
                 }
 
-                foreach (GeneralShape c in TargetLVD.generalShapes)
+                foreach (GeneralShape c in targetLvd.generalShapes)
                 {
-                    shapeNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
+                    shapeNode.Nodes.Add(new TreeNode(c.Name) { Tag = c, ContextMenu = elementCm });
                 }
 
-                foreach (DamageShape c in TargetLVD.damageShapes)
+                foreach (DamageShape c in targetLvd.damageShapes)
                 {
-                    hurtNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
+                    hurtNode.Nodes.Add(new TreeNode(c.Name) { Tag = c, ContextMenu = elementCm });
                 }
 
-                foreach (EnemyGenerator c in TargetLVD.enemyGenerators)
+                foreach (EnemyGenerator c in targetLvd.enemyGenerators)
                 {
-                    enemyNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
+                    enemyNode.Nodes.Add(new TreeNode(c.Name) { Tag = c, ContextMenu = elementCm });
                 }
             }
         }
@@ -342,52 +334,52 @@ namespace SmashForge
         {
             if (e.Node.Level != 0)
             {
-                TargetLVD.LVDSelection = e.Node.Tag;
+                targetLvd.LVDSelection = e.Node.Tag;
                 //MainForm.Instance.viewports[0].timeSinceSelected.Restart();
-                lvdEditor.Open((LVDEntry)e.Node.Tag, e.Node);
+                lvdEditor.Open((LvdEntry)e.Node.Tag, e.Node);
             }
         }
 
-        public void deleteNode(TreeNode treeNode)
+        public void DeleteNode(TreeNode treeNode)
         {
-            if (!(treeNode.Tag is LVDEntry))
+            if (!(treeNode.Tag is LvdEntry))
                 return;
-            LVDEntry entry = (LVDEntry)treeNode.Tag;
+            LvdEntry entry = (LvdEntry)treeNode.Tag;
 
             if (entry is Collision)
-                TargetLVD.collisions.Remove((Collision)entry);
+                targetLvd.collisions.Remove((Collision)entry);
             if (entry is CollisionCliff)
-                TargetLVD.collisions[treeView1.SelectedNode.Parent.Index].cliffs.Remove((CollisionCliff)entry);
+                targetLvd.collisions[treeView1.SelectedNode.Parent.Index].cliffs.Remove((CollisionCliff)entry);
             if (entry is Spawn)
             {
-                TargetLVD.respawns.Remove((Spawn)entry);
-                TargetLVD.spawns.Remove((Spawn)entry);
+                targetLvd.respawns.Remove((Spawn)entry);
+                targetLvd.spawns.Remove((Spawn)entry);
             }
             if (entry is Bounds)
             {
-                TargetLVD.blastzones.Remove((Bounds)entry);
-                TargetLVD.cameraBounds.Remove((Bounds)entry);
+                targetLvd.blastzones.Remove((Bounds)entry);
+                targetLvd.cameraBounds.Remove((Bounds)entry);
             }
             if (entry is DamageShape)
-                TargetLVD.damageShapes.Remove((DamageShape)entry);
+                targetLvd.damageShapes.Remove((DamageShape)entry);
             if (entry is EnemyGenerator)
-                TargetLVD.enemyGenerators.Remove((EnemyGenerator)entry);
+                targetLvd.enemyGenerators.Remove((EnemyGenerator)entry);
             if (entry is GeneralShape)
-                TargetLVD.generalShapes.Remove((GeneralShape)entry);
+                targetLvd.generalShapes.Remove((GeneralShape)entry);
             if (entry is ItemSpawner)
-                TargetLVD.itemSpawns.Remove((ItemSpawner)entry);
+                targetLvd.itemSpawns.Remove((ItemSpawner)entry);
             if (entry is GeneralPoint)
-                TargetLVD.generalPoints.Remove((GeneralPoint)entry);
+                targetLvd.generalPoints.Remove((GeneralPoint)entry);
 
             treeView1.Nodes.Remove(treeNode);
         }
 
-        public void deleteSelected()
+        public void DeleteSelected()
         {
-            if (treeView1.SelectedNode == null || !(treeView1.SelectedNode.Tag is LVDEntry))
+            if (treeView1.SelectedNode == null || !(treeView1.SelectedNode.Tag is LvdEntry))
                 return;
 
-            deleteNode(treeView1.SelectedNode);
+            DeleteNode(treeView1.SelectedNode);
         }
 
         private void treeView1_KeyPress(object sender, KeyPressEventArgs e)
@@ -400,7 +392,7 @@ namespace SmashForge
                             "Delete Selected Entry", MessageBoxButtons.YesNo);
                 if (r == DialogResult.Yes)
                 {
-                    deleteSelected();
+                    DeleteSelected();
                 }
             }
         }

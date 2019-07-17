@@ -1,14 +1,9 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using Syroot.NintenTools.Bfres;
-using Syroot.NintenTools.Bfres.GX2;
 using Syroot.NintenTools.Bfres.Helpers;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Syroot.NintenTools.Yaz0;
 
 namespace SmashForge
 {
@@ -47,7 +42,7 @@ namespace SmashForge
 
                 FTEXContainer.FTEXtextures.Add(texture.Text, texture);
             }
-            Runtime.FTEXContainerList.Add(FTEXContainer);
+            Runtime.ftexContainerList.Add(FTEXContainer);
 
             int ModelCur = 0;
             //FMDLs -Models-
@@ -242,7 +237,7 @@ namespace SmashForge
                         box.Center = new Vector3(bnd.Center.X, bnd.Center.Y, bnd.Center.Z);
                         box.Extent = new Vector3(bnd.Extent.X, bnd.Extent.Y, bnd.Extent.Z);
 
-                        poly.boundingBoxes.Add(box); //Each box is by LOD mesh. This will be in a seperate class later so only one will be added
+                        poly.boundingBoxes.Add(box); //Each box is by LOD mesh. This will be in a separate class later so only one will be added
 
                     }
                     foreach (float r in shp.RadiusArray)

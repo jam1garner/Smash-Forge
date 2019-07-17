@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Syroot.BinaryData;
-using Syroot.NintenTools.Byaml.Dynamic;
+﻿using System.Collections.Generic;
 using OpenTK;
 using System.Windows.Forms;
 

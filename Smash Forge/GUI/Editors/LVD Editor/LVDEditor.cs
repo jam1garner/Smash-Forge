@@ -1,21 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK;
 
 namespace SmashForge
 {
-    public partial class LVDEditor : DockContent
+    public partial class LvdEditor : DockContent
     {
-        public LVDEditor()
+        public LvdEditor()
         {
             InitializeComponent();
         }
@@ -26,9 +18,9 @@ namespace SmashForge
             shapeTypeComboBox.DataSource = Enum.GetValues(typeof(LVDShapeType));
         }
 
-        public LVD LVD;
+        public LVD lvd;
 
-        public LVDEntry currentEntry;
+        public LvdEntry currentEntry;
         private TreeNode currentTreeNode;
         private CollisionMat currentMat;
         private LVDShape currentShape;
@@ -40,9 +32,9 @@ namespace SmashForge
         {
             ResetUi();
 
-            if (obj is LVDEntry)
+            if (obj is LvdEntry)
             {
-                LVDEntry entry = (LVDEntry)obj;
+                LvdEntry entry = (LvdEntry)obj;
                 OpenLvdEntry(entry, entryTree);
             }
             else if (obj is DAT.JOBJ)
@@ -87,19 +79,19 @@ namespace SmashForge
             jobjZ.Value = (Decimal)jobj.pos.Z;
         }
 
-        private void OpenLvdEntry(LVDEntry entry, TreeNode entryTree)
+        private void OpenLvdEntry(LvdEntry entry, TreeNode entryTree)
         {
             lvdEntryGroup.Visible = true;
             currentEntry = entry;
             currentTreeNode = entryTree;
 
-            nameTB.Text = currentEntry.name;
-            subnameTB.Text = currentEntry.subname;
+            nameTB.Text = currentEntry.Name;
+            subnameTB.Text = currentEntry.Subname;
             xStartPosUpDown.Value = (decimal)currentEntry.startPos[0];
             yStartPosUpDown.Value = (decimal)currentEntry.startPos[1];
             zStartPosUpDown.Value = (decimal)currentEntry.startPos[2];
             useStartPosCB.Checked = currentEntry.useStartPos;
-            string boneNameRigging = currentEntry.boneName;
+            string boneNameRigging = currentEntry.BoneName;
             if (boneNameRigging.Length == 0)
                 boneNameRigging = "None";
             boneRigSelectButton.Text = boneNameRigging;
@@ -151,7 +143,7 @@ namespace SmashForge
             }
         }
 
-        private void OpenDatCollData(LVDEntry entry)
+        private void OpenDatCollData(LvdEntry entry)
         {
             meleeCollisionGroup.Visible = true;
             meleeVerts.Nodes.Clear();
@@ -185,35 +177,35 @@ namespace SmashForge
             treeViewPath.Nodes.Clear();
             for (int i = 0; i < shape.points.Count; ++i)
                 treeViewPath.Nodes.Add(new TreeNode());
-            renamePathTreeview();
+            RenamePathTreeview();
 
             if (shape.type == (int)LVDShapeType.Point)
             {
-                this.label24.Text = "X";
-                this.label25.Text = "Y";
-                this.label26.Text = "";
-                this.label27.Text = "";
+                label24.Text = "X";
+                label25.Text = "Y";
+                label26.Text = "";
+                label27.Text = "";
             }
             else if (shape.type == (int)LVDShapeType.Circle)
             {
-                this.label24.Text = "X";
-                this.label25.Text = "Y";
-                this.label26.Text = "Radius";
-                this.label27.Text = "";
+                label24.Text = "X";
+                label25.Text = "Y";
+                label26.Text = "Radius";
+                label27.Text = "";
             }
             else if (shape.type == (int)LVDShapeType.Rectangle)
             {
-                this.label24.Text = "X-";
-                this.label25.Text = "X+";
-                this.label26.Text = "Y-";
-                this.label27.Text = "Y+";
+                label24.Text = "X-";
+                label25.Text = "X+";
+                label26.Text = "Y-";
+                label27.Text = "Y+";
             }
             else if (shape.type == (int)LVDShapeType.Path)
             {
-                this.label24.Text = "";
-                this.label25.Text = "";
-                this.label26.Text = "";
-                this.label27.Text = "";
+                label24.Text = "";
+                label25.Text = "";
+                label26.Text = "";
+                label27.Text = "";
             }
         }
 
@@ -272,7 +264,7 @@ namespace SmashForge
             pointShapeZUpDown.Value = (Decimal)point.z;
         }
 
-        private void OpenItemSpawner(LVDEntry entry)
+        private void OpenItemSpawner(LvdEntry entry)
         {
             itemSpawnerGroup.Visible = true;
             ItemSpawner spawner = (ItemSpawner)entry;
@@ -282,7 +274,7 @@ namespace SmashForge
                 itemSpawnSectionTreeView.Nodes.Add(new TreeNode($"Section {i++}") { Tag = section });
         }
 
-        private void OpenBounds(LVDEntry entry)
+        private void OpenBounds(LvdEntry entry)
         {
             boundsGroup.Visible = true;
             topValUpDown.Value = (decimal)((Bounds)currentEntry).top;
@@ -291,7 +283,7 @@ namespace SmashForge
             bottomVal.Value = (decimal)((Bounds)currentEntry).bottom;
         }
 
-        private void OpenSpawn(LVDEntry entry)
+        private void OpenSpawn(LvdEntry entry)
         {
             point2dGroup.Visible = true;
             xPointUpDown.Value = (decimal)((Spawn)entry).x;
@@ -336,7 +328,7 @@ namespace SmashForge
                 return;
 
             // Used for the blinking during rendering.
-            LVD.LVDSelection = collision.verts[selectedIndex];
+            lvd.LVDSelection = collision.verts[selectedIndex];
 
             vertXPosUpDown.Value = (decimal)collision.verts[selectedIndex].X;
             vertYPosUpDown.Value = (decimal)collision.verts[selectedIndex].Y;
@@ -350,18 +342,18 @@ namespace SmashForge
             if (selectedIndex >= collision.normals.Count)
                 return;
 
-            LVD.LVDSelection = collision.normals[selectedIndex];
+            lvd.LVDSelection = collision.normals[selectedIndex];
 
             currentMat = (CollisionMat)((object[])e.Node.Tag)[1];
-            leftLedgeCB.Checked = currentMat.getFlag(6);
-            rightLedgeCB.Checked = currentMat.getFlag(7);
-            noWallJumpCB.Checked = currentMat.getFlag(4);
+            leftLedgeCB.Checked = currentMat.GetFlag(6);
+            rightLedgeCB.Checked = currentMat.GetFlag(7);
+            noWallJumpCB.Checked = currentMat.GetFlag(4);
             physicsMatComboBox.SelectedItem = (CollisionMatType)currentMat.physics;
 
             passthroughAngleUpDown.Value = (decimal)(Math.Atan2(collision.normals[selectedIndex].Y, collision.normals[selectedIndex].X) * 180.0 / Math.PI);
         }
 
-        private void flagChange(object sender, EventArgs e)
+        private void FlagChange(object sender, EventArgs e)
         {
             if(sender == flag1CB)
                 ((Collision)currentEntry).flag1 = flag1CB.Checked;
@@ -395,18 +387,18 @@ namespace SmashForge
             }
         }
 
-        private void nameChange(object sender, EventArgs e)
+        private void NameChange(object sender, EventArgs e)
         {
             if (currentEntry == null)
                 return;
             if (sender == nameTB)
             {
-                currentEntry.name = nameTB.Text;
+                currentEntry.Name = nameTB.Text;
                 currentTreeNode.Text = nameTB.Text;
             }
                 
             if (sender == subnameTB)
-                currentEntry.subname = subnameTB.Text;
+                currentEntry.Subname = subnameTB.Text;
         }
 
         private void passthroughAngle_ValueChanged(object sender, EventArgs e)
@@ -428,7 +420,7 @@ namespace SmashForge
             currentMat.physics = ((byte)Enum.Parse(typeof(CollisionMatType), physicsMatComboBox.Text));
         }
 
-        private void changeStart(object sender, EventArgs e)
+        private void ChangeStart(object sender, EventArgs e)
         {
             if (sender == useStartPosCB)
                 currentEntry.useStartPos = useStartPosCB.Checked;
@@ -440,7 +432,7 @@ namespace SmashForge
                 currentEntry.startPos[2] = (float)zStartPosUpDown.Value;
         }
 
-        private void lineFlagChange(object sender, EventArgs e)
+        private void LineFlagChange(object sender, EventArgs e)
         {
             if (currentMat == null)
                 return;
@@ -467,7 +459,7 @@ namespace SmashForge
                 cliff.lineIndex = (int)cliffLineIndexUpDown.Value - 1;
         }
 
-        private void pointMoved(object sender, EventArgs e)
+        private void PointMoved(object sender, EventArgs e)
         {
             if (currentEntry is Spawn)
             {
@@ -478,7 +470,7 @@ namespace SmashForge
             }
         }
 
-        private void boundsChanged(object sender, EventArgs e)
+        private void BoundsChanged(object sender, EventArgs e)
         {
             if (sender == topValUpDown)
                 ((Bounds)currentEntry).top = (float)topValUpDown.Value;
@@ -490,7 +482,7 @@ namespace SmashForge
                 ((Bounds)currentEntry).right = (float)rightValUpDown.Value;
         }
 
-        private void addVertButtonClicked(object sender, EventArgs e)
+        private void AddVertButtonClicked(object sender, EventArgs e)
         {
             Collision col = (Collision)currentEntry;
 
@@ -526,7 +518,7 @@ namespace SmashForge
             UpdateVertexNumbers();
         }
 
-        private void removeVertButtonClicked(object sender, EventArgs e)
+        private void RemoveVertButtonClicked(object sender, EventArgs e)
         {
             Collision col = (Collision)currentEntry;
             int vertCount = col.verts.Count;
@@ -573,13 +565,13 @@ namespace SmashForge
         //Open bone selector for object rigging
         private void boneRigSelectButton_Click(object sender, EventArgs e)
         {
-            BoneRiggingSelector brs = new BoneRiggingSelector(currentEntry.boneName);
+            BoneRiggingSelector brs = new BoneRiggingSelector(currentEntry.BoneName);
             brs.ModelContainers = MainForm.Instance.GetActiveViewport().meshList.GetModelContainers();
             brs.ShowDialog();
             if (!brs.Cancelled)
-                currentEntry.boneName = brs.currentValue;
+                currentEntry.BoneName = brs.currentValue;
 
-            string boneNameRigging = currentEntry.boneName;
+            string boneNameRigging = currentEntry.BoneName;
             if (boneNameRigging.Length == 0)
                 boneNameRigging = "None";
             boneRigSelectButton.Text = boneNameRigging;
@@ -642,7 +634,7 @@ namespace SmashForge
             shape.points.Insert(selectionIndex, new Vector2());
             itemSpawnVertTreeView.Nodes.Insert(selectionIndex, new TreeNode());
 
-            renameItemSpawnVertTreeview();
+            RenameItemSpawnVertTreeview();
         }
 
         //Delete item spawner vertex
@@ -661,11 +653,11 @@ namespace SmashForge
             shape.points.RemoveAt(selectionIndex);
             itemSpawnVertTreeView.Nodes.RemoveAt(selectionIndex);
 
-            renameItemSpawnVertTreeview();
+            RenameItemSpawnVertTreeview();
         }
 
         //changed either X or Y pos of item spawner vertex
-        private void changeItemVertPosition(object sender, EventArgs e)
+        private void ChangeItemVertPosition(object sender, EventArgs e)
         {
             LVDShape shape = (LVDShape)itemSpawnSectionTreeView.SelectedNode.Tag;
             int selectionIndex = itemSpawnVertTreeView.SelectedNode.Index;
@@ -677,10 +669,10 @@ namespace SmashForge
                 vert.Y = (float)numericUpDown1.Value;
 
             shape.points[selectionIndex] = vert;
-            renameItemSpawnVertTreeview();
+            RenameItemSpawnVertTreeview();
         }
 
-        private void renameItemSpawnVertTreeview()
+        private void RenameItemSpawnVertTreeview()
         {
             LVDShape shape = (LVDShape)itemSpawnSectionTreeView.SelectedNode.Tag;
 
@@ -719,10 +711,10 @@ namespace SmashForge
             OpenShape(currentShape);
 
             if (currentEntry is EnemyGenerator)
-                renameEnemyGeneratorTreeViews();
+                RenameEnemyGeneratorTreeViews();
         }
 
-        private void shapeValueChanged(object sender, EventArgs e)
+        private void ShapeValueChanged(object sender, EventArgs e)
         {
             LVDShape shape = currentShape;
 
@@ -746,7 +738,7 @@ namespace SmashForge
             pathNodeY.Value = (decimal)vert.Y;
         }
 
-        private void pathValueChanged(object sender, EventArgs e)
+        private void PathValueChanged(object sender, EventArgs e)
         {
             LVDShape shape = currentShape;
             int selectionIndex = treeViewPath.SelectedNode.Index;
@@ -758,10 +750,10 @@ namespace SmashForge
                 vert.Y = (float)pathNodeY.Value;
 
             shape.points[selectionIndex] = vert;
-            renamePathTreeview();
+            RenamePathTreeview();
         }
 
-        private void renamePathTreeview()
+        private void RenamePathTreeview()
         {
             LVDShape shape = currentShape;
 
@@ -782,7 +774,7 @@ namespace SmashForge
 
             shape.points.Insert(selectionIndex, new Vector2());
             treeViewPath.Nodes.Insert(selectionIndex, new TreeNode());
-            renamePathTreeview();
+            RenamePathTreeview();
         }
 
         //Remove path point
@@ -800,7 +792,7 @@ namespace SmashForge
 
             shape.points.RemoveAt(selectionIndex);
             treeViewPath.Nodes.RemoveAt(selectionIndex);
-            renamePathTreeview();
+            RenamePathTreeview();
         }
 
         private void damageShape_ValueChanged(object sender, EventArgs e)
@@ -865,7 +857,7 @@ namespace SmashForge
             egen.spawns.Insert(selectionIndex, new LVDShape(1));
             egen.spawnIds.Insert(selectionIndex, new int());
             enemyGeneratorSpawnTreeView.Nodes.Insert(selectionIndex, new TreeNode());
-            renameEnemyGeneratorTreeViews();
+            RenameEnemyGeneratorTreeViews();
         }
 
         private void enemyGeneratorSpawnMinusButton_Click(object sender, EventArgs e)
@@ -883,7 +875,7 @@ namespace SmashForge
             egen.spawns.RemoveAt(selectionIndex);
             egen.spawnIds.RemoveAt(selectionIndex);
             enemyGeneratorSpawnTreeView.Nodes.RemoveAt(selectionIndex);
-            renameEnemyGeneratorTreeViews();
+            RenameEnemyGeneratorTreeViews();
         }
 
         private void enemyGeneratorZonePlusButton_Click(object sender, EventArgs e)
@@ -899,7 +891,7 @@ namespace SmashForge
             egen.zones.Insert(selectionIndex, new LVDShape(3));
             egen.zoneIds.Insert(selectionIndex, new int());
             enemyGeneratorZoneTreeView.Nodes.Insert(selectionIndex, new TreeNode());
-            renameEnemyGeneratorTreeViews();
+            RenameEnemyGeneratorTreeViews();
         }
 
         private void enemyGeneratorZoneMinusButton_Click(object sender, EventArgs e)
@@ -917,10 +909,10 @@ namespace SmashForge
             egen.zones.RemoveAt(selectionIndex);
             egen.zoneIds.RemoveAt(selectionIndex);
             enemyGeneratorZoneTreeView.Nodes.RemoveAt(selectionIndex);
-            renameEnemyGeneratorTreeViews();
+            RenameEnemyGeneratorTreeViews();
         }
 
-        private void renameEnemyGeneratorTreeViews()
+        private void RenameEnemyGeneratorTreeViews()
         {
             EnemyGenerator egen = (EnemyGenerator)currentEntry;
 
@@ -961,7 +953,7 @@ namespace SmashForge
         private DAT.COLL_DATA.Link currentLink;
         private Vector2 currentMeleeVert;
 
-        private void updateVertexPosition(object sender, EventArgs e)
+        private void UpdateVertexPosition(object sender, EventArgs e)
         {
             if (currentMeleeVert == null)
                 return;
@@ -971,7 +963,7 @@ namespace SmashForge
                 currentMeleeVert.Y = (float)meleeY.Value;
         }
 
-        private void linkVertUpdate(object sender, EventArgs e)
+        private void LinkVertUpdate(object sender, EventArgs e)
         {
             if (currentLink == null)
                 return;
@@ -989,7 +981,7 @@ namespace SmashForge
                 currentLink.connectors[1] = ushort.MaxValue;
         }
 
-        private int changeFlag(int original, int mask, bool newValue)
+        private int ChangeFlag(int original, int mask, bool newValue)
         {
             bool isSet = (original & mask) != 0;
             if (newValue)
@@ -999,25 +991,25 @@ namespace SmashForge
             return original;
         }
 
-        private void linkPropertyUpdate(object sender, EventArgs e)
+        private void LinkPropertyUpdate(object sender, EventArgs e)
         {
             if (currentLink == null)
                 return;
             if (sender == leftWall)
-                currentLink.collisionAngle = changeFlag(currentLink.collisionAngle, 4, leftWall.Checked);
+                currentLink.collisionAngle = ChangeFlag(currentLink.collisionAngle, 4, leftWall.Checked);
             if (sender == rightWall)
-                currentLink.collisionAngle = changeFlag(currentLink.collisionAngle, 8, rightWall.Checked);
+                currentLink.collisionAngle = ChangeFlag(currentLink.collisionAngle, 8, rightWall.Checked);
             if (sender == floor)
-                currentLink.collisionAngle = changeFlag(currentLink.collisionAngle, 1, floor.Checked);
+                currentLink.collisionAngle = ChangeFlag(currentLink.collisionAngle, 1, floor.Checked);
             if (sender == ceiling)
-                currentLink.collisionAngle = changeFlag(currentLink.collisionAngle, 2, ceiling.Checked);
+                currentLink.collisionAngle = ChangeFlag(currentLink.collisionAngle, 2, ceiling.Checked);
             if (sender == ledge)
-                currentLink.flags = (byte)changeFlag(currentLink.flags, 2, ledge.Checked);
+                currentLink.flags = (byte)ChangeFlag(currentLink.flags, 2, ledge.Checked);
             if (sender == meleeDropThrough)
-                currentLink.flags = (byte)changeFlag(currentLink.flags, 1, meleeDropThrough.Checked);
+                currentLink.flags = (byte)ChangeFlag(currentLink.flags, 1, meleeDropThrough.Checked);
         }
 
-        private void polygonRangeChange(object sender, EventArgs e)
+        private void PolygonRangeChange(object sender, EventArgs e)
         {
             if (currentAreaTableEntry == null)
                 return;
@@ -1027,7 +1019,7 @@ namespace SmashForge
                 currentAreaTableEntry.nbLinks = (ushort)((polyEnd.Value - currentAreaTableEntry.idxLowestSpot) + 1);
         }
 
-        private void selectItem(object sender, TreeViewEventArgs e)
+        private void SelectItem(object sender, TreeViewEventArgs e)
         {
             if(sender == meleeVerts)
             {
@@ -1133,33 +1125,33 @@ namespace SmashForge
                 meleePolygons.Nodes[i].Text = $"Polygon {i}";
         }
 
-        private void jobjPostionUpdate(object sender, EventArgs e)
+        private void JobjPostionUpdate(object sender, EventArgs e)
         {
             if (sender == jobjX)
             {
                 float xdelta = (float)jobjX.Value - currentJobj.pos.X;
-                jobjTranslate(currentJobj, new Vector3(xdelta, 0, 0), true);
+                JobjTranslate(currentJobj, new Vector3(xdelta, 0, 0), true);
                 if (datToPrerender != null)
                     datToPrerender.PreRender();
             }
             if (sender == jobjY)
             {
                 float ydelta = (float)jobjY.Value - currentJobj.pos.Y;
-                jobjTranslate(currentJobj, new Vector3(0, ydelta, 0), true);
+                JobjTranslate(currentJobj, new Vector3(0, ydelta, 0), true);
                 if (datToPrerender != null)
                     datToPrerender.PreRender();
             }
             if (sender == jobjZ)
             {
                 float zdelta = (float)jobjZ.Value - currentJobj.pos.Z;
-                jobjTranslate(currentJobj, new Vector3(0, 0, zdelta), true);
+                JobjTranslate(currentJobj, new Vector3(0, 0, zdelta), true);
                 if (datToPrerender != null)
                     datToPrerender.PreRender();
             }
             
         }
 
-        private void jobjTranslate(DAT.JOBJ jobj, Vector3 posTransform, bool applyTransform = false)
+        private void JobjTranslate(DAT.JOBJ jobj, Vector3 posTransform, bool applyTransform = false)
         {
             if (applyTransform)
             {
@@ -1171,13 +1163,13 @@ namespace SmashForge
             foreach (TreeNode node in jobj.node.Nodes)
             {
                 if(node.Tag is DAT.JOBJ)
-                    jobjTranslate((DAT.JOBJ)node.Tag, posTransform);
+                    JobjTranslate((DAT.JOBJ)node.Tag, posTransform);
                 if (node.Tag is DAT.DOBJ)
-                    dobjTranslate((DAT.DOBJ)node.Tag, posTransform);
+                    DobjTranslate((DAT.DOBJ)node.Tag, posTransform);
             }
         }
 
-        private void dobjTranslate(DAT.DOBJ dobj, Vector3 posTransform)
+        private void DobjTranslate(DAT.DOBJ dobj, Vector3 posTransform)
         {
             foreach (DAT.POBJ pobj in dobj.polygons)
                 foreach (DAT.POBJ.DisplayObject disp in pobj.display)

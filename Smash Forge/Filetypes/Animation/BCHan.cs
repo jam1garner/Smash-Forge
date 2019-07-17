@@ -1,9 +1,6 @@
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Diagnostics;
 using OpenTK;
-using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
 
 namespace SmashForge
 {
@@ -21,64 +18,64 @@ namespace SmashForge
         {
             bchHeader header = new bchHeader();
             FileData f = new FileData(filename);
-            f.Endian = System.IO.Endianness.Little;
+            f.endian = System.IO.Endianness.Little;
 
-            f.skip(4);
-            header.backwardCompatibility = f.readByte();
-            header.forwardCompatibility = f.readByte();
-            header.version = f.readUShort();
+            f.Skip(4);
+            header.backwardCompatibility = f.ReadByte();
+            header.forwardCompatibility = f.ReadByte();
+            header.version = f.ReadUShort();
 
-            header.mainHeaderOffset = f.readInt();
-            header.stringTableOffset = f.readInt();
-            header.gpuCommandsOffset = f.readInt();
-            header.dataOffset = f.readInt();
-            if (header.backwardCompatibility > 0x20) header.dataExtendedOffset = f.readInt();
-            header.relocationTableOffset = f.readInt();
+            header.mainHeaderOffset = f.ReadInt();
+            header.stringTableOffset = f.ReadInt();
+            header.gpuCommandsOffset = f.ReadInt();
+            header.dataOffset = f.ReadInt();
+            if (header.backwardCompatibility > 0x20) header.dataExtendedOffset = f.ReadInt();
+            header.relocationTableOffset = f.ReadInt();
 
-            header.mainHeaderLength = f.readInt();
-            header.stringTableLength = f.readInt();
-            header.gpuCommandsLength = f.readInt();
-            header.dataLength = f.readInt();
-            if (header.backwardCompatibility > 0x20) header.dataExtendedLength = f.readInt();
-            header.relocationTableLength = f.readInt();
+            header.mainHeaderLength = f.ReadInt();
+            header.stringTableLength = f.ReadInt();
+            header.gpuCommandsLength = f.ReadInt();
+            header.dataLength = f.ReadInt();
+            if (header.backwardCompatibility > 0x20) header.dataExtendedLength = f.ReadInt();
+            header.relocationTableLength = f.ReadInt();
 
-            header.uninitializedDataSectionLength = f.readInt();
-            header.uninitializedDescriptionSectionLength = f.readInt();
+            header.uninitializedDataSectionLength = f.ReadInt();
+            header.uninitializedDescriptionSectionLength = f.ReadInt();
 
             if (header.backwardCompatibility > 7)
             {
-                header.flags = f.readUShort();
-                header.addressCount = f.readUShort();
+                header.flags = f.ReadUShort();
+                header.addressCount = f.ReadUShort();
             }
 
             // Relocation table
             for (int i = 0; i < header.relocationTableLength; i += 4)
             {
-                f.seek(header.relocationTableOffset + i);
-                int val = f.readInt();
+                f.Seek(header.relocationTableOffset + i);
+                int val = f.ReadInt();
                 int off = val & 0x1FFFFFF;
                 byte flag = (byte)(val >> 25);
 
                 switch (flag)
                 {
                     case 0:
-                        f.seek((off * 4) + header.mainHeaderOffset);
-                        f.writeInt((off * 4) + header.mainHeaderOffset, f.readInt() + header.mainHeaderOffset);
+                        f.Seek((off * 4) + header.mainHeaderOffset);
+                        f.WriteInt((off * 4) + header.mainHeaderOffset, f.ReadInt() + header.mainHeaderOffset);
                         break;
 
                     case 1:
-                        f.seek(off + header.mainHeaderOffset);
-                        f.writeInt((off) + header.mainHeaderOffset, f.readInt() + header.stringTableOffset);
+                        f.Seek(off + header.mainHeaderOffset);
+                        f.WriteInt((off) + header.mainHeaderOffset, f.ReadInt() + header.stringTableOffset);
                         break;
 
                     case 2:
-                        f.seek((off * 4) + header.mainHeaderOffset);
-                        f.writeInt((off * 4) + header.mainHeaderOffset, f.readInt() + header.gpuCommandsOffset);
+                        f.Seek((off * 4) + header.mainHeaderOffset);
+                        f.WriteInt((off * 4) + header.mainHeaderOffset, f.ReadInt() + header.gpuCommandsOffset);
                         break;
 
                     case 0xc:
-                        f.seek((off * 4) + header.mainHeaderOffset);
-                        f.writeInt((off * 4) + header.mainHeaderOffset, f.readInt() + header.dataOffset);
+                        f.Seek((off * 4) + header.mainHeaderOffset);
+                        f.WriteInt((off * 4) + header.mainHeaderOffset, f.ReadInt() + header.dataOffset);
                         break;
                 }
 
@@ -86,100 +83,100 @@ namespace SmashForge
 
 
             // Content Header
-            f.seek(header.mainHeaderOffset);
+            f.Seek(header.mainHeaderOffset);
             bchContentHeader content = new bchContentHeader();
             {
-                content.modelsPointerTableOffset = f.readInt();
-                content.modelsPointerTableEntries = f.readInt();
-                content.modelsNameOffset = f.readInt();
-                content.materialsPointerTableOffset = f.readInt();
-                content.materialsPointerTableEntries = f.readInt();
-                content.materialsNameOffset = f.readInt();
-                content.shadersPointerTableOffset = f.readInt();
-                content.shadersPointerTableEntries = f.readInt();
-                content.shadersNameOffset = f.readInt();
-                content.texturesPointerTableOffset = f.readInt();
-                content.texturesPointerTableEntries = f.readInt();
-                content.texturesNameOffset = f.readInt();
-                content.materialsLUTPointerTableOffset = f.readInt();
-                content.materialsLUTPointerTableEntries = f.readInt();
-                content.materialsLUTNameOffset = f.readInt();
-                content.lightsPointerTableOffset = f.readInt();
-                content.lightsPointerTableEntries = f.readInt();
-                content.lightsNameOffset = f.readInt();
-                content.camerasPointerTableOffset = f.readInt();
-                content.camerasPointerTableEntries = f.readInt();
-                content.camerasNameOffset = f.readInt();
-                content.fogsPointerTableOffset = f.readInt();
-                content.fogsPointerTableEntries = f.readInt();
-                content.fogsNameOffset = f.readInt();
-                content.skeletalAnimationsPointerTableOffset = f.readInt();
-                content.skeletalAnimationsPointerTableEntries = f.readInt();
-                content.skeletalAnimationsNameOffset = f.readInt();
-                content.materialAnimationsPointerTableOffset = f.readInt();
-                content.materialAnimationsPointerTableEntries = f.readInt();
-                content.materialAnimationsNameOffset = f.readInt();
-                content.visibilityAnimationsPointerTableOffset = f.readInt();
-                content.visibilityAnimationsPointerTableEntries = f.readInt();
-                content.visibilityAnimationsNameOffset = f.readInt();
-                content.lightAnimationsPointerTableOffset = f.readInt();
-                content.lightAnimationsPointerTableEntries = f.readInt();
-                content.lightAnimationsNameOffset = f.readInt();
-                content.cameraAnimationsPointerTableOffset = f.readInt();
-                content.cameraAnimationsPointerTableEntries = f.readInt();
-                content.cameraAnimationsNameOffset = f.readInt();
-                content.fogAnimationsPointerTableOffset = f.readInt();
-                content.fogAnimationsPointerTableEntries = f.readInt();
-                content.fogAnimationsNameOffset = f.readInt();
-                content.scenePointerTableOffset = f.readInt();
-                content.scenePointerTableEntries = f.readInt();
-                content.sceneNameOffset = f.readInt();
+                content.modelsPointerTableOffset = f.ReadInt();
+                content.modelsPointerTableEntries = f.ReadInt();
+                content.modelsNameOffset = f.ReadInt();
+                content.materialsPointerTableOffset = f.ReadInt();
+                content.materialsPointerTableEntries = f.ReadInt();
+                content.materialsNameOffset = f.ReadInt();
+                content.shadersPointerTableOffset = f.ReadInt();
+                content.shadersPointerTableEntries = f.ReadInt();
+                content.shadersNameOffset = f.ReadInt();
+                content.texturesPointerTableOffset = f.ReadInt();
+                content.texturesPointerTableEntries = f.ReadInt();
+                content.texturesNameOffset = f.ReadInt();
+                content.materialsLUTPointerTableOffset = f.ReadInt();
+                content.materialsLUTPointerTableEntries = f.ReadInt();
+                content.materialsLUTNameOffset = f.ReadInt();
+                content.lightsPointerTableOffset = f.ReadInt();
+                content.lightsPointerTableEntries = f.ReadInt();
+                content.lightsNameOffset = f.ReadInt();
+                content.camerasPointerTableOffset = f.ReadInt();
+                content.camerasPointerTableEntries = f.ReadInt();
+                content.camerasNameOffset = f.ReadInt();
+                content.fogsPointerTableOffset = f.ReadInt();
+                content.fogsPointerTableEntries = f.ReadInt();
+                content.fogsNameOffset = f.ReadInt();
+                content.skeletalAnimationsPointerTableOffset = f.ReadInt();
+                content.skeletalAnimationsPointerTableEntries = f.ReadInt();
+                content.skeletalAnimationsNameOffset = f.ReadInt();
+                content.materialAnimationsPointerTableOffset = f.ReadInt();
+                content.materialAnimationsPointerTableEntries = f.ReadInt();
+                content.materialAnimationsNameOffset = f.ReadInt();
+                content.visibilityAnimationsPointerTableOffset = f.ReadInt();
+                content.visibilityAnimationsPointerTableEntries = f.ReadInt();
+                content.visibilityAnimationsNameOffset = f.ReadInt();
+                content.lightAnimationsPointerTableOffset = f.ReadInt();
+                content.lightAnimationsPointerTableEntries = f.ReadInt();
+                content.lightAnimationsNameOffset = f.ReadInt();
+                content.cameraAnimationsPointerTableOffset = f.ReadInt();
+                content.cameraAnimationsPointerTableEntries = f.ReadInt();
+                content.cameraAnimationsNameOffset = f.ReadInt();
+                content.fogAnimationsPointerTableOffset = f.ReadInt();
+                content.fogAnimationsPointerTableEntries = f.ReadInt();
+                content.fogAnimationsNameOffset = f.ReadInt();
+                content.scenePointerTableOffset = f.ReadInt();
+                content.scenePointerTableEntries = f.ReadInt();
+                content.sceneNameOffset = f.ReadInt();
             }
 
 
             //Skeletal animation
-            AnimationGroupNode ThisAnimation = new AnimationGroupNode() { Text = filename};
+            AnimationGroupNode ThisAnimation = new AnimationGroupNode() { Text = filename };
 
             for (int index1 = 0; index1 < content.skeletalAnimationsPointerTableEntries; index1++)//
             {
-                f.seek(content.skeletalAnimationsPointerTableOffset + (index1 * 4));
-                int dataOffset = f.readInt();
-                f.seek(dataOffset);
+                f.Seek(content.skeletalAnimationsPointerTableOffset + (index1 * 4));
+                int dataOffset = f.ReadInt();
+                f.Seek(dataOffset);
 
 
-                string skeletalAnimationName = f.readString(f.readInt(), -1);
-                int animationFlags = f.readInt();
+                string skeletalAnimationName = f.ReadString(f.ReadInt(), -1);
+                int animationFlags = f.ReadInt();
                 //int skeletalAnimationloopMode = f.readByte();  //pas ça du tout
-                float skeletalAnimationframeSize = f.readFloat();
-                int boneTableOffset = f.readInt();
-                int boneTableEntries = f.readInt();
-                int metaDataPointerOffset = f.readInt();
-                
+                float skeletalAnimationframeSize = f.ReadFloat();
+                int boneTableOffset = f.ReadInt();
+                int boneTableEntries = f.ReadInt();
+                int metaDataPointerOffset = f.ReadInt();
+
                 //Runtime.Animations.Add(skeletalAnimationName, a);
                 //MainForm.animNode.Nodes.Add(skeletalAnimationName);
-                
+
                 Animation a = new Animation(skeletalAnimationName);
                 ThisAnimation.Nodes.Add(a);
 
                 for (int i = 0; i < boneTableEntries; i++)
                 {
-                    f.seek(boneTableOffset + (i * 4));
-                    int offset = f.readInt();
-                    
+                    f.Seek(boneTableOffset + (i * 4));
+                    int offset = f.ReadInt();
+
                     Animation.KeyNode bone = new Animation.KeyNode("");
-                    a.Bones.Add(bone);
-                    f.seek(offset);
-                    bone.Text = f.readString(f.readInt(), -1);
+                    a.bones.Add(bone);
+                    f.Seek(offset);
+                    bone.Text = f.ReadString(f.ReadInt(), -1);
                     //Console.WriteLine("Bone Name: " + bone.name);
-                    int animationTypeFlags = f.readInt();
-                    uint flags = (uint)f.readInt();
+                    int animationTypeFlags = f.ReadInt();
+                    uint flags = (uint)f.ReadInt();
 
                     OSegmentType segmentType = (OSegmentType)((animationTypeFlags >> 16) & 0xf);
                     //Debug.WriteLine(bone.Text + " " + flags.ToString("x"));
                     switch (segmentType)
                     {
                         case OSegmentType.transform:
-                            f.seek(offset + 0xC);
+                            f.Seek(offset + 0xC);
                             //Console.WriteLine(f.pos().ToString("x") + " " + flags.ToString("x"));
 
                             uint notExistMask = 0x10000;
@@ -200,44 +197,45 @@ namespace SmashForge
                                         if (constant)
                                         {
                                             Animation.KeyFrame frame = new Animation.KeyFrame();
-                                            frame.InterType = Animation.InterpolationType.LINEAR;
-                                            frame.Value = f.readFloat();
+                                            frame.interType = Animation.InterpolationType.Linear;
+                                            frame.Value = f.ReadFloat();
                                             frame.Frame = 0;
-                                            group.Keys.Add(frame);
+                                            group.keys.Add(frame);
                                         }
                                         else
                                         {
-                                            int frameOffset = f.readInt();
-                                            int position = f.pos();
-                                            f.seek(frameOffset);
+                                            int frameOffset = f.ReadInt();
+                                            int position = f.Pos();
+                                            f.Seek(frameOffset);
                                             float c = 0;
                                             //Debug.WriteLine(j + " " + axis + " " + bone.Text);
                                             getAnimationKeyFrame(f, group, out c);
-                                            if (c > a.FrameCount)
-                                                a.FrameCount = (int)c;
-                                            f.seek(position);
+                                            if (c > a.frameCount)
+                                                a.frameCount = (int)c;
+                                            f.Seek(position);
                                         }
                                     }
                                     else
-                                        f.seek(f.pos() + 0x04);
-                                    bone.RotType = Animation.RotationType.EULER;
+                                        f.Seek(f.Pos() + 0x04);
+                                    bone.rotType = Animation.RotationType.Euler;
 
                                     if (j == 0)
                                     {
                                         switch (axis)
                                         {
-                                            case 0: bone.XSCA = group; break;
-                                            case 1: bone.YSCA = group; break;
-                                            case 2: bone.ZSCA = group; break;
+                                            case 0: bone.xsca = group; break;
+                                            case 1: bone.ysca = group; break;
+                                            case 2: bone.zsca = group; break;
                                         }
-                                    }else
+                                    }
+                                    else
                                     if (j == 1)
                                     {
                                         switch (axis)
                                         {
-                                            case 0: bone.XROT = group; break;
-                                            case 1: bone.YROT = group; break;
-                                            case 2: bone.ZROT = group; break;
+                                            case 0: bone.xrot = group; break;
+                                            case 1: bone.yrot = group; break;
+                                            case 2: bone.zrot = group; break;
                                         }
                                     }
                                     else
@@ -245,17 +243,17 @@ namespace SmashForge
                                     {
                                         switch (axis)
                                         {
-                                            case 0: bone.XPOS = group; break;
-                                            case 1: bone.YPOS = group; break;
-                                            case 2: bone.ZPOS = group; break;
+                                            case 0: bone.xpos = group; break;
+                                            case 1: bone.ypos = group; break;
+                                            case 2: bone.zpos = group; break;
                                         }
                                     }
 
                                     notExistMask <<= 1;
                                     constantMask <<= 1;
                                 }
-                                if(j == 1)
-                                constantMask <<= 1;
+                                if (j == 1)
+                                    constantMask <<= 1;
                             }
 
                             break;
@@ -409,28 +407,28 @@ namespace SmashForge
             //return a;
             return ThisAnimation;
         }
-        
+
         private static void getAnimationKeyFrame(FileData input, Animation.KeyGroup group, out float endFrame)
         {
-            float startFrame = input.readFloat();
-            endFrame = input.readFloat();
+            float startFrame = input.ReadFloat();
+            endFrame = input.ReadFloat();
 
-            uint frameFlags = (uint)input.readInt();
+            uint frameFlags = (uint)input.ReadInt();
             //Debug.WriteLine(frameFlags.ToString("x"));
             //int preRepeat = (RenderBase.ORepeatMethod)(frameFlags & 0xf);
             //int postRepeat = (RenderBase.ORepeatMethod)((frameFlags >> 8) & 0xf);
 
-            uint segmentFlags = (uint)input.readInt();
+            uint segmentFlags = (uint)input.ReadInt();
             int interpolation = ((int)segmentFlags & 0xf);
             uint quantization = ((segmentFlags >> 8) & 0xff);
             uint entries = segmentFlags >> 16;
-            float valueScale = input.readFloat();
-            float valueOffset = input.readFloat();
-            float frameScale = input.readFloat();
-            float frameOffset = input.readFloat();
+            float valueScale = input.ReadFloat();
+            float valueOffset = input.ReadFloat();
+            float frameScale = input.ReadFloat();
+            float frameOffset = input.ReadFloat();
 
-            uint offset = (uint)input.readInt();
-            if (offset < input.size()) input.seek((int)offset);
+            uint offset = (uint)input.ReadInt();
+            if (offset < input.Size()) input.Seek((int)offset);
             for (int key = 0; key < entries; key++)
             {
                 Animation.KeyFrame keyFrame = new Animation.KeyFrame();
@@ -483,7 +481,7 @@ namespace SmashForge
                         keyFrame.value = input.ReadSingle();
                         break;*/
                     case 7:// RenderBase.OSegmentQuantization.stepLinear32:
-                        uint sL32Value = (uint)input.readInt();
+                        uint sL32Value = (uint)input.ReadInt();
                         keyFrame.Frame = sL32Value & 0xfff;
                         keyFrame.Value = sL32Value >> 12;
                         break;
@@ -493,7 +491,7 @@ namespace SmashForge
                 keyFrame.Frame = (keyFrame.Frame * frameScale) + frameOffset;
                 keyFrame.Value = (keyFrame.Value * valueScale) + valueOffset;
 
-                group.Keys.Add(keyFrame);
+                group.keys.Add(keyFrame);
             }
         }
 
@@ -668,9 +666,9 @@ namespace SmashForge
         /// </summary>
         public enum OInterpolationMode
         {
-            step = 0,
-            linear = 1,
-            hermite = 2
+            Step = 0,
+            Linear = 1,
+            Hermite = 2
         }
 
         /// <summary>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SmashForge
 {
@@ -20,14 +16,14 @@ namespace SmashForge
 
             public Entry Read(FileData f)
             {
-                subaction = f.readUShort();
-                f.readUShort();//skip padding
-                startFrame = f.readUShort();
-                lastFrame = f.readUShort();
-                xmin = f.readFloat();
-                xmax = f.readFloat();
-                ymin = f.readFloat();
-                ymax = f.readFloat();
+                subaction = f.ReadUShort();
+                f.ReadUShort();//skip padding
+                startFrame = f.ReadUShort();
+                lastFrame = f.ReadUShort();
+                xmin = f.ReadFloat();
+                xmax = f.ReadFloat();
+                ymin = f.ReadFloat();
+                ymax = f.ReadFloat();
                 return this;
             }
         }
@@ -43,10 +39,10 @@ namespace SmashForge
 
         public ATKD Read(FileData f)
         {
-            f.skip(4);
-            int entryCount = f.readInt();
-            commonSubactions = (uint)f.readInt();
-            uniqueSubactions = (uint)f.readInt();
+            f.Skip(4);
+            int entryCount = f.ReadInt();
+            commonSubactions = (uint)f.ReadInt();
+            uniqueSubactions = (uint)f.ReadInt();
             for(int i = 0; i < entryCount; i++)
                 entries.Add(new Entry().Read(f));
             return this;
@@ -55,23 +51,23 @@ namespace SmashForge
         public void Save(string filename)
         {
             FileOutput f = new FileOutput();
-            f.Endian = System.IO.Endianness.Big;
-            f.writeChars("ATKD".ToCharArray());
-            f.writeInt(entries.Count);
-            f.writeUInt(commonSubactions);
-            f.writeUInt(uniqueSubactions);
+            f.endian = System.IO.Endianness.Big;
+            f.WriteChars("ATKD".ToCharArray());
+            f.WriteInt(entries.Count);
+            f.WriteUInt(commonSubactions);
+            f.WriteUInt(uniqueSubactions);
             foreach (Entry e in entries)
             {
-                f.writeUShort(e.subaction);
-                f.writeUShort(0);
-                f.writeUShort(e.startFrame);
-                f.writeUShort(e.lastFrame);
-                f.writeFloat(e.xmin);
-                f.writeFloat(e.xmax);
-                f.writeFloat(e.ymin);
-                f.writeFloat(e.ymax);
+                f.WriteUShort(e.subaction);
+                f.WriteUShort(0);
+                f.WriteUShort(e.startFrame);
+                f.WriteUShort(e.lastFrame);
+                f.WriteFloat(e.xmin);
+                f.WriteFloat(e.xmax);
+                f.WriteFloat(e.ymin);
+                f.WriteFloat(e.ymax);
             }
-            f.save(filename);
+            f.Save(filename);
         }
     }
 }

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MeleeLib.DAT;
 using MeleeLib.IO;
@@ -47,7 +44,7 @@ namespace SmashForge.Filetypes.Melee
 
         public void Import(object sender, EventArgs args)
         {
-            VBN bonetree = Runtime.TargetVBN;
+            VBN bonetree = Runtime.TargetVbn;
 
             if(bonetree == null)
             {
@@ -59,29 +56,29 @@ namespace SmashForge.Filetypes.Melee
 
             List<Bone> bones = bonetree.getBoneTreeOrder();
 
-            DatAnimation.FrameCount = a.FrameCount;
+            DatAnimation.FrameCount = a.frameCount;
             DatAnimation.Nodes.Clear();
             foreach (Bone b in bones)
             {
                 DatAnimationNode node = new DatAnimationNode();
                 string BoneName = b.Text;
-                foreach (Animation.KeyNode n in a.Bones)
+                foreach (Animation.KeyNode n in a.bones)
                 {
                     if (n.Text.Equals(BoneName))
                     {
                         List<AnimationHelperTrack> tracks = new List<AnimationHelperTrack>();
 
-                        if (n.XPOS.Keys.Count > 0) tracks.Add(EncodeTrack(n.XPOS, AnimTrackType.XPOS));
-                        if (n.YPOS.Keys.Count > 0) tracks.Add(EncodeTrack(n.YPOS, AnimTrackType.YPOS));
-                        if (n.ZPOS.Keys.Count > 0) tracks.Add(EncodeTrack(n.ZPOS, AnimTrackType.ZPOS));
-                        if (n.XROT.Keys.Count > 0) tracks.Add(EncodeTrack(n.XROT, AnimTrackType.XROT));
-                        if (n.YROT.Keys.Count > 0) tracks.Add(EncodeTrack(n.YROT, AnimTrackType.YROT));
-                        if (n.ZROT.Keys.Count > 0) tracks.Add(EncodeTrack(n.ZROT, AnimTrackType.ZROT));
-                        if (n.XSCA.Keys.Count > 0) tracks.Add(EncodeTrack(n.XSCA, AnimTrackType.XSCA));
-                        if (n.YSCA.Keys.Count > 0) tracks.Add(EncodeTrack(n.YSCA, AnimTrackType.YSCA));
-                        if (n.ZSCA.Keys.Count > 0) tracks.Add(EncodeTrack(n.ZSCA, AnimTrackType.ZSCA));
+                        if (n.xpos.keys.Count > 0) tracks.Add(EncodeTrack(n.xpos, AnimTrackType.XPOS));
+                        if (n.ypos.keys.Count > 0) tracks.Add(EncodeTrack(n.ypos, AnimTrackType.YPOS));
+                        if (n.zpos.keys.Count > 0) tracks.Add(EncodeTrack(n.zpos, AnimTrackType.ZPOS));
+                        if (n.xrot.keys.Count > 0) tracks.Add(EncodeTrack(n.xrot, AnimTrackType.XROT));
+                        if (n.yrot.keys.Count > 0) tracks.Add(EncodeTrack(n.yrot, AnimTrackType.YROT));
+                        if (n.zrot.keys.Count > 0) tracks.Add(EncodeTrack(n.zrot, AnimTrackType.ZROT));
+                        if (n.xsca.keys.Count > 0) tracks.Add(EncodeTrack(n.xsca, AnimTrackType.XSCA));
+                        if (n.ysca.keys.Count > 0) tracks.Add(EncodeTrack(n.ysca, AnimTrackType.YSCA));
+                        if (n.zsca.keys.Count > 0) tracks.Add(EncodeTrack(n.zsca, AnimTrackType.ZSCA));
 
-                        node = (AnimationKeyFrameHelper.EncodeKeyFrames(tracks.ToArray(), (int)a.FrameCount));
+                        node = (AnimationKeyFrameHelper.EncodeKeyFrames(tracks.ToArray(), (int)a.frameCount));
                         break;
                     }
                 }
@@ -93,23 +90,23 @@ namespace SmashForge.Filetypes.Melee
         {
             AnimationHelperTrack t = new AnimationHelperTrack();
             t.TrackType = Type;
-            foreach (Animation.KeyFrame kf in Group.Keys)
+            foreach (Animation.KeyFrame kf in Group.keys)
             {
                 AnimationHelperKeyFrame f = new AnimationHelperKeyFrame();
                 f.Frame = (int)kf.Frame;
                 f.Value = kf.Value;
                 f.Tan = kf.In;
                 t.KeyFrames.Add(f);
-                switch (kf.InterType)
+                switch (kf.interType)
                 {
-                    case Animation.InterpolationType.CONSTANT: f.InterpolationType = InterpolationType.Constant; break;
-                    case Animation.InterpolationType.HERMITE: f.InterpolationType = InterpolationType.Hermite; break;
-                    case Animation.InterpolationType.LINEAR:
-                        if (Group.Keys.Count == 1)
+                    case Animation.InterpolationType.Constant: f.InterpolationType = InterpolationType.Constant; break;
+                    case Animation.InterpolationType.Hermite: f.InterpolationType = InterpolationType.Hermite; break;
+                    case Animation.InterpolationType.Linear:
+                        if (Group.keys.Count == 1)
                             f.InterpolationType = InterpolationType.Constant;
                         else
                             f.InterpolationType = InterpolationType.Linear; break;
-                    case Animation.InterpolationType.STEP: f.InterpolationType = InterpolationType.Step; break;
+                    case Animation.InterpolationType.Step: f.InterpolationType = InterpolationType.Step; break;
                 }
             }
             return t;
@@ -151,15 +148,15 @@ namespace SmashForge.Filetypes.Melee
         {
             Animation a = new Animation(Text);
 
-            a.FrameCount = (int)DatAnimation.FrameCount;
+            a.frameCount = (int)DatAnimation.FrameCount;
 
             int bid = 0;
             foreach(DatAnimationNode bone in DatAnimation.Nodes)
             {
                 Animation.KeyNode node = new Animation.KeyNode("Bone_" + bid++);
                 //Console.WriteLine(node.Text + " " + bone.Tracks.Count);
-                a.Bones.Add(node);
-                node.RotType = Animation.RotationType.EULER;
+                a.bones.Add(node);
+                node.rotType = Animation.RotationType.Euler;
 
                 AnimationHelperTrack[] helper;
                 try
@@ -187,13 +184,13 @@ namespace SmashForge.Filetypes.Melee
                         f.In = key.Tan;
                         switch (key.InterpolationType)
                         {
-                            case InterpolationType.Constant: f.InterType = Animation.InterpolationType.CONSTANT; break;
-                            case InterpolationType.Hermite: f.InterType = Animation.InterpolationType.HERMITE; break;
-                            case InterpolationType.Linear: f.InterType = Animation.InterpolationType.LINEAR; break;
-                            case InterpolationType.Step: f.InterType = Animation.InterpolationType.STEP; break;
+                            case InterpolationType.Constant: f.interType = Animation.InterpolationType.Constant; break;
+                            case InterpolationType.Hermite: f.interType = Animation.InterpolationType.Hermite; break;
+                            case InterpolationType.Linear: f.interType = Animation.InterpolationType.Linear; break;
+                            case InterpolationType.Step: f.interType = Animation.InterpolationType.Step; break;
 
                             case InterpolationType.HermiteValue:
-                                f.InterType = Animation.InterpolationType.HERMITE;
+                                f.interType = Animation.InterpolationType.Hermite;
                                 f.In = prevTan;
                                 break;
                             case InterpolationType.HermiteCurve:
@@ -203,20 +200,20 @@ namespace SmashForge.Filetypes.Melee
                         prevValue = key.Value;
                         prevTan = key.Tan;
                         prevkey = f;
-                        Group.Keys.Add(f);
+                        Group.keys.Add(f);
                     }
 
                     switch (track.TrackType)
                     {
-                        case AnimTrackType.XPOS: node.XPOS = Group; break;
-                        case AnimTrackType.YPOS: node.YPOS = Group; break;
-                        case AnimTrackType.ZPOS: node.ZPOS = Group; break;
-                        case AnimTrackType.XROT: node.XROT = Group; break;
-                        case AnimTrackType.YROT: node.YROT = Group; break;
-                        case AnimTrackType.ZROT: node.ZROT = Group; break;
-                        case AnimTrackType.XSCA: node.XSCA = Group; break;
-                        case AnimTrackType.YSCA: node.YSCA = Group; break;
-                        case AnimTrackType.ZSCA: node.ZSCA = Group; break;
+                        case AnimTrackType.XPOS: node.xpos = Group; break;
+                        case AnimTrackType.YPOS: node.ypos = Group; break;
+                        case AnimTrackType.ZPOS: node.zpos = Group; break;
+                        case AnimTrackType.XROT: node.xrot = Group; break;
+                        case AnimTrackType.YROT: node.yrot = Group; break;
+                        case AnimTrackType.ZROT: node.zrot = Group; break;
+                        case AnimTrackType.XSCA: node.xsca = Group; break;
+                        case AnimTrackType.YSCA: node.ysca = Group; break;
+                        case AnimTrackType.ZSCA: node.zsca = Group; break;
                     }
                 }
             }

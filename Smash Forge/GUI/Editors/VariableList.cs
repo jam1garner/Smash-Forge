@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SmashForge
@@ -18,9 +10,9 @@ namespace SmashForge
             InitializeComponent();
         }
 
-        private bool VariableValuesSet = false;
+        private bool variableValuesSet = false;
 
-        public void refresh()
+        public void Refresh()
         {
             if (Runtime.gameAcmdScript != null)
             {
@@ -30,11 +22,11 @@ namespace SmashForge
                 {
                     listBox1.Items.Add(flag.ToString());
                 }
-                if (Runtime.gameAcmdScript.LedgeGrabDisallowed)
+                if (Runtime.gameAcmdScript.ledgeGrabDisallowed)
                     listBox1.Items.Add("Ledge grab disallowed");
-                if (Runtime.gameAcmdScript.FrontLedgeGrabAllowed)
+                if (Runtime.gameAcmdScript.frontLedgeGrabAllowed)
                     listBox1.Items.Add("Front Ledge grab allowed");
-                if (Runtime.gameAcmdScript.ReverseLedgeGrabAllowed)
+                if (Runtime.gameAcmdScript.reverseLedgeGrabAllowed)
                     listBox1.Items.Add("Reverse Ledge grab allowed");
 
                 listBox1.EndUpdate();
@@ -52,7 +44,7 @@ namespace SmashForge
                 }
                 treeView1.EndUpdate();
 
-                if (!VariableValuesSet)
+                if (!variableValuesSet)
                 {
                     flowLayoutPanel1.Controls.Clear();
                     foreach (var pair in Runtime.gameAcmdScript.VariableValueList)
@@ -74,7 +66,7 @@ namespace SmashForge
                             Runtime.gameAcmdScript.IfVariableValueList[(SALT.Moveset.FighterVariable)comboBox.Tag] = (int)comboBox.SelectedItem;
                         };
                     }
-                    VariableValuesSet = true;
+                    variableValuesSet = true;
                 }
             }
             else
@@ -87,7 +79,7 @@ namespace SmashForge
 
         public void Initialize()
         {
-            VariableValuesSet = false;
+            variableValuesSet = false;
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SALT.Moveset.AnimCMD;
 using System.IO;
 using System.Security.Cryptography;
@@ -78,43 +76,43 @@ namespace SmashForge
             Expression.Export(path + "expression.bin");
         }
 
-        public acmd_frame CommandsAtFrame(string animation, int frame)
+        public AcmdFrame CommandsAtFrame(string animation, int frame)
         {
-            var _commandsGame = new List<ACMDCommand>();
-            var _commandsEffect = new List<ACMDCommand>();
-            var _commandsSound = new List<ACMDCommand>();
-            var _commandsExpression = new List<ACMDCommand>();
-            var _hash = Crc32.Compute(animation.ToLower());
+            var commandsGame = new List<ACMDCommand>();
+            var commandsEffect = new List<ACMDCommand>();
+            var commandsSound = new List<ACMDCommand>();
+            var commandsExpression = new List<ACMDCommand>();
+            var hash = Crc32.Compute(animation.ToLower());
 
-            var info = new acmd_frame();
+            var info = new AcmdFrame();
             info.fnum = frame;
 
             if (Game != null)
             {
-                if (Game.Scripts.ContainsKey(_hash))
+                if (Game.Scripts.ContainsKey(hash))
                 {
-                    info.Game = CommandsAtFrame((ACMDScript)Game.Scripts[_hash], frame);
+                    info.game = CommandsAtFrame((ACMDScript)Game.Scripts[hash], frame);
                 }
             }
             if (Effect != null)
             {
-                if (Effect.Scripts.ContainsKey(_hash))
+                if (Effect.Scripts.ContainsKey(hash))
                 {
-                    info.Effect = CommandsAtFrame((ACMDScript)Effect.Scripts[_hash], frame);
+                    info.effect = CommandsAtFrame((ACMDScript)Effect.Scripts[hash], frame);
                 }
             }
             if (Sound != null)
             {
-                if (Sound.Scripts.ContainsKey(_hash))
+                if (Sound.Scripts.ContainsKey(hash))
                 {
-                    info.Sound = CommandsAtFrame((ACMDScript)Sound.Scripts[_hash], frame);
+                    info.sound = CommandsAtFrame((ACMDScript)Sound.Scripts[hash], frame);
                 }
             }
             if (Expression != null)
             {
-                if (Expression.Scripts.ContainsKey(_hash))
+                if (Expression.Scripts.ContainsKey(hash))
                 {
-                    info.Expression = CommandsAtFrame((ACMDScript)Expression.Scripts[_hash], frame);
+                    info.expression = CommandsAtFrame((ACMDScript)Expression.Scripts[hash], frame);
                 }
             }
             return info;
@@ -153,9 +151,9 @@ namespace SmashForge
             return commands.ToArray();
         }
     }
-    public class acmd_frame
+    public class AcmdFrame
     {
-        public acmd_frame()
+        public AcmdFrame()
         {
             ActiveHitboxes = new Dictionary<int, Hitbox>();
         }
@@ -163,15 +161,15 @@ namespace SmashForge
         public int fnum;
         public Dictionary<int, Hitbox> ActiveHitboxes { get; set; }
 
-        public ACMDCommand[] Game;
-        public ACMDCommand[] Effect;
-        public ACMDCommand[] Sound;
-        public ACMDCommand[] Expression;
+        public ACMDCommand[] game;
+        public ACMDCommand[] effect;
+        public ACMDCommand[] sound;
+        public ACMDCommand[] expression;
     }
 
     public class Hitbox : ICloneable
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         public float Damage { get; set; }
         public int Angle { get; set; }
@@ -182,16 +180,16 @@ namespace SmashForge
         public int Type { get; set; }
 
         public bool Extended { get; set; }
-        public bool Ignore_Throw { get; set; }
+        public bool IgnoreThrow { get; set; }
 
-        public const int HITBOX = 0;
-        public const int GRABBOX = 1;
-        public const int WINDBOX = 2;
-        public const int SEARCHBOX = 3;
+        public const int HitboxValue = 0;
+        public const int Grabbox = 1;
+        public const int Windbox = 2;
+        public const int Searchbox = 3;
 
-        public const int RENDER_NORMAL = 0;
-        public const int RENDER_KNOCKBACK = 1;
-        public const int RENDER_ID = 2;
+        public const int RenderNormal = 0;
+        public const int RenderKnockback = 1;
+        public const int RenderId = 2;
 
         public int Part { get; set; } = 0;
         public int Bone { get; set; }
@@ -233,31 +231,31 @@ namespace SmashForge
 
         // These values were chosen to capture the middle 70% of hitboxes. Outliers
         // are just pulled in to the max/min values.
-        public static readonly float KB_UPPER_THRESHOLD = 210;
-        public static readonly float KB_LOWER_THRESHOLD = 100;
-        public int getKnockbackBucket(float knockback)
+        public static readonly float kbUpperThreshold = 210;
+        public static readonly float kbLowerThreshold = 100;
+        public int GetKnockbackBucket(float knockback)
         {
-            float bucketRange = (KB_UPPER_THRESHOLD - KB_LOWER_THRESHOLD) / Runtime.hitboxKnockbackColors.Count;
-            if (knockback < KB_LOWER_THRESHOLD) knockback = KB_LOWER_THRESHOLD;
-            if (knockback > KB_UPPER_THRESHOLD) knockback = KB_UPPER_THRESHOLD - 0.001f;
-            return (int)Math.Floor((knockback - KB_LOWER_THRESHOLD) / bucketRange);
+            float bucketRange = (kbUpperThreshold - kbLowerThreshold) / Runtime.hitboxKnockbackColors.Count;
+            if (knockback < kbLowerThreshold) knockback = kbLowerThreshold;
+            if (knockback > kbUpperThreshold) knockback = kbUpperThreshold - 0.001f;
+            return (int)Math.Floor((knockback - kbLowerThreshold) / bucketRange);
         }
 
         public Color GetRegularDisplayColor()
         {
-            if (Runtime.hitboxRenderMode == RENDER_KNOCKBACK)
+            if (Runtime.hitboxRenderMode == RenderKnockback)
             {
                 // Chooses different color from distinctColours depending on knockback
                 // or things like spike angle
                 if (Angle > 245 && Angle < 295)
                     return Color.FromArgb(0xFF, Color.Black);
                 float kb = GetSimplifiedKnockback(Damage, KnockbackBase, KnockbackGrowth, 160);
-                return Runtime.hitboxKnockbackColors[getKnockbackBucket(kb)];
+                return Runtime.hitboxKnockbackColors[GetKnockbackBucket(kb)];
             }
             else
             {
-                if (ID < Runtime.hitboxIdColors.Count)
-                    return Runtime.hitboxIdColors[ID];
+                if (Id < Runtime.hitboxIdColors.Count)
+                    return Runtime.hitboxIdColors[Id];
                 return Runtime.hitboxIdColors[0];  // confusing sure, but better than a runtime error
             }
         }
@@ -268,22 +266,22 @@ namespace SmashForge
             Color color;
             switch (Type)
             {
-                case Hitbox.HITBOX:
-                    if (Ignore_Throw)
+                case Hitbox.HitboxValue:
+                    if (IgnoreThrow)
                         color = Color.FromArgb(Runtime.hitboxAlpha, 0x59, 0x33, 0x15); // Deep yellowish brown
                     else
-                        if (Runtime.hitboxRenderMode == Hitbox.RENDER_NORMAL)
+                        if (Runtime.hitboxRenderMode == Hitbox.RenderNormal)
                             color = Color.FromArgb(Runtime.hitboxAlpha, Color.Red);
                         else
                             color = Color.FromArgb(Runtime.hitboxAlpha, GetRegularDisplayColor());
                     break;
-                case Hitbox.GRABBOX:
+                case Hitbox.Grabbox:
                     color = Color.FromArgb(Runtime.hitboxAlpha, Runtime.grabboxColor);
                     break;
-                case Hitbox.WINDBOX:
+                case Hitbox.Windbox:
                     color = Color.FromArgb(Runtime.hitboxAlpha, Runtime.windboxColor);
                     break;
-                case Hitbox.SEARCHBOX:
+                case Hitbox.Searchbox:
                     color = Color.FromArgb(Runtime.hitboxAlpha, Runtime.searchboxColor);
                     break;
                 default:
@@ -297,13 +295,13 @@ namespace SmashForge
         {
             switch (Type)
             {
-                case Hitbox.HITBOX:
+                case Hitbox.HitboxValue:
                     return "Hitbox";
-                case Hitbox.GRABBOX:
+                case Hitbox.Grabbox:
                     return "Grabbox";
-                case Hitbox.SEARCHBOX:
+                case Hitbox.Searchbox:
                     return "Searchbox";
-                case Hitbox.WINDBOX:
+                case Hitbox.Windbox:
                     return "Windbox";
                 default:
                     return "Hitbox";

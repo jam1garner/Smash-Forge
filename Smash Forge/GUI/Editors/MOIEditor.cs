@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SmashForge
 {
-    public partial class MOIEditor : DockContent
+    public partial class MoiEditor : DockContent
     {
-        public MOIEditor(MOI moi)
+        public MoiEditor(MOI moi)
         {
             InitializeComponent();
             this.moi = moi;
@@ -75,7 +69,7 @@ namespace SmashForge
             }
         }
 
-        private void changedValue(object sender, EventArgs e)
+        private void ChangedValue(object sender, EventArgs e)
         {
             MOI.Entry entry;
             if (sender == u1 || sender == u2)

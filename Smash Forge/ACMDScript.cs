@@ -1,17 +1,15 @@
-﻿using SALT.Moveset;
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using SALT.Moveset;
 using SALT.Moveset.AnimCMD;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using System.Drawing;
+using System.Linq;
 
 namespace SmashForge
 {
-    public class ForgeACMDScript
+    public class ForgeAcmdScript
     {
         public class ScriptState
         {
@@ -31,16 +29,16 @@ namespace SmashForge
         {
             get
             {
-                if(MainForm.dockPanel.ActiveContent is ModelViewport)
+                if (MainForm.dockPanel.ActiveContent is ModelViewport)
                 {
                     return ((ModelViewport)MainForm.dockPanel.ActiveContent).MovesetManager;
                 }
                 return null;
             }
         }
-        public int scriptId { get; set; }
-        public ACMDScript script { get; set; }
-        public List<ACMDScript> subscripts { get; set; }  // For subscript processing, shares currentFrame between all scripts
+        public int ScriptId { get; set; }
+        public ACMDScript Script { get; set; }
+        public List<ACMDScript> Subscripts { get; set; }  // For subscript processing, shares currentFrame between all scripts
 
         // Data processed by script
         public SortedList<int, Hitbox> Hitboxes { get; set; }
@@ -61,13 +59,13 @@ namespace SmashForge
 
 
         // Script processing helpers
-        public int currentGameFrame { get; set; }   // In-game frame # for the move. One in-game frame can skip multiple animation frames.
-        public double currentFrame { get; set; }     // Script frame, can be fractional due to frameSpeed values
-        public double currentAnimationFrame { get; set; }     // Script frame, can be fractional due to frameSpeed values
-        public double frameSpeed { get; set; }       // Set by Set_Frame_Duration. How many in-game frames maps to an animation frame right now.
+        public int CurrentGameFrame { get; set; }   // In-game frame # for the move. One in-game frame can skip multiple animation frames.
+        public double CurrentFrame { get; set; }     // Script frame, can be fractional due to frameSpeed values
+        public double CurrentAnimationFrame { get; set; }     // Script frame, can be fractional due to frameSpeed values
+        public double FrameSpeed { get; set; }       // Set by Set_Frame_Duration. How many in-game frames maps to an animation frame right now.
         public List<float> animationFrames;           // Used to track historical animationFrames so that the right one can be returned
-        public float animationFrame                   // The current animation frame to display in-game
-        { 
+        public float AnimationFrame                   // The current animation frame to display in-game
+        {
             // This getter exists solely to match up what animation frame the ACMD
             // results should be seen on as it would appear in-game.
             get
@@ -81,27 +79,27 @@ namespace SmashForge
         public bool adjustAnimFrames;      // Fixup for anim frames, only happens when frameSpeed <= 1 on first frame
 
         // Trying to emulate float comparison with the smash engine
-        public static double Epsilon = 0.001;
+        public static double epsilon = 0.001;
 
-        public int scriptCommandIndex { get; set; }
+        public int ScriptCommandIndex { get; set; }
         private int loopStart;
         private int loopIterations;
         private double framesSinceSyncTimerStarted;
         // To track state through subscripts
-        public Stack<ScriptState> scriptStates { get; set; }
+        public Stack<ScriptState> ScriptStates { get; set; }
 
         //Conditionals
-        public int TrueFalseSkipLength = 0;
+        public int trueFalseSkipLength = 0;
         public bool readTrue = true;
 
         //Ledge grab
-        public bool LedgeGrabDisallowed = false;
-        public bool FrontLedgeGrabAllowed = false;
-        public bool ReverseLedgeGrabAllowed = false;
+        public bool ledgeGrabDisallowed = false;
+        public bool frontLedgeGrabAllowed = false;
+        public bool reverseLedgeGrabAllowed = false;
 
-        public ForgeACMDScript(ACMDScript script)
+        public ForgeAcmdScript(ACMDScript script)
         {
-            this.script = script;
+            this.Script = script;
             Reset();
 
 
@@ -112,57 +110,57 @@ namespace SmashForge
 
             if (script != null)
             {
-                getIfs();
+                GetIfs();
 
-                foreach(var pair in VariableValueList)
+                foreach (var pair in VariableValueList)
                 {
                     if (!pair.Value.Contains(-1))
                         pair.Value.Add(-1); //There are some scripts that have false blocks so putting this value for those (One of peach scripts has -1 but only true blocks)
                 }
 
-                if (Runtime.variableViewer != null)
-                    Runtime.variableViewer.Initialize();
+                if (Runtime.VariableViewer != null)
+                    Runtime.VariableViewer.Initialize();
 
             }
         }
 
         public void Reset()
         {
-            Hitboxes           = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
-            LastHitboxes       = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
-            InvincibleBones    = new List<int>();
-            IntangibleBones    = new List<int>();
-            BodyIntangible     = false;
-            BodyInvincible     = false;
-            SuperArmor         = false;
-            ActiveFlags        = new List<FighterVariable>();
+            Hitboxes = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
+            LastHitboxes = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
+            InvincibleBones = new List<int>();
+            IntangibleBones = new List<int>();
+            BodyIntangible = false;
+            BodyInvincible = false;
+            SuperArmor = false;
+            ActiveFlags = new List<FighterVariable>();
 
             //Reset hidden hitboxes so all hitboxes are visible
             Runtime.HiddenHitboxes.Clear();
 
-            currentGameFrame   = 0;
-            currentFrame       = 0;
-            currentAnimationFrame = 0;
-            frameSpeed         = 1;
-            animationFrames    = new List<float>();
+            CurrentGameFrame = 0;
+            CurrentFrame = 0;
+            CurrentAnimationFrame = 0;
+            FrameSpeed = 1;
+            animationFrames = new List<float>();
             incrementFrameValue = false;  // First frame has weird stuff going on with this
 
-            scriptCommandIndex = 0;
-            loopStart          = 0;
-            loopIterations     = 0;
+            ScriptCommandIndex = 0;
+            loopStart = 0;
+            loopIterations = 0;
             framesSinceSyncTimerStarted = -1;
-            subscripts         = new List<ACMDScript>();
-            scriptStates       = new Stack<ScriptState>();
+            Subscripts = new List<ACMDScript>();
+            ScriptStates = new Stack<ScriptState>();
 
-            TrueFalseSkipLength = 0;
-            LedgeGrabDisallowed = false;
-            FrontLedgeGrabAllowed = false;
-            ReverseLedgeGrabAllowed = false;
+            trueFalseSkipLength = 0;
+            ledgeGrabDisallowed = false;
+            frontLedgeGrabAllowed = false;
+            reverseLedgeGrabAllowed = false;
         }
 
-        public void addOrOverwriteHitbox(int id, Hitbox newHitbox)
+        public void AddOrOverwriteHitbox(int id, Hitbox newHitbox)
         {
-            newHitbox.ID = id;
+            newHitbox.Id = id;
             if (Hitboxes.ContainsKey(id))
                 Hitboxes[id] = newHitbox;
             else
@@ -171,41 +169,41 @@ namespace SmashForge
 
         // Get the total number of in-game frames this move goes for, including
         // modified frame speed
-        public int calculateTotalFrames(int totalAnimFrames)
+        public int CalculateTotalFrames(int totalAnimFrames)
         {
-            ForgeACMDScript tempScript = new ForgeACMDScript(this.script);
+            ForgeAcmdScript tempScript = new ForgeAcmdScript(this.Script);
 
             // Calculate frames
             int gameFrame = -1;
-            while (tempScript.animationFrame < totalAnimFrames)
+            while (tempScript.AnimationFrame < totalAnimFrames)
             {
                 gameFrame++;
-                tempScript.processToFrame(gameFrame);
+                tempScript.ProcessToFrame(gameFrame);
             }
             return gameFrame;
         }
 
-        public int calculateFAF(int FAF)
+        public int CalculateFaf(int faf)
         {
-            ForgeACMDScript tempScript = new ForgeACMDScript(this.script);
+            ForgeAcmdScript tempScript = new ForgeAcmdScript(this.Script);
 
             int gameFrame = -1;
-            while (tempScript.currentFrame < FAF)
+            while (tempScript.CurrentFrame < faf)
             {
                 gameFrame++;
-                tempScript.processToFrame(gameFrame);
+                tempScript.ProcessToFrame(gameFrame);
             }
 
-            return tempScript.currentGameFrame;
+            return tempScript.CurrentGameFrame;
         }
 
-        public void processToFrame(int frame)
+        public void ProcessToFrame(int frame)
         {
-            if (script == null)
+            if (Script == null)
                 return;
 
             bool wasReset = false;
-            if (frame < currentGameFrame)
+            if (frame < CurrentGameFrame)
             {
                 // Reset script to frame 0 and process from there
                 Reset();
@@ -213,29 +211,29 @@ namespace SmashForge
             }
 
             bool keepProcessing;
-            while (currentGameFrame <= frame)
+            while (CurrentGameFrame <= frame)
             {
-                updateHitboxes(true);  // once per in-game frame
+                UpdateHitboxes(true);  // once per in-game frame
 
                 // ACMD subsystem stuff now
                 if (incrementFrameValue)
                 {
-                    currentFrame += frameSpeed;
+                    CurrentFrame += FrameSpeed;
                 }
                 // Theory: actual animation frame keeps processing regardless
-                currentAnimationFrame += frameSpeed;
+                CurrentAnimationFrame += FrameSpeed;
 
                 keepProcessing = true;
                 while (keepProcessing)
                 {
                     keepProcessing = false;
 
-                    processFrame();
+                    ProcessFrame();
                     // Weird checks done only on the first frame
-                    if (currentFrame < 1)
+                    if (CurrentFrame < 1)
                     {
-                        currentFrame += frameSpeed;
-                        if (currentFrame > 1)
+                        CurrentFrame += FrameSpeed;
+                        if (CurrentFrame > 1)
                         {
                             // Do not increment frame value next frame, defer processing to next frame
                             incrementFrameValue = false;
@@ -256,10 +254,10 @@ namespace SmashForge
                     }
                     //Console.WriteLine($"END ACMD FRAME: gameFrame={currentGameFrame} animationFrame={animationFrame} currentFrame={currentFrame} currentAnimationFrame={currentAnimationFrame}");
                 }
-                int roundedAnimFrame = roundAnimationFrame(currentAnimationFrame);
+                int roundedAnimFrame = RoundAnimationFrame(CurrentAnimationFrame);
                 roundedAnimFrame -= 1;
-                animationFrames.Add((float)currentAnimationFrame - 1);
-                currentGameFrame += 1;
+                animationFrames.Add((float)CurrentAnimationFrame - 1);
+                CurrentGameFrame += 1;
                 //Console.WriteLine($"END GAME FRAME: gameFrame={currentGameFrame} animationFrame={animationFrame} currentFrame={currentFrame} currentAnimationFrame={currentAnimationFrame}");
             }
 
@@ -269,46 +267,46 @@ namespace SmashForge
             if (wasReset)
                 LastHitboxes.Clear();
 
-            if (Runtime.hitboxList != null)
-                Runtime.hitboxList.refresh();
-            if (Runtime.variableViewer != null)
-                Runtime.variableViewer.refresh();
+            if (Runtime.HitboxList != null)
+                Runtime.HitboxList.Refresh();
+            if (Runtime.VariableViewer != null)
+                Runtime.VariableViewer.Refresh();
         }
 
-        public void processFrame()
+        public void ProcessFrame()
         {
             bool continueProcessing = true;
             while (continueProcessing)
             {
                 // Subscripts take precedence in processing, most deep one first
-                if (subscripts.Count > 0)
+                if (Subscripts.Count > 0)
                 {
-                    if (scriptCommandIndex < subscripts[subscripts.Count - 1].Count)
-                        continueProcessing = processCommand(subscripts[subscripts.Count - 1][scriptCommandIndex]);
+                    if (ScriptCommandIndex < Subscripts[Subscripts.Count - 1].Count)
+                        continueProcessing = ProcessCommand(Subscripts[Subscripts.Count - 1][ScriptCommandIndex]);
                     else
                     {
                         // We finished the subscript, pop it off and keep processing the parent
-                        ScriptState prevState = scriptStates.Pop();
-                        scriptCommandIndex = prevState.commandIndex;
+                        ScriptState prevState = ScriptStates.Pop();
+                        ScriptCommandIndex = prevState.commandIndex;
                         loopStart = prevState.loopStart;
                         loopIterations = prevState.loopIterations;
-                        subscripts.RemoveAt(subscripts.Count - 1);
+                        Subscripts.RemoveAt(Subscripts.Count - 1);
                     }
                 }
                 else
                 {
-                    if (scriptCommandIndex < script.Count)
-                        continueProcessing = processCommand(script[scriptCommandIndex]);
+                    if (ScriptCommandIndex < Script.Count)
+                        continueProcessing = ProcessCommand(Script[ScriptCommandIndex]);
                     else
                         // No script commands left to process, regardless of frame
                         break;
                 }
                 if (continueProcessing)
-                    scriptCommandIndex++;
+                    ScriptCommandIndex++;
             }
         }
 
-        public void updateHitboxes(bool updateInterpolation)
+        public void UpdateHitboxes(bool updateInterpolation)
         {
             // Store the last frame's hitboxes for interpolation reasons
             LastHitboxes = new SortedList<int, Hitbox>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
@@ -316,9 +314,9 @@ namespace SmashForge
                 LastHitboxes.Add(kvp.Key, (Hitbox)kvp.Value.Clone());
         }
 
-        public static bool doubleEquals(double d1, double d2)
+        public static bool DoubleEquals(double d1, double d2)
         {
-            return (Math.Abs(d1 - d2) < Epsilon);
+            return (Math.Abs(d1 - d2) < epsilon);
         }
 
         /// <summary>
@@ -326,13 +324,13 @@ namespace SmashForge
         /// </summary>
         /// <returns>True if we should keep processing, False to stop 
         /// for the rest of the frame.</returns>
-        public bool processCommand(ICommand cmd)
+        public bool ProcessCommand(ICommand cmd)
         {
             Hitbox newHitbox = null;
-            if(TrueFalseSkipLength > 0)
+            if (trueFalseSkipLength > 0)
             {
                 //Skip command since its on a true/false block and the variable is set to the other value
-                TrueFalseSkipLength -= cmd.Parameters.Count + 1;
+                trueFalseSkipLength -= cmd.Parameters.Count + 1;
                 return true;
             }
             switch (cmd.Ident)
@@ -341,7 +339,7 @@ namespace SmashForge
                     {
                         float continueOnFrame = (float)cmd.Parameters[0];
                         // A way of saying strictly greater than or equal to (>=) with better precision
-                        if (doubleEquals(currentFrame, continueOnFrame) || currentFrame > continueOnFrame)
+                        if (DoubleEquals(CurrentFrame, continueOnFrame) || CurrentFrame > continueOnFrame)
                             return true;  // Timer finished, keep processing ACMD commands
                         return false;  // Timer hasn't finished yet
                     }
@@ -356,12 +354,12 @@ namespace SmashForge
                             // Thus a Synchronous_Timer(Frames=0) would always instantly finish.
                             framesSinceSyncTimerStarted = 0;
                         else
-                            framesSinceSyncTimerStarted += frameSpeed;
+                            framesSinceSyncTimerStarted += FrameSpeed;
 
                         float stopAfterFrames = (int)(float)cmd.Parameters[0];
                         double framesPassed = stopAfterFrames - framesSinceSyncTimerStarted;
                         // A way of saying strictly greater than (>) with better precision
-                        if (!doubleEquals(framesPassed, 0d) && framesPassed > 0)
+                        if (!DoubleEquals(framesPassed, 0d) && framesPassed > 0)
                             return false;  // Timer hasn't finished yet
 
                         // Timer finished, keep processing ACMD commands
@@ -371,19 +369,19 @@ namespace SmashForge
                 case 0x7172A764: // Set_Frame_Duration, sets Frame_Speed such that Arg0 ACMD frames are processed per in-game frame
                     {
                         if (Runtime.useFrameDuration)
-                            frameSpeed = 1 / (float)cmd.Parameters[0];
+                            FrameSpeed = 1 / (float)cmd.Parameters[0];
                         break;
                     }
                 case 0xB2E91D0C: // Used in bayo scripts to set the Frame_Speed to a specific value
                     {
                         if (Runtime.useFrameDuration)
-                            frameSpeed = 1 / (float)cmd.Parameters[0];
+                            FrameSpeed = 1 / (float)cmd.Parameters[0];
                         break;
                     }
                 case 0xA546845C: // Frame_Speed_Multiplier, sets Frame_Speed = Arg0
                     {
                         if (Runtime.useFrameDuration)
-                            frameSpeed = (float)cmd.Parameters[0];
+                            FrameSpeed = (float)cmd.Parameters[0];
                         break;
                     }
                 case 0x9126EBA2: // Subroutine: call another script
@@ -394,17 +392,17 @@ namespace SmashForge
                     if (Moveset == null) break;
                     if (Moveset.Game.Scripts.ContainsKey(crc)) //TODO:
                     {
-                        subscripts.Add((ACMDScript)Moveset.Game.Scripts[crc]);
+                        Subscripts.Add((ACMDScript)Moveset.Game.Scripts[crc]);
 
                         // Store the return scriptCommandIndex
-                        scriptStates.Push(new ScriptState(
-                            scriptCommandIndex,
+                        ScriptStates.Push(new ScriptState(
+                            ScriptCommandIndex,
                             loopStart,
                             loopIterations
                         ));
 
                         // Start fresh in the new script
-                        scriptCommandIndex = -1; // This is incremented immediately in the containing loop hence the -1
+                        ScriptCommandIndex = -1; // This is incremented immediately in the containing loop hence the -1
                         loopStart = 0;
                         loopIterations = 0;
                     }
@@ -413,7 +411,7 @@ namespace SmashForge
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        newHitbox.Type = Hitbox.HITBOX;
+                        newHitbox.Type = Hitbox.HitboxValue;
                         newHitbox.Part = (int)cmd.Parameters[1];
                         newHitbox.Bone = (int)cmd.Parameters[2];
                         newHitbox.Damage = (float)cmd.Parameters[3];
@@ -425,14 +423,14 @@ namespace SmashForge
                         newHitbox.X = (float)cmd.Parameters[9];
                         newHitbox.Y = (float)cmd.Parameters[10];
                         newHitbox.Z = (float)cmd.Parameters[11];
-                        addOrOverwriteHitbox(id, newHitbox);
+                        AddOrOverwriteHitbox(id, newHitbox);
                         break;
                     }
                 case 0x2988D50F: // Extended hitbox
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        newHitbox.Type = Hitbox.HITBOX;
+                        newHitbox.Type = Hitbox.HitboxValue;
                         newHitbox.Part = (int)cmd.Parameters[1];
                         newHitbox.Extended = true;
                         newHitbox.Bone = (int)cmd.Parameters[2];
@@ -448,14 +446,14 @@ namespace SmashForge
                         newHitbox.X2 = (float)cmd.Parameters[24];
                         newHitbox.Y2 = (float)cmd.Parameters[25];
                         newHitbox.Z2 = (float)cmd.Parameters[26];
-                        addOrOverwriteHitbox(id, newHitbox);
+                        AddOrOverwriteHitbox(id, newHitbox);
                         break;
                     }
                 case 0x14FCC7E4: // special hitbox
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        newHitbox.Type = Hitbox.HITBOX;
+                        newHitbox.Type = Hitbox.HitboxValue;
                         newHitbox.Part = (int)cmd.Parameters[1];
                         newHitbox.Bone = (int)cmd.Parameters[2];
                         newHitbox.Damage = (float)cmd.Parameters[3];
@@ -472,17 +470,17 @@ namespace SmashForge
                         {
                             if ((int)cmd.Parameters[39] == 1)
                             {
-                                newHitbox.Type = Hitbox.WINDBOX;
+                                newHitbox.Type = Hitbox.Windbox;
                             }
                         }
-                        addOrOverwriteHitbox(id, newHitbox);
+                        AddOrOverwriteHitbox(id, newHitbox);
                         break;
                     }
                 case 0x7075DC5A: // Extended special hitbox
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        newHitbox.Type = Hitbox.HITBOX;
+                        newHitbox.Type = Hitbox.HitboxValue;
                         newHitbox.Extended = true;
                         newHitbox.Part = (int)cmd.Parameters[1];
                         newHitbox.Bone = (int)cmd.Parameters[2];
@@ -498,19 +496,19 @@ namespace SmashForge
                         newHitbox.FacingRestriction = (int)cmd.Parameters[34];
                         if ((int)cmd.Parameters[39] == 1)
                         {
-                            newHitbox.Type = Hitbox.WINDBOX;
+                            newHitbox.Type = Hitbox.Windbox;
                         }
                         newHitbox.X2 = (float)cmd.Parameters[40];
                         newHitbox.Y2 = (float)cmd.Parameters[41];
                         newHitbox.Z2 = (float)cmd.Parameters[42];
-                        addOrOverwriteHitbox(id, newHitbox);
+                        AddOrOverwriteHitbox(id, newHitbox);
                         break;
                     }
                 case 0xCC7CC705: // collateral hitbox (ignored by character being thrown)
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        newHitbox.Type = Hitbox.HITBOX;
+                        newHitbox.Type = Hitbox.HitboxValue;
                         newHitbox.Part = (int)cmd.Parameters[1];
                         newHitbox.Bone = (int)cmd.Parameters[2];
                         newHitbox.Damage = (float)cmd.Parameters[3];
@@ -523,16 +521,16 @@ namespace SmashForge
                         newHitbox.Y = (float)cmd.Parameters[10];
                         newHitbox.Z = (float)cmd.Parameters[11];
 
-                        newHitbox.Ignore_Throw = true;
+                        newHitbox.IgnoreThrow = true;
 
-                        addOrOverwriteHitbox(id, newHitbox);
+                        AddOrOverwriteHitbox(id, newHitbox);
                         break;
                     }
                 case 0xED67D5DA: // Extended collateral hitbox (ignored by character being thrown)
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        newHitbox.Type = Hitbox.HITBOX;
+                        newHitbox.Type = Hitbox.HitboxValue;
                         newHitbox.Extended = true;
                         newHitbox.Part = (int)cmd.Parameters[1];
                         newHitbox.Bone = (int)cmd.Parameters[2];
@@ -549,9 +547,9 @@ namespace SmashForge
                         newHitbox.Y2 = (float)cmd.Parameters[25];
                         newHitbox.Z2 = (float)cmd.Parameters[26];
 
-                        newHitbox.Ignore_Throw = true;
+                        newHitbox.IgnoreThrow = true;
 
-                        addOrOverwriteHitbox(id, newHitbox);
+                        AddOrOverwriteHitbox(id, newHitbox);
                         break;
                     }
                 case 0x9245E1A8: // clear all hitboxes
@@ -605,12 +603,12 @@ namespace SmashForge
                     }
                 case 0xEB375E3: // Set Loop
                     loopIterations = int.Parse(cmd.Parameters[0] + "") - 1;
-                    loopStart = scriptCommandIndex;
+                    loopStart = ScriptCommandIndex;
                     break;
                 case 0x38A3EC78: // goto
                     if (loopIterations > 0)
                     {
-                        scriptCommandIndex = loopStart;
+                        ScriptCommandIndex = loopStart;
                         loopIterations -= 1;
                     }
                     break;
@@ -623,7 +621,7 @@ namespace SmashForge
                     {
                         newHitbox = new Hitbox();
                         int id = (int)cmd.Parameters[0];
-                        newHitbox.Type = Hitbox.GRABBOX;
+                        newHitbox.Type = Hitbox.Grabbox;
                         newHitbox.Bone = int.Parse(cmd.Parameters[1] + "");
                         newHitbox.Size = (float)cmd.Parameters[2];
                         newHitbox.X = (float)cmd.Parameters[3];
@@ -638,7 +636,7 @@ namespace SmashForge
                             newHitbox.Extended = true;
                         }
 
-                        addOrOverwriteHitbox(id, newHitbox);
+                        AddOrOverwriteHitbox(id, newHitbox);
                         break;
                     }
                 case 0xF3A464AC: // Terminate_Grab_Collisions
@@ -646,7 +644,7 @@ namespace SmashForge
                         List<int> toDelete = new List<int>();
                         foreach (KeyValuePair<int, Hitbox> kvp in Hitboxes)
                         {
-                            if (kvp.Value.Type == Hitbox.GRABBOX)
+                            if (kvp.Value.Type == Hitbox.Grabbox)
                                 toDelete.Add(kvp.Key);
                         }
                         foreach (int index in toDelete)
@@ -655,7 +653,7 @@ namespace SmashForge
                     }
                 case 0x2F08F54F: // Delete_Catch_Collision by ID
                     int idToDelete = (int)cmd.Parameters[0];
-                    if (Hitboxes[idToDelete].Type == Hitbox.GRABBOX)
+                    if (Hitboxes[idToDelete].Type == Hitbox.Grabbox)
                         Hitboxes.Remove(idToDelete);
                     break;
                 case 0x44081C21: //SEARCH
@@ -664,14 +662,14 @@ namespace SmashForge
                         int id = (int)cmd.Parameters[0];
                         if (Hitboxes.ContainsKey(id))
                             Hitboxes.Remove(id);
-                        newHitbox.Type = Hitbox.SEARCHBOX;
+                        newHitbox.Type = Hitbox.Searchbox;
                         newHitbox.Bone = (int)cmd.Parameters[2];
 
                         newHitbox.Size = (float)cmd.Parameters[3];
                         newHitbox.X = (float)cmd.Parameters[4];
                         newHitbox.Y = (float)cmd.Parameters[5];
                         newHitbox.Z = (float)cmd.Parameters[6];
-                        addOrOverwriteHitbox(id, newHitbox);
+                        AddOrOverwriteHitbox(id, newHitbox);
                         break;
                     }
                 case 0xCD0C1CC9: //Bat Within (it clears WT SEARCH event)
@@ -680,7 +678,7 @@ namespace SmashForge
                         List<int> toDelete = new List<int>();
                         foreach (KeyValuePair<int, Hitbox> kvp in Hitboxes)
                         {
-                            if (kvp.Value.Type == Hitbox.SEARCHBOX)
+                            if (kvp.Value.Type == Hitbox.Searchbox)
                                 toDelete.Add(kvp.Key);
                         }
                         foreach (int index in toDelete)
@@ -797,9 +795,9 @@ namespace SmashForge
                     {
                         if (!readTrue)
                         {
-                            TrueFalseSkipLength = (int)cmd.Parameters[0] - 4;
-                            if (TrueFalseSkipLength == 0)
-                                TrueFalseSkipLength = 1;
+                            trueFalseSkipLength = (int)cmd.Parameters[0] - 4;
+                            if (trueFalseSkipLength == 0)
+                                trueFalseSkipLength = 1;
                         }
                         break;
                     }
@@ -807,9 +805,9 @@ namespace SmashForge
                     {
                         if (readTrue)
                         {
-                            TrueFalseSkipLength = (int)cmd.Parameters[0] - 2;
-                            if (TrueFalseSkipLength == 0)
-                                TrueFalseSkipLength = 1;
+                            trueFalseSkipLength = (int)cmd.Parameters[0] - 2;
+                            if (trueFalseSkipLength == 0)
+                                trueFalseSkipLength = 1;
                         }
                         break;
                     }
@@ -819,17 +817,17 @@ namespace SmashForge
                         switch (type)
                         {
                             case 0:
-                                LedgeGrabDisallowed = true;
-                                FrontLedgeGrabAllowed = false;
-                                ReverseLedgeGrabAllowed = false;
+                                ledgeGrabDisallowed = true;
+                                frontLedgeGrabAllowed = false;
+                                reverseLedgeGrabAllowed = false;
                                 break;
                             case 1:
-                                LedgeGrabDisallowed = false;
-                                FrontLedgeGrabAllowed = true;
+                                ledgeGrabDisallowed = false;
+                                frontLedgeGrabAllowed = true;
                                 break;
                             case 2:
-                                LedgeGrabDisallowed = false;
-                                ReverseLedgeGrabAllowed = true;
+                                ledgeGrabDisallowed = false;
+                                reverseLedgeGrabAllowed = true;
                                 break;
                         }
                         break;
@@ -839,40 +837,40 @@ namespace SmashForge
             return true;
         }
 
-        public void getIfs()
+        public void GetIfs()
         {
-            scriptCommandIndex = 0;
+            ScriptCommandIndex = 0;
             while (true)
             {
                 // Subscripts take precedence in processing, most deep one first
-                if (subscripts.Count > 0)
+                if (Subscripts.Count > 0)
                 {
-                    if (scriptCommandIndex < subscripts[subscripts.Count - 1].Count)
-                        processAndGetIfs(subscripts[subscripts.Count - 1][scriptCommandIndex]);
+                    if (ScriptCommandIndex < Subscripts[Subscripts.Count - 1].Count)
+                        ProcessAndGetIfs(Subscripts[Subscripts.Count - 1][ScriptCommandIndex]);
                     else
                     {
                         // We finished the subscript, pop it off and keep processing the parent
-                        ScriptState prevState = scriptStates.Pop();
-                        scriptCommandIndex = prevState.commandIndex;
+                        ScriptState prevState = ScriptStates.Pop();
+                        ScriptCommandIndex = prevState.commandIndex;
                         loopStart = prevState.loopStart;
                         loopIterations = prevState.loopIterations;
-                        subscripts.RemoveAt(subscripts.Count - 1);
+                        Subscripts.RemoveAt(Subscripts.Count - 1);
                     }
                 }
                 else
                 {
-                    if (scriptCommandIndex < script.Count)
-                        processAndGetIfs(script[scriptCommandIndex]);
+                    if (ScriptCommandIndex < Script.Count)
+                        ProcessAndGetIfs(Script[ScriptCommandIndex]);
                     else
                         // No script commands left to process, regardless of frame
                         break;
                 }
-                scriptCommandIndex++;
+                ScriptCommandIndex++;
             }
-            scriptCommandIndex = 0;
+            ScriptCommandIndex = 0;
         }
 
-        public void processAndGetIfs(ICommand cmd)
+        public void ProcessAndGetIfs(ICommand cmd)
         {
             switch (cmd.Ident)
             {
@@ -902,19 +900,19 @@ namespace SmashForge
                     // Try and load the other script. If we can't, then just keep going as per normal
                     uint crc = (uint)int.Parse(cmd.Parameters[0] + "");
                     if (Moveset == null) break;
-                    if (Moveset.Game.Scripts.ContainsKey(crc) && crc != this.script.AnimationCRC)
+                    if (Moveset.Game.Scripts.ContainsKey(crc) && crc != this.Script.AnimationCRC)
                     {
-                        subscripts.Add((ACMDScript)Moveset.Game.Scripts[crc]);
+                        Subscripts.Add((ACMDScript)Moveset.Game.Scripts[crc]);
 
                         // Store the return scriptCommandIndex
-                        scriptStates.Push(new ScriptState(
-                            scriptCommandIndex,
+                        ScriptStates.Push(new ScriptState(
+                            ScriptCommandIndex,
                             loopStart,
                             loopIterations
                         ));
 
                         // Start fresh in the new script
-                        scriptCommandIndex = -1; // This is incremented immediately in the containing loop hence the -1
+                        ScriptCommandIndex = -1; // This is incremented immediately in the containing loop hence the -1
                         loopStart = 0;
                         loopIterations = 0;
                     }
@@ -922,7 +920,7 @@ namespace SmashForge
             }
         }
 
-        private static int roundAnimationFrame(double animFrame)
+        private static int RoundAnimationFrame(double animFrame)
         {
             // Modified version of Math.Round to try an approximate in-game behaviour
             return (int)Math.Floor(animFrame + 0.4);
@@ -930,9 +928,9 @@ namespace SmashForge
 
         #region Rendering
 
-        public void Render(VBN Skeleton)
+        public void Render(VBN skeleton)
         {
-            if (!Runtime.renderHitboxes || Skeleton == null)
+            if (!Runtime.renderHitboxes || skeleton == null)
                 return;
 
             if (Hitboxes.Count <= 0)
@@ -944,20 +942,20 @@ namespace SmashForge
             {
                 var h = pair.Value;
 
-                if (Runtime.HiddenHitboxes.Contains(h.ID))
+                if (Runtime.HiddenHitboxes.Contains(h.Id))
                     continue;
 
-                Bone b = getBone(h.Bone, Skeleton);
+                Bone b = GetBone(h.Bone, skeleton);
                 h.va = Vector3.TransformPosition(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
                 // Draw angle marker
-                if (Runtime.renderHitboxAngles && (h.Type == Hitbox.HITBOX || h.Type == Hitbox.WINDBOX))
-                    RenderHitboxAngles(h, Skeleton);
+                if (Runtime.renderHitboxAngles && (h.Type == Hitbox.HitboxValue || h.Type == Hitbox.Windbox))
+                    RenderHitboxAngles(h, skeleton);
 
                 GL.Color4(h.GetDisplayColor());
 
                 // Draw everything to the stencil buffer
-                Rendering.ShapeDrawing.beginTopLevelStencil();
+                Rendering.ShapeDrawing.BeginTopLevelStencil();
                 if (!h.IsSphere())
                 {
                     h.va2 = new Vector3(h.X2, h.Y2, h.Z2);
@@ -966,7 +964,7 @@ namespace SmashForge
                 }
                 else
                 {
-                    Rendering.ShapeDrawing.drawSphere(h.va, h.Size, 30);
+                    Rendering.ShapeDrawing.DrawSphere(h.va, h.Size, 30);
                 }
 
                 // n factorial (n!) algorithm (NOT EFFICIENT) to draw subsequent hitboxes around each other.
@@ -974,17 +972,17 @@ namespace SmashForge
                 if (Runtime.renderHitboxesNoOverlap)
                 {
                     // Remove the stencil for the already drawn hitboxes
-                    Rendering.ShapeDrawing.beginTopLevelAntiStencil();
+                    Rendering.ShapeDrawing.BeginTopLevelAntiStencil();
                     foreach (var pair2 in Hitboxes.Reverse())
                     {
                         if (pair2.Key == pair.Key)
                             break;  // this only works because the list is sorted
                         var h2 = pair2.Value;
 
-                        if (!Runtime.HiddenHitboxes.Contains(h2.ID))
+                        if (!Runtime.HiddenHitboxes.Contains(h2.Id))
                         {
 
-                            Bone b2 = getBone(h2.Bone, Skeleton);
+                            Bone b2 = GetBone(h2.Bone, skeleton);
                             var va = Vector3.TransformPosition(new Vector3(h2.X, h2.Y, h2.Z), b2.transform.ClearScale());
                             if (!h2.IsSphere())
                             {
@@ -994,13 +992,13 @@ namespace SmashForge
                             }
                             else
                             {
-                                Rendering.ShapeDrawing.drawSphere(va, h2.Size, 30);
+                                Rendering.ShapeDrawing.DrawSphere(va, h2.Size, 30);
                             }
                         }
                     }
                 }
 
-                if (Runtime.SelectedHitboxID == h.ID)
+                if (Runtime.SelectedHitboxId == h.Id)
                 {
                     GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorSelected));
                     if (!h.IsSphere())
@@ -1009,23 +1007,23 @@ namespace SmashForge
                     }
                     else
                     {
-                        Rendering.ShapeDrawing.drawWireframeSphere(h.va, h.Size, 10);
+                        Rendering.ShapeDrawing.DrawWireframeSphere(h.va, h.Size, 10);
                     }
                 }
 
                 // End stenciling and draw over all the stenciled bits
-                Rendering.ShapeDrawing.endTopLevelStencilAndDraw();
+                Rendering.ShapeDrawing.EndTopLevelStencilAndDraw();
             }
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
         }
-        
+
         public void RenderHitboxAngles(Hitbox h, VBN vbn)
         {
             //Angle marker changes direction depending on conditions:
             //If hitbox is behind transN bone (as if the person being hit is located at the hitbox center)
             //If facing-restriction parameter of hitboxes is set to certain values (3 = forward, 4 = backward)
-            float transN_Z = getBone(0, vbn).pos.Z;
+            float transNZ = GetBone(0, vbn).pos.Z;
             int facingRestr = h.FacingRestriction;
             int direction = 1;
 
@@ -1034,7 +1032,7 @@ namespace SmashForge
                 direction = 1;
             else if (facingRestr == 4)
                 direction = -1;
-            else if (h.va.Z < transN_Z)
+            else if (h.va.Z < transNZ)
                 direction = -1;
 
             GL.LineWidth(5f);
@@ -1047,7 +1045,7 @@ namespace SmashForge
                 GL.Vertex3(h.va + new Vector3(0, 0, h.Size / 2));
                 GL.Vertex3(h.va - new Vector3(0, h.Size / 2, 0));
                 GL.Vertex3(h.va + new Vector3(0, h.Size / 2, 0));
-                
+
             }
             else if (h.Angle == 362 || h.Angle == 363 || (h.Angle >= 365 && h.Angle <= 367))
             {
@@ -1066,7 +1064,7 @@ namespace SmashForge
             GL.End();
         }
 
-        public static Tuple<int, int> translateScriptBoneId(int boneId)
+        public static Tuple<int, int> TranslateScriptBoneId(int boneId)
         {
             int jtbIndex = 0;
             while (boneId >= 1000)
@@ -1077,9 +1075,9 @@ namespace SmashForge
             return Tuple.Create(boneId, jtbIndex);
         }
 
-        public static Bone getBone(int bone, VBN VBN)
+        public static Bone GetBone(int bone, VBN vbn)
         {
-            Tuple<int, int> boneInfo = translateScriptBoneId(bone);
+            Tuple<int, int> boneInfo = TranslateScriptBoneId(bone);
             int bid = boneInfo.Item1;
             int jtbIndex = boneInfo.Item2;
 
@@ -1090,12 +1088,12 @@ namespace SmashForge
                 // ModelContainers should store Hitbox data or have them linked since it will use last
                 // modelcontainer bone for hitbox display (which might not be the character model).
                 // This is especially important for the future when importing weapons for some moves.
-                if (VBN != null)
+                if (vbn != null)
                 {
                     try //Try used to avoid bone not found issue that crashes the application
                     {
-                        if (VBN.JointTable.Tables.Count < 1)
-                            b = VBN.bones[bid];
+                        if (vbn.JointTable.Tables.Count < 1)
+                            b = vbn.bones[bid];
                         else
                         {
                             if (jtbIndex == 0)
@@ -1103,24 +1101,24 @@ namespace SmashForge
                                 // Special rule for table 0, index 0 is *always* TransN, and index 1 counts as index 0
                                 if (bid <= 0)
                                 {
-                                    b = VBN.bones.Find(item => item.Name == "TransN");
+                                    b = vbn.bones.Find(item => item.Name == "TransN");
                                     if (b == null)
-                                        b = VBN.bones[0];
+                                        b = vbn.bones[0];
                                 }
                                 else  // Index 2 counts as index 1, etc
-                                    b = VBN.bones[VBN.JointTable.Tables[jtbIndex][bid - 1]];
+                                    b = vbn.bones[vbn.JointTable.Tables[jtbIndex][bid - 1]];
                             }
-                            else if (jtbIndex < VBN.JointTable.Tables.Count)
+                            else if (jtbIndex < vbn.JointTable.Tables.Count)
                             {
                                 // Extra joint tables don't have the TransN rule
-                                b = VBN.bones[VBN.JointTable.Tables[jtbIndex][bid]];
+                                b = vbn.bones[vbn.JointTable.Tables[jtbIndex][bid]];
                             }
                             else
                             {
                                 //If there is no jointTable but bone is >1000 then don't look into a another joint table
                                 //This makes some weapons like Luma have hitboxes visualized
                                 //b = m.vbn.bones[bid];
-                                b = VBN.bones[VBN.JointTable.Tables[VBN.JointTable.Tables.Count - 1][bid]];
+                                b = vbn.bones[vbn.JointTable.Tables[vbn.JointTable.Tables.Count - 1][bid]];
                             }
                         }
                     }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SALT.PARAMS;
+﻿using SALT.PARAMS;
 using OpenTK;
 using SmashForge.Rendering.Lights;
 

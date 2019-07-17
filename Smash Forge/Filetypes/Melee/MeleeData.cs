@@ -38,25 +38,25 @@ namespace SmashForge.Filetypes.Melee
                 }
                 // Read it
                 FileData d = new FileData(fname.Substring(0, fname.Length - 6) + ".dat");
-                d.Endian = Endianness.Big;
-                d.seek(0x24);
-                d.seek(d.readInt() + 0x20);
+                d.endian = Endianness.Big;
+                d.Seek(0x24);
+                d.Seek(d.ReadInt() + 0x20);
                 int off;
-                while((off = d.readInt()) != 0)
+                while((off = d.ReadInt()) != 0)
                 {
-                    int temp = d.pos();
-                    d.seek(off + 0x20);
-                    int Count = d.readInt();
-                    int Offset = d.readInt() + 0x20;
+                    int temp = d.Pos();
+                    d.Seek(off + 0x20);
+                    int Count = d.ReadInt();
+                    int Offset = d.ReadInt() + 0x20;
 
                     for(int i =0; i < Count; i++)
                     {
-                        d.seek(Offset + i * 8);
-                        int c = d.readInt();
-                        int o = d.readInt() + 0x20;
-                        LodModels.AddRange(d.getSection(o, c));
+                        d.Seek(Offset + i * 8);
+                        int c = d.ReadInt();
+                        int o = d.ReadInt() + 0x20;
+                        LodModels.AddRange(d.GetSection(o, c));
                     }
-                    d.seek(temp);
+                    d.Seek(temp);
                     break;
                 }
             }
@@ -100,7 +100,7 @@ namespace SmashForge.Filetypes.Melee
                             //MessageBox.Show("Cannot save this dat type yet");
                             // gonna have to inject this one for now
                             FileData d = new FileData(fileName);
-                            d.Endian = Endianness.Big;
+                            d.endian = Endianness.Big;
                             FileOutput o = new FileOutput();
 
                             if (DatFile.Roots.Length > 1)
@@ -120,10 +120,10 @@ namespace SmashForge.Filetypes.Melee
                                     Compiler.Compile(n.GetAsDATFile(), "temp.dat");
                                     if (script != null)
                                         script.AnimationOffset = o.Size();
-                                    o.writeBytes(File.ReadAllBytes("temp.dat"));
+                                    o.WriteBytes(File.ReadAllBytes("temp.dat"));
                                     if (script != null)
                                         script.AnimationSize = o.Size() - script.AnimationOffset;
-                                    o.align(0x20, 0xFF);
+                                    o.Align(0x20, 0xFF);
                                 }
                             if(File.Exists("temp.dat"))
                                 File.Delete("temp.dat");
@@ -132,8 +132,8 @@ namespace SmashForge.Filetypes.Melee
                             {
                                 if (DatFile.Roots.Length > 1)
                                 {
-                                    d.writeInt(s.Offset + 4, s.AnimationOffset);
-                                    d.writeInt(s.Offset + 8, s.AnimationSize);
+                                    d.WriteInt(s.Offset + 4, s.AnimationOffset);
+                                    d.WriteInt(s.Offset + 8, s.AnimationSize);
                                 }
                                 List<byte> newSection = new List<byte>();
                                 foreach(SubAction sub in s.SubActions)
@@ -163,20 +163,20 @@ namespace SmashForge.Filetypes.Melee
                                 }
                                 else if (newSection.Count > s.SubActionSize && CanExpand)
                                 {
-                                    d.writeInt(s.Offset + 12, d.size() - 0x20);
-                                    d.writeBytesAt(d.size(), newSection.ToArray());
+                                    d.WriteInt(s.Offset + 12, d.Size() - 0x20);
+                                    d.WriteBytesAt(d.Size(), newSection.ToArray());
                                 }
                                 else
                                 {
-                                    d.writeInt(s.Offset + 12, s.SubActionOffset - 0x20);
-                                    d.writeBytesAt(s.SubActionOffset, newSection.ToArray());
+                                    d.WriteInt(s.Offset + 12, s.SubActionOffset - 0x20);
+                                    d.WriteBytesAt(s.SubActionOffset, newSection.ToArray());
                                 }
                                 Console.WriteLine(s.SubActionOffset.ToString("x") + " " + s.SubActionSize.ToString("x") + " " + newSection.Count.ToString("x"));
                             }
                             if (DatFile.Roots.Length > 1)
-                                o.save(sfd.FileName.Replace(".dat", "AJ.dat"));
-                            d.writeInt(0, d.size());
-                            File.WriteAllBytes(sfd.FileName, d.getSection(0, d.eof()));
+                                o.Save(sfd.FileName.Replace(".dat", "AJ.dat"));
+                            d.WriteInt(0, d.Size());
+                            File.WriteAllBytes(sfd.FileName, d.GetSection(0, d.Eof()));
                             return;
                         }
                     }
@@ -224,9 +224,9 @@ namespace SmashForge.Filetypes.Melee
             }
 
             // Only initialize this once to improve frame rates.
-            Shader shader = OpenTKSharedResources.shaders["Dat"];
+            Shader shader = OpenTkSharedResources.shaders["Dat"];
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                shader = OpenTKSharedResources.shaders["DatDebug"];
+                shader = OpenTkSharedResources.shaders["DatDebug"];
             shader.UseProgram();
 
             // TODO: Why is this flipped?
@@ -284,12 +284,12 @@ namespace SmashForge.Filetypes.Melee
             DatFile.AddRoot(r);
 
             FileData f = new FileData(fname);
-            while(f.pos() < f.eof())
+            while(f.Pos() < f.Eof())
             {
-                int size = f.readInt();
-                byte[] data = f.getSection(f.pos()-4, size);
-                f.skip(size - 4);
-                f.align(0x20);
+                int size = f.ReadInt();
+                byte[] data = f.GetSection(f.Pos()-4, size);
+                f.Skip(size - 4);
+                f.Align(0x20);
                 DATFile datfile = Decompiler.Decompile(data);
                 datfile.Roots[0].Animations[0].Text = datfile.Roots[0].Text;
                 r.Animations.Add(datfile.Roots[0].Animations[0]);

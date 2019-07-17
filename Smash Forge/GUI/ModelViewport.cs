@@ -84,20 +84,20 @@ namespace SmashForge
                 //Moveset
                 //If moveset is loaded then initialize with null script so handleACMD loads script for frame speed modifiers and FAF (if parameters are imported)
                 if (MovesetManager != null && acmdScript == null)
-                    acmdScript = new ForgeACMDScript(null);
+                    acmdScript = new ForgeAcmdScript(null);
 
                 if (value != null)
                 {
-                    string TargetAnimString = value.Text;
-                    if (!string.IsNullOrEmpty(TargetAnimString))
+                    string targetAnimString = value.Text;
+                    if (!string.IsNullOrEmpty(targetAnimString))
                     {
                         if (acmdScript != null)
                         {
                             //Remove manual crc flag
                             //acmdEditor.manualCrc = false;
-                            HandleACMD(TargetAnimString);
+                            HandleAcmd(targetAnimString);
                             if (acmdScript != null)
-                                acmdScript.processToFrame(0);
+                                acmdScript.ProcessToFrame(0);
 
                         }
                         if (atkdEditor != null && scriptId >= 0)
@@ -107,7 +107,7 @@ namespace SmashForge
                 ResetModels();
                 currentMaterialAnimation = null;
                 currentAnimation = value;
-                totalFrame.Value = value.FrameCount;
+                totalFrame.Value = value.frameCount;
                 animationTrackBar.TickFrequency = 1;
                 currentFrameUpDown.Value = 1;
                 currentFrameUpDown.Value = 0;
@@ -158,7 +158,7 @@ namespace SmashForge
         public int scriptId = -1;
         public Dictionary<string, int> paramMoveNameIdMapping;
         public CharacterParamManager paramManager;
-        public PARAMEditor paramManagerHelper;
+        public ParamEditor paramManagerHelper;
 
         private MovesetManager movesetManager;
         public MovesetManager MovesetManager
@@ -171,18 +171,18 @@ namespace SmashForge
             {
                 movesetManager = value;
                 if (acmdEditor != null)
-                    acmdEditor.updateCrcList();
+                    acmdEditor.UpdateCrcList();
             }
         }
 
-        public ForgeACMDScript acmdScript = null;
+        public ForgeAcmdScript acmdScript = null;
 
-        public ACMDPreviewEditor acmdEditor;
+        public AcmdPreviewEditor acmdEditor;
         public HitboxList hitboxList;
         public HurtboxList hurtboxList;
         public VariableList variableViewer;
 
-        public ATKD_Editor atkdEditor;
+        public AtkdEditor atkdEditor;
         public bool atkdRectClicked = false;
 
         // Used in ModelContainer for direct UV time animation.
@@ -190,7 +190,7 @@ namespace SmashForge
 
         //LVD
         private LVD lvd;
-        public LVD LVD
+        public LVD Lvd
         {
             get
             {
@@ -200,19 +200,19 @@ namespace SmashForge
             {
                 lvd = value;
                 lvd.MeshList = meshList;
-                lvdEditor.LVD = lvd;
-                lvdList.TargetLVD = lvd;
-                lvdList.fillList();
+                lvdEditor.lvd = lvd;
+                lvdList.targetLvd = lvd;
+                lvdList.FillList();
             }
         }
 
-        LVDList lvdList = new LVDList();
-        LVDEditor lvdEditor = new LVDEditor();
+        LvdList lvdList = new LvdList();
+        LvdEditor lvdEditor = new LvdEditor();
 
         public BfresMaterialEditor bfresMatEditor = new BfresMaterialEditor();
 
         //Binary YAML. Used in many Wii U/Switch games
-        public BYAML BYAML
+        public BYAML Byaml
         {
             get
             {
@@ -221,9 +221,9 @@ namespace SmashForge
             set
             {
                 byaml = value;
-                byamlEditor.TargetBYAML = byaml;
-                byamlList.TargetBYAML = byaml;
-                byamlList.fillList();
+                byamlEditor.targetByaml = byaml;
+                byamlList.targetByaml = byaml;
+                byamlList.FillList();
             }
         }
         private BYAML byaml;
@@ -279,7 +279,7 @@ namespace SmashForge
             byamlList.Dock = DockStyle.Left;
             byamlList.MaximumSize = new Size(300, 2000);
             AddControl(byamlList);
-            byamlList.BYAMLEditor = byamlEditor;
+            byamlList.byamlEditor = byamlEditor;
 
             byamlEditor.Dock = DockStyle.Right;
             byamlEditor.MaximumSize = new Size(300, 2000);
@@ -291,7 +291,7 @@ namespace SmashForge
             modeMesh.Checked = false;
             modePolygon.Checked = false;
 
-            LVD = new LVD();
+            Lvd = new LVD();
 
             ViewComboBox.SelectedIndex = 0;
 
@@ -319,10 +319,10 @@ namespace SmashForge
 
         private void SetUpAcmdEditor()
         {
-            acmdEditor = new ACMDPreviewEditor();
-            acmdEditor.Owner = this;
+            acmdEditor = new AcmdPreviewEditor();
+            acmdEditor.owner = this;
             acmdEditor.Dock = DockStyle.Right;
-            acmdEditor.updateCrcList();
+            acmdEditor.UpdateCrcList();
             AddControl(acmdEditor);
         }
 
@@ -514,17 +514,17 @@ namespace SmashForge
 
         public Vector2 GetMouseOnViewport()
         {
-            float mouse_x = glViewport.PointToClient(Cursor.Position).X;
-            float mouse_y = glViewport.PointToClient(Cursor.Position).Y;
+            float mouseX = glViewport.PointToClient(Cursor.Position).X;
+            float mouseY = glViewport.PointToClient(Cursor.Position).Y;
 
-            float mx = (2.0f * mouse_x) / glViewport.Width - 1.0f;
-            float my = 1.0f - (2.0f * mouse_y) / glViewport.Height;
+            float mx = (2.0f * mouseX) / glViewport.Width - 1.0f;
+            float my = 1.0f - (2.0f * mouseY) / glViewport.Height;
             return new Vector2(mx, my);
         }
 
         private void MouseClickItemSelect(System.Windows.Forms.MouseEventArgs e)
         {
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || glViewport == null)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized || glViewport == null)
                 return;
 
             //Mesh Selection Test
@@ -644,7 +644,7 @@ namespace SmashForge
             return offscreenRenderFbo.SamplePixelColor(mousePosition.X, glViewport.Height - mousePosition.Y);
         }
 
-        private Vector3 getScreenPoint(Vector3 pos)
+        private Vector3 GetScreenPoint(Vector3 pos)
         {
             Vector4 n = Vector4.Transform(new Vector4(pos, 1), camera.MvpMatrix);
             n.X /= n.W;
@@ -655,7 +655,7 @@ namespace SmashForge
 
         private void glViewport_Resize(object sender, EventArgs e)
         {
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized
+            if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Initialized
                 && currentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
             {
                 GL.LoadIdentity();
@@ -718,11 +718,11 @@ namespace SmashForge
 
             // Process script first in case we have to speed up the animation
             if (acmdScript != null)
-                acmdScript.processToFrame(frameNum);
+                acmdScript.ProcessToFrame(frameNum);
 
             float animFrameNum = frameNum;
             if (acmdScript != null && Runtime.useFrameDuration)
-                animFrameNum = acmdScript.animationFrame;// - 1;
+                animFrameNum = acmdScript.AnimationFrame;// - 1;
 
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
@@ -953,7 +953,7 @@ namespace SmashForge
 
         #region Moveset
 
-        public void HandleACMD(string animname)
+        public void HandleAcmd(string animname)
         {
             //if (ACMDEditor.manualCrc)
             //    return;
@@ -987,46 +987,46 @@ namespace SmashForge
                 //If the character doesn't have angled ftilt/fsmash
                 if (animname == "AttackS4S.omo" || animname == "AttackS3S.omo")
                 {
-                    HandleACMD(animname.Replace("S.omo", ".omo"));
+                    HandleAcmd(animname.Replace("S.omo", ".omo"));
                     return;
                 }
                 //Ryu ftilts
                 else if (animname == "AttackS3Ss.omo")
                 {
-                    HandleACMD(animname.Replace("Ss.omo", "s.omo"));
+                    HandleAcmd(animname.Replace("Ss.omo", "s.omo"));
                     return;
                 }
                 else if (animname == "AttackS3Sw.omo")
                 {
-                    HandleACMD(animname.Replace("Sw.omo", "w.omo"));
+                    HandleAcmd(animname.Replace("Sw.omo", "w.omo"));
                     return;
                 }
                 //Rapid Jab Finisher
                 else if (animname == "AttackEnd.omo")
                 {
-                    HandleACMD("Attack100End.omo");
+                    HandleAcmd("Attack100End.omo");
                     return;
                 }
                 else if (animname.Contains("ZeldaPhantomMainPhantom"))
                 {
-                    HandleACMD(animname.Replace("ZeldaPhantomMainPhantom", ""));
+                    HandleAcmd(animname.Replace("ZeldaPhantomMainPhantom", ""));
                     return;
                 }
                 else if (animname == "SpecialHi1.omo")
                 {
-                    HandleACMD("SpecialHi.omo");
+                    HandleAcmd("SpecialHi.omo");
                     return;
                 }
                 else if (animname == "SpecialAirHi1.omo")
                 {
-                    HandleACMD("SpecialAirHi.omo");
+                    HandleAcmd("SpecialAirHi.omo");
                     return;
                 }
                 else
                 {
                     this.acmdScript = null;
-                    hitboxList.refresh();
-                    variableViewer.refresh();
+                    hitboxList.Refresh();
+                    variableViewer.Refresh();
                     return;
                 }
             }
@@ -1036,9 +1036,9 @@ namespace SmashForge
             if (acmdScript != null)
             {
                 // If script wasn't set, or it was set and it changed, load the new script
-                if (this.acmdScript == null || (this.acmdScript != null && this.acmdScript.script != acmdScript))
+                if (this.acmdScript == null || (this.acmdScript != null && this.acmdScript.Script != acmdScript))
                 {
-                    this.acmdScript = new ForgeACMDScript(acmdScript);
+                    this.acmdScript = new ForgeAcmdScript(acmdScript);
                 }
             }
             else
@@ -1237,11 +1237,11 @@ namespace SmashForge
                 return;
 
             List<Bitmap> images = new List<Bitmap>();
-            float ScaleFactor = 1f;
+            float scaleFactor = 1f;
             isPlaying = false;
             playButton.Text = "Play";
 
-            GIFSettings settings = new GIFSettings((int)totalFrame.Value, ScaleFactor, images.Count > 0);
+            GIFSettings settings = new GIFSettings((int)totalFrame.Value, scaleFactor, images.Count > 0);
             settings.ShowDialog();
 
             if (settings.ClearFrames)
@@ -1250,7 +1250,7 @@ namespace SmashForge
             if (!settings.OK)
                 return;
 
-            ScaleFactor = settings.ScaleFactor;
+            scaleFactor = settings.ScaleFactor;
 
             int cFrame = (int)currentFrameUpDown.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
                                                   //Disable controls
@@ -1266,7 +1266,7 @@ namespace SmashForge
                 {
                     using (Bitmap cs = Framebuffer.ReadDefaultFramebufferImagePixels(fboRenderWidth, fboRenderWidth))
                     {
-                        images.Add(new Bitmap(cs, new Size((int)(cs.Width / ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
+                        images.Add(new Bitmap(cs, new Size((int)(cs.Width / scaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
                     }
                 }
             }
@@ -1308,19 +1308,19 @@ namespace SmashForge
                 if (node is ModelContainer)
                 {
                     ModelContainer m = (ModelContainer)node;
-                    Runtime.TextureContainers.Remove(m.NUT);
+                    Runtime.textureContainers.Remove(m.NUT);
 
                     if (m.BNTX != null)
                     {
                         m.BNTX.textures.Clear();
                         m.BNTX.glTexByName.Clear();
-                        Runtime.BNTXList.Remove(m.BNTX);
+                        Runtime.bntxList.Remove(m.BNTX);
                     }
                     if (m.Bfres != null && m.Bfres.FTEXContainer != null)
                     {
                         m.Bfres.FTEXContainer.FTEXtextures.Clear();
                         m.Bfres.FTEXContainer.glTexByName.Clear();
-                        Runtime.FTEXContainerList.Remove(m.Bfres.FTEXContainer);
+                        Runtime.ftexContainerList.Remove(m.Bfres.FTEXContainer);
                     }
                 }
             }
@@ -1352,7 +1352,7 @@ namespace SmashForge
                 currentFrameUpDown.Value--;
         }
 
-        private void viewStripButtonsBone(object sender, EventArgs e)
+        private void ViewStripButtonsBone(object sender, EventArgs e)
         {
             stripPos.Checked = false;
             stripRot.Checked = false;
@@ -1388,14 +1388,14 @@ namespace SmashForge
             else
             {
                 if (currentAnimation.Tag is Animation)
-                    ((Animation)currentAnimation.Tag).FrameCount = (int)totalFrame.Value;
-                currentAnimation.FrameCount = (int)totalFrame.Value;
+                    ((Animation)currentAnimation.Tag).frameCount = (int)totalFrame.Value;
+                currentAnimation.frameCount = (int)totalFrame.Value;
                 animationTrackBar.Value = 0;
-                animationTrackBar.SetRange(0, currentAnimation.FrameCount);
+                animationTrackBar.SetRange(0, currentAnimation.frameCount);
             }
         }
 
-        private void checkSelect()
+        private void CheckSelect()
         {
             if (currentMode == Mode.Selection)
             {
@@ -1422,7 +1422,7 @@ namespace SmashForge
                                 {
                                     if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
                                         poly.selectedVerts[i] = 0;
-                                    Vector3 n = getScreenPoint(v.pos);
+                                    Vector3 n = GetScreenPoint(v.pos);
                                     if (n.X >= minx && n.Y >= miny && n.X <= minx + width && n.Y <= miny + height)
                                         poly.selectedVerts[i] = 1;
                                     i++;
@@ -1436,12 +1436,11 @@ namespace SmashForge
                     // single vertex
                     // Selects the closest vertex
                     Ray r = RenderTools.CreateRay(camera.MvpMatrix, GetMouseOnViewport());
-                    Vector3 close = Vector3.Zero;
                     foreach (TreeNode node in draw)
                     {
                         if (!(node is ModelContainer)) continue;
                         ModelContainer con = (ModelContainer)node;
-                        Nud.Polygon Close = null;
+                        Nud.Polygon closestPolygon = null;
                         int index = 0;
                         double mindis = 999;
                         foreach (Nud.Mesh mesh in con.NUD.Nodes)
@@ -1456,13 +1455,14 @@ namespace SmashForge
                                     if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
                                         poly.selectedVerts[i] = 0;
 
-                                    if (r.TrySphereHit(v.pos, 0.2f, out close))
+                                    Vector3 closest;
+                                    if (r.TrySphereHit(v.pos, 0.2f, out closest))
                                     {
-                                        double dis = r.Distance(close);
+                                        double dis = r.Distance(closest);
                                         if (dis < mindis)
                                         {
                                             mindis = dis;
-                                            Close = poly;
+                                            closestPolygon = poly;
                                             index = i;
                                         }
                                     }
@@ -1470,9 +1470,9 @@ namespace SmashForge
                                 }
                             }
                         }
-                        if (Close != null)
+                        if (closestPolygon != null)
                         {
-                            Close.selectedVerts[index] = 1;
+                            closestPolygon.selectedVerts[index] = 1;
                         }
                     }
                 }
@@ -1503,7 +1503,7 @@ namespace SmashForge
             }
         }
 
-        private bool GetMouseYZPlaneProjection(out Vector3 projection)
+        private bool GetMouseYzPlaneProjection(out Vector3 projection)
         {
             projection = new Vector3(0, 0, 0);
             try
@@ -1537,7 +1537,7 @@ namespace SmashForge
             if (atkdEditor != null && atkdEditor.isRendered)
             {
                 Vector3 projection;
-                if (GetMouseYZPlaneProjection(out projection))
+                if (GetMouseYzPlaneProjection(out projection))
                 {
                     if (atkdRectClicked)
                         atkdEditor.ViewportEvent_SetSelectedXY(projection.Z, projection.Y);
@@ -1576,7 +1576,7 @@ namespace SmashForge
         {
             // Don't render if the context and resources aren't set up properly.
             // Watching textures suddenly appear looks weird.
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || Runtime.glTexturesNeedRefreshing)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized || Runtime.glTexturesNeedRefreshing)
                 return;
 
             SetupViewport(width, height);
@@ -1592,7 +1592,7 @@ namespace SmashForge
             // Return early to avoid rendering other stuff. 
             if (meshList.filesTreeView.SelectedNode != null)
             {
-                if (meshList.filesTreeView.SelectedNode is BCH_Texture)
+                if (meshList.filesTreeView.SelectedNode is BchTexture)
                 {
                     DrawBchTex();
                     glViewport.SwapBuffers();
@@ -1606,12 +1606,12 @@ namespace SmashForge
                 }
                 if (meshList.filesTreeView.SelectedNode is BRTI)
                 {
-                    DrawBNTXTexAndUvs();
+                    DrawBntxTexAndUvs();
                     return;
                 }
                 if (meshList.filesTreeView.SelectedNode is FTEX)
                 {
-                    DrawFTEXTexAndUvs();
+                    DrawFtexTexAndUvs();
                     return;
                 }
             }
@@ -1767,7 +1767,7 @@ namespace SmashForge
             // Clearing the depth buffer allows stuff to render on top of the models.
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            if (Runtime.renderLVD)
+            if (Runtime.renderLvd)
                 lvd.Render();
 
             if (Runtime.renderBones)
@@ -1789,7 +1789,7 @@ namespace SmashForge
             if (atkdEditor != null)
             {
                 atkdEditor.isRendered = false;
-                if (Runtime.LoadAndRenderATKD && draw.Count > 0 && (draw[0] is ModelContainer))
+                if (Runtime.loadAndRenderAtkd && draw.Count > 0 && (draw[0] is ModelContainer))
                     atkdEditor.Viewport_Render(((ModelContainer)draw[0]).GetVBN());
             }
 
@@ -1836,7 +1836,7 @@ namespace SmashForge
             {
                 if (!OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
                 {
-                    checkSelect();
+                    CheckSelect();
                     currentMode = Mode.Normal;
                 }
 
@@ -1882,24 +1882,24 @@ namespace SmashForge
                 if (currentAnimation != null && transformTool.b != null)
                 {
                     // get the node group for the current bone in animation
-                    Animation.KeyNode ThisNode = null;
-                    foreach (Animation.KeyNode node in currentAnimation.Bones)
+                    Animation.KeyNode thisNode = null;
+                    foreach (Animation.KeyNode node in currentAnimation.bones)
                     {
                         if (node.Text.Equals(transformTool.b.Text))
                         {
                             // found
-                            ThisNode = node;
+                            thisNode = node;
                             break;
                         }
                     }
-                    if (ThisNode == null)
+                    if (thisNode == null)
                     {
-                        ThisNode = new Animation.KeyNode(transformTool.b.Text);
-                        currentAnimation.Bones.Add(ThisNode);
+                        thisNode = new Animation.KeyNode(transformTool.b.Text);
+                        currentAnimation.bones.Add(thisNode);
                     }
 
                     // update or add the key frame
-                    ThisNode.SetKeyFromBone((float)currentFrameUpDown.Value, transformTool.b);
+                    thisNode.SetKeyFromBone((float)currentFrameUpDown.Value, transformTool.b);
                 }
             }
         }
@@ -1975,7 +1975,7 @@ namespace SmashForge
             return outputPath;
         }
 
-        private void DrawBNTXTexAndUvs()
+        private void DrawBntxTexAndUvs()
         {
             GL.PopAttrib();
             BRTI tex = ((BRTI)meshList.filesTreeView.SelectedNode);
@@ -1990,7 +1990,7 @@ namespace SmashForge
             }
 
             if (Runtime.drawUv)
-                DrawNSWBFRESUvsForSelectedTexture(tex);
+                DrawNswbfresUvsForSelectedTexture(tex);
 
             glViewport.SwapBuffers();
         }
@@ -2005,21 +2005,21 @@ namespace SmashForge
         private void DrawBchTex()
         {
             GL.PopAttrib();
-            BCH_Texture tex = ((BCH_Texture)meshList.filesTreeView.SelectedNode);
-            ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, screenVao);
+            BchTexture tex = ((BchTexture)meshList.filesTreeView.SelectedNode);
+            ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, screenVao);
         }
 
-        private void DrawFTEXTexAndUvs()
+        private void DrawFtexTexAndUvs()
         {
             GL.PopAttrib();
 
             FTEX tex = ((FTEX)meshList.filesTreeView.SelectedNode);
             switch (tex.format)
             {
-                case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
+                case (int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTBc4Unorm:
                     ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, screenVao, true, false, false);
                     break;
-                case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM:
+                case (int)Gtx.Gx2SurfaceFormat.Gx2SurfaceFormatTBc4Snorm:
                     ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, screenVao, true, false, false);
                     break;
                 default:
@@ -2028,7 +2028,7 @@ namespace SmashForge
             }
 
             if (Runtime.drawUv)
-                DrawBFRESUvsForSelectedTexture(tex);
+                DrawBfresUvsForSelectedTexture(tex);
 
             glViewport.SwapBuffers();
         }
@@ -2042,7 +2042,7 @@ namespace SmashForge
             }
         }
 
-        private void DrawNSWBFRESUvsForSelectedTexture(BRTI tex)
+        private void DrawNswbfresUvsForSelectedTexture(BRTI tex)
         {
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
@@ -2057,7 +2057,7 @@ namespace SmashForge
             }
         }
 
-        private void DrawBFRESUvsForSelectedTexture(FTEX tex)
+        private void DrawBfresUvsForSelectedTexture(FTEX tex)
         {
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
@@ -2074,7 +2074,7 @@ namespace SmashForge
 
         private void glViewport_Paint(object sender, PaintEventArgs e)
         {
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+            if (OpenTkSharedResources.SetupStatus != OpenTkSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             Render(sender, e, glViewport.Width, glViewport.Height);
@@ -2123,9 +2123,9 @@ namespace SmashForge
         {
             glViewport.MakeCurrent();
 
-            OpenTKSharedResources.InitializeSharedResources();
+            OpenTkSharedResources.InitializeSharedResources();
 
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Initialized)
             {
                 screenVao = ScreenDrawing.CreateScreenTriangle();
 
@@ -2135,10 +2135,10 @@ namespace SmashForge
 
                 SetUpBuffersAndTextures();
 
-                if (Runtime.enableOpenTKDebugOutput)
+                if (Runtime.enableOpenTkDebugOutput)
                 {
                     glViewport.MakeCurrent();
-                    OpenTKSharedResources.EnableOpenTKDebugOutput();
+                    OpenTkSharedResources.EnableOpenTkDebugOutput();
                 }
             }
         }
@@ -2160,16 +2160,9 @@ namespace SmashForge
 
                 ModelContainer m = (ModelContainer)node;
 
-                if (m.NUT != null)
-                    m.NUT.RefreshGlTexturesByHashId();
-                if (m.BNTX != null)
-                {
-                    m.BNTX.RefreshGlTexturesByName();
-                }
-                if (m.Bfres != null && m.Bfres.FTEXContainer != null)
-                {
-                    m.Bfres.FTEXContainer.RefreshGlTexturesByName();
-                }
+                m.NUT?.RefreshGlTexturesByHashId();
+                m.BNTX?.RefreshGlTexturesByName();
+                m.Bfres?.FTEXContainer?.RefreshGlTexturesByName();
             }
         }
     }

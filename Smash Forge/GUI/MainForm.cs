@@ -36,24 +36,24 @@ namespace SmashForge
         // Lists
         public AnimListPanel animList = new AnimListPanel() { ShowHint = DockState.DockRight };
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
-        public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
+        public LvdList lvdList = new LvdList() { ShowHint = DockState.DockLeft };
         public ByamlList byamlList = new ByamlList() { ShowHint = DockState.DockLeft };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
         public HurtboxList hurtboxList = new HurtboxList() { ShowHint = DockState.DockLeft };
-        public LMList lmList = new LMList() { ShowHint = DockState.DockLeft };
+        public LmList lmList = new LmList() { ShowHint = DockState.DockLeft };
 
         // Editors and Forms
-        public NUTEditor nutEditor = null;
-        public NUS3BANKEditor nusEditor = null;
+        public NutEditor nutEditor = null;
+        public Nus3BankEditor nusEditor = null;
         public _3DSTexEditor texEditor = null;
         public CameraSettings cameraForm = null;
-        public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockLeft };
+        public LvdEditor lvdEditor = new LvdEditor() { ShowHint = DockState.DockLeft };
         public ByamlEditor byamlEditor = new ByamlEditor() { ShowHint = DockState.DockLeft };
         public BfresMaterialEditor bfresMatEditor = new BfresMaterialEditor() { ShowHint = DockState.DockLeft };
 
-        public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
-        public List<MTAEditor> mtaEditors = new List<MTAEditor>() { };
-        public List<ACMDEditor> acmdEditors = new List<ACMDEditor>() { };
+        public List<ParamEditor> paramEditors = new List<ParamEditor>() { };
+        public List<MtaEditor> mtaEditors = new List<MtaEditor>() { };
+        public List<AcmdEditor> acmdEditors = new List<AcmdEditor>() { };
         public List<SwagEditor> swagEditors = new List<SwagEditor>() { };
 
         public MainForm()
@@ -103,8 +103,8 @@ namespace SmashForge
             DiscordSettings.Update();
 
             // Make sure everything is loaded before opening files.
-            OpenTKSharedResources.InitializeSharedResources();
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Failed)
+            OpenTkSharedResources.InitializeSharedResources();
+            if (OpenTkSharedResources.SetupStatus == OpenTkSharedResources.SharedResourceStatus.Failed)
             {
                 // Disable options that would cause crashes.
                 reloadShadersToolStripMenuItem.Enabled = false;
@@ -152,25 +152,25 @@ namespace SmashForge
                                 chr00Loc = filesToOpen[j + 1];
                                 if (!File.Exists(filesToOpen[j + 1])) break;
                                 chr00Nut = new NUT(filesToOpen[j + 1]);
-                                Runtime.TextureContainers.Add(chr00Nut);
+                                Runtime.textureContainers.Add(chr00Nut);
                                 break;
                             case "-chr_11":
                                 chr11Loc = filesToOpen[j + 1];
                                 if (!File.Exists(filesToOpen[j + 1])) break;
                                 chr11Nut = new NUT(filesToOpen[j + 1]);
-                                Runtime.TextureContainers.Add(chr11Nut);
+                                Runtime.textureContainers.Add(chr11Nut);
                                 break;
                             case "-chr_13":
                                 chr13Loc = filesToOpen[j + 1];
                                 if (!File.Exists(filesToOpen[j + 1])) break;
                                 chr13Nut = new NUT(filesToOpen[j + 1]);
-                                Runtime.TextureContainers.Add(chr13Nut);
+                                Runtime.textureContainers.Add(chr13Nut);
                                 break;
                             case "-stock_90":
                                 stock90Loc = filesToOpen[j + 1];
                                 if (!File.Exists(filesToOpen[j + 1])) break;
                                 stock90Nut = new NUT(filesToOpen[j + 1]);
-                                Runtime.TextureContainers.Add(stock90Nut);
+                                Runtime.textureContainers.Add(stock90Nut);
                                 break;
                         }
                         i++;
@@ -180,11 +180,11 @@ namespace SmashForge
                         OpenNud(nud);
                     }
 
-                    UIPreview uiPreview = new UIPreview(chr00Nut, chr11Nut, chr13Nut, stock90Nut);
-                    uiPreview.chr_00_loc = chr00Loc;
-                    uiPreview.chr_11_loc = chr11Loc;
-                    uiPreview.chr_13_loc = chr13Loc;
-                    uiPreview.stock_90_loc = stock90Loc;
+                    UiPreview uiPreview = new UiPreview(chr00Nut, chr11Nut, chr13Nut, stock90Nut);
+                    uiPreview.chr00Loc = chr00Loc;
+                    uiPreview.chr11Loc = chr11Loc;
+                    uiPreview.chr13Loc = chr13Loc;
+                    uiPreview.stock90Loc = stock90Loc;
                     uiPreview.ShowHint = DockState.DockRight;
                     dockPanel1.DockRightPortion = 270;
                     AddDockedControl(uiPreview);
@@ -235,26 +235,26 @@ namespace SmashForge
             if (project.IsDisposed)
             {
                 project = new ProjectTree();
-                project.fillTree();
+                project.FillTree();
             }
             if (lvdList.IsDisposed)
             {
-                lvdList = new LVDList();
-                lvdList.fillList();
+                lvdList = new LvdList();
+                lvdList.FillList();
             }
             if (lmList.IsDisposed)
             {
-                lmList = new LMList();
-                lmList.fillList();
+                lmList = new LmList();
+                lmList.FillList();
             }
             if (byamlList.IsDisposed)
             {
                 byamlList = new ByamlList();
-                byamlList.fillList();
+                byamlList.FillList();
             }
             if (lvdEditor.IsDisposed)
             {
-                lvdEditor = new LVDEditor();
+                lvdEditor = new LvdEditor();
             }
             if (bfresMatEditor.IsDisposed)
             {
@@ -272,21 +272,21 @@ namespace SmashForge
             if (hurtboxList.IsDisposed)
             {
                 hurtboxList = new HurtboxList();
-                hurtboxList.refresh();
+                hurtboxList.Refresh();
             }
-            if (Runtime.hitboxList.IsDisposed)
+            if (Runtime.HitboxList.IsDisposed)
             {
-                Runtime.hitboxList = new HitboxList();
-                Runtime.hitboxList.refresh();
+                Runtime.HitboxList = new HitboxList();
+                Runtime.HitboxList.Refresh();
             }
-            if (Runtime.variableViewer.IsDisposed)
+            if (Runtime.VariableViewer.IsDisposed)
             {
-                Runtime.variableViewer = new VariableList();
-                Runtime.variableViewer.refresh();
+                Runtime.VariableViewer = new VariableList();
+                Runtime.VariableViewer.Refresh();
             }
             if (Runtime.acmdEditor != null && Runtime.acmdEditor.IsDisposed)
             {
-                Runtime.acmdEditor = new ACMDPreviewEditor();
+                Runtime.acmdEditor = new AcmdPreviewEditor();
             }
         }
 
@@ -297,14 +297,14 @@ namespace SmashForge
                 ((EditorBase)dockPanel1.ActiveContent).Save();
                 return;
             }
-            PARAMEditor currentParam = null;
-            ACMDEditor currentAcmd = null;
+            ParamEditor currentParam = null;
+            AcmdEditor currentAcmd = null;
             SwagEditor currentSwagEditor = null;
-            foreach (PARAMEditor p in paramEditors)
+            foreach (ParamEditor p in paramEditors)
                 if (p.ContainsFocus)
                     currentParam = p;
 
-            foreach (ACMDEditor a in acmdEditors)
+            foreach (AcmdEditor a in acmdEditors)
                 if (a.ContainsFocus)
                     currentAcmd = a;
 
@@ -315,9 +315,9 @@ namespace SmashForge
             if (currentParam != null)
                 currentParam.SaveAs();
             else if (currentAcmd != null)
-                currentAcmd.save();
+                currentAcmd.Save();
             else if (currentSwagEditor != null)
-                currentSwagEditor.save();
+                currentSwagEditor.Save();
             else
             {
                 string filename = "";
@@ -474,15 +474,15 @@ namespace SmashForge
             modelContainer.BNTX = modelContainer.Bfres.getBntx();
 
             if (modelContainer.BNTX != null)
-                Runtime.BNTXList.Add(modelContainer.BNTX);
+                Runtime.bntxList.Add(modelContainer.BNTX);
 
             if (modelContainer.Bfres.models.Count != 0)
             {
-                Runtime.TargetVBN = modelContainer.Bfres.models[0].skeleton;
+                Runtime.TargetVbn = modelContainer.Bfres.models[0].skeleton;
                 ResyncTargetVbn();
             }
 
-            if (Runtime.BNTXList.Count > 0 || Runtime.FTEXContainerList.Count > 0)
+            if (Runtime.bntxList.Count > 0 || Runtime.ftexContainerList.Count > 0)
                 Runtime.glTexturesNeedRefreshing = true;
 
             if (modelContainer.Bfres.AnimationCountTotal != 0)
@@ -610,7 +610,7 @@ namespace SmashForge
 
             NUT nut = new NUT(fileName);
             modelContainer.NUT = nut;
-            Runtime.TextureContainers.Add(nut);
+            Runtime.textureContainers.Add(nut);
             // Multiple windows was a mistake...
             Runtime.glTexturesNeedRefreshing = true;
         }
@@ -660,13 +660,13 @@ namespace SmashForge
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Runtime.SoundContainers.Clear();
+            Runtime.soundContainers.Clear();
             Runtime.Animations.Clear();
             Runtime.Animnames.Clear();
             Runtime.MaterialAnimations.Clear();
-            if (Runtime.TargetVBN != null)
-                Runtime.TargetVBN.reset();
-            Runtime.acmdEditor.updateCrcList();
+            if (Runtime.TargetVbn != null)
+                Runtime.TargetVbn.reset();
+            Runtime.acmdEditor.UpdateCrcList();
         }
 
         private void importToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -676,14 +676,14 @@ namespace SmashForge
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     Runtime.Moveset = new MovesetManager(ofd.FileName);
-                    Runtime.acmdEditor.updateCrcList();
+                    Runtime.acmdEditor.UpdateCrcList();
                 }
             }
         }
 
         public void OpenMats(Nud.Polygon poly, string name)
         {
-            (new NUDMaterialEditor(poly) { ShowHint = DockState.DockLeft, Text = name }).Show();
+            (new NudMaterialEditor(poly) { ShowHint = DockState.DockLeft, Text = name }).Show();
         }
 
         public void OpenBfresMats(BFRES.Mesh poly, string name)
@@ -705,7 +705,7 @@ namespace SmashForge
         public void ClearWorkSpace(bool closeEditors = true)
         {
             Runtime.ParamManager.Reset();
-            hurtboxList.refresh();
+            hurtboxList.Refresh();
             Runtime.Animnames.Clear();
             Runtime.ClearMoveset();
             animList.treeView1.Nodes.Clear();
@@ -799,8 +799,8 @@ namespace SmashForge
                                 mvp.MovesetManager = new MovesetManager(s + "\\animcmd\\body\\motion.mtable");
                             }
 
-                            if (Runtime.LoadAndRenderATKD && File.Exists(s + "\\ai\\attack_data.bin"))
-                                Runtime.currentATKD = s + "\\ai\\attack_data.bin";
+                            if (Runtime.loadAndRenderAtkd && File.Exists(s + "\\ai\\attack_data.bin"))
+                                Runtime.currentAtkd = s + "\\ai\\attack_data.bin";
                         }
                     }
 
@@ -814,9 +814,9 @@ namespace SmashForge
                         try
                         {
                             mvp.paramManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
-                            mvp.hurtboxList.refresh();
-                            mvp.paramManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
-                            mvp.paramMoveNameIdMapping = mvp.paramManagerHelper.getMoveNameIdMapping();
+                            mvp.hurtboxList.Refresh();
+                            mvp.paramManagerHelper = new ParamEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
+                            mvp.paramMoveNameIdMapping = mvp.paramManagerHelper.GetMoveNameIdMapping();
 
                             // Model render size
                             ParamFile param = new ParamFile(Runtime.paramDir + "\\fighter\\fighter_param.bin");
@@ -828,9 +828,9 @@ namespace SmashForge
                     }
                     Instance.progress.ProgressValue = 99;
                     Instance.progress.Message = "Please Wait... Opening Character ATKD";
-                    if (!string.IsNullOrEmpty(Runtime.currentATKD))
+                    if (!string.IsNullOrEmpty(Runtime.currentAtkd))
                     {
-                        ATKD_Editor atkdEditor = new ATKD_Editor(Runtime.currentATKD, mvp);
+                        AtkdEditor atkdEditor = new AtkdEditor(Runtime.currentAtkd, mvp);
                         mvp.atkdEditor = atkdEditor;
                         AddDockedControl(atkdEditor);
                     }
@@ -911,10 +911,10 @@ namespace SmashForge
             {
                 foreach (string fileName in Directory.GetFiles(paramPath))
                 {
-                    if (Path.GetExtension(fileName).Equals(".lvd") && Runtime.TargetLVD == null)
+                    if (Path.GetExtension(fileName).Equals(".lvd") && Runtime.TargetLvd == null)
                     {
-                        mvp.LVD = new LVD(fileName);
-                        lvdList.fillList();
+                        mvp.Lvd = new LVD(fileName);
+                        lvdList.FillList();
                     }
 
                     OpenStprmBin(mvp, fileName);
@@ -935,12 +935,12 @@ namespace SmashForge
 
                     if (fileName.EndsWith("area_light.xmb"))
                     {
-                        LightTools.CreateAreaLightsFromXMB(new XMBFile(fileName));
+                        LightTools.CreateAreaLightsFromXmb(new XMBFile(fileName));
                     }
 
                     if (fileName.EndsWith("lightmap.xmb"))
                     {
-                        LightTools.CreateLightMapsFromXMB(new XMBFile(fileName));
+                        LightTools.CreateLightMapsFromXmb(new XMBFile(fileName));
                     }
                 }
             }
@@ -992,9 +992,9 @@ namespace SmashForge
             else if (filename.EndsWith(".smd"))
             {
                 var anim = new Animation(filename);
-                if (Runtime.TargetVBN == null)
-                    Runtime.TargetVBN = new VBN();
-                SMD.read(filename, anim, Runtime.TargetVBN);
+                if (Runtime.TargetVbn == null)
+                    Runtime.TargetVbn = new VBN();
+                Smd.Read(filename, anim, Runtime.TargetVbn);
                 return (anim);
             }
             else if (filename.EndsWith(".pac"))
@@ -1043,12 +1043,12 @@ namespace SmashForge
 
             if (filename.EndsWith(".chr0"))
             {
-                return (CHR0.read(new FileData(filename), Runtime.TargetVBN));
+                return (CHR0.read(new FileData(filename), Runtime.TargetVbn));
             }
 
             if (filename.EndsWith(".anim"))
             {
-                return (ANIM.read(filename, Runtime.TargetVBN));
+                return (ANIM.read(filename, Runtime.TargetVbn));
             }
 
             if (filename.EndsWith(".bch"))
@@ -1069,18 +1069,18 @@ namespace SmashForge
         {
             if (filename.EndsWith(".vbn"))
             {
-                Runtime.TargetVBN.Endian = Endianness.Big;
+                Runtime.TargetVbn.Endian = Endianness.Big;
                 if (!checkBox1.Checked)
-                    Runtime.TargetVBN.Endian = Endianness.Little;
-                Runtime.TargetVBN.Save(filename);
+                    Runtime.TargetVbn.Endian = Endianness.Little;
+                Runtime.TargetVbn.Save(filename);
             }
 
-            if (filename.EndsWith(".lvd") && Runtime.TargetLVD != null)
-                File.WriteAllBytes(filename, Runtime.TargetLVD.Rebuild());
+            if (filename.EndsWith(".lvd") && Runtime.TargetLvd != null)
+                File.WriteAllBytes(filename, Runtime.TargetLvd.Rebuild());
 
 
-            if (filename.EndsWith(".byaml") && Runtime.TargetBYAML != null)
-                Runtime.TargetBYAML.Rebuild(filename);
+            if (filename.EndsWith(".byaml") && Runtime.TargetByaml != null)
+                Runtime.TargetByaml.Rebuild(filename);
 
         }
 
@@ -1199,7 +1199,7 @@ namespace SmashForge
             if (fileName.EndsWith(".kcl"))
             {
                 FileData f = new FileData(fileName);
-                byte[] data = f.getSection(0, f.eof());
+                byte[] data = f.GetSection(0, f.Eof());
 
                 if (dockPanel1.ActiveContent is ModelViewport)
                 {
@@ -1224,8 +1224,8 @@ namespace SmashForge
                 byte[] fileByteData = GetUncompressedSzsSbfresData(fileName);
                 FileData uncompressedFileData = new FileData(fileByteData);
 
-                int hexM = uncompressedFileData.readInt();
-                string magic2 = uncompressedFileData.readString(0, 4);
+                int hexM = uncompressedFileData.ReadInt();
+                string magic2 = uncompressedFileData.ReadString(0, 4);
 
                 if (magic2 == "FRES") //YAZO compressed
                 {
@@ -1254,16 +1254,16 @@ namespace SmashForge
                 {
                     BNTX bntx = new BNTX();
                     bntx.ReadBNTXFile(fileByteData);
-                    Runtime.BNTXList.Add(bntx);
+                    Runtime.bntxList.Add(bntx);
 
-                    BNTXEditor editor = new BNTXEditor(bntx);
+                    BntxEditor editor = new BntxEditor(bntx);
                     AddDockedControl(editor);
 
                 }
 
                 if (magic2 == "SARC") //SARC compressed
                 {
-                    var szsFiles = new SARC().unpackRam(uncompressedFileData.getSection(0, uncompressedFileData.eof()));
+                    var szsFiles = new SARC().unpackRam(uncompressedFileData.GetSection(0, uncompressedFileData.Eof()));
 
                     foreach (var s in szsFiles.Keys)
                     {
@@ -1291,7 +1291,7 @@ namespace SmashForge
             if (fileName.EndsWith(".bfres"))
             {
                 FileData f = new FileData(fileName);
-                byte[] data = f.getSection(0, f.eof());
+                byte[] data = f.GetSection(0, f.Eof());
 
                 if (dockPanel1.ActiveContent is ModelViewport)
                 {
@@ -1340,7 +1340,7 @@ namespace SmashForge
 
             if (fileName.EndsWith(".nut"))
             {
-                NUTEditor editor = new NUTEditor(fileName);
+                NutEditor editor = new NutEditor(fileName);
                 AddDockedControl(editor);
             }
 
@@ -1350,10 +1350,10 @@ namespace SmashForge
 
                 modelContainer.BNTX = new BNTX();
                 modelContainer.BNTX.ReadBNTXFile(fileName);
-                Runtime.BNTXList.Add(modelContainer.BNTX);
+                Runtime.bntxList.Add(modelContainer.BNTX);
                 Runtime.glTexturesNeedRefreshing = true;
 
-                BNTXEditor editor = new BNTXEditor(modelContainer.BNTX);
+                BntxEditor editor = new BntxEditor(modelContainer.BNTX);
                 AddDockedControl(editor);
 
                 mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
@@ -1430,19 +1430,19 @@ namespace SmashForge
                 if (CheckCurrentViewport(out mvp))
                 {
                     mvp.ViewComboBox.SelectedItem = "LVD Editor";
-                    mvp.LVD = new LVD(fileName);
+                    mvp.Lvd = new LVD(fileName);
                 }
                 else
                 {
                     mvp.ViewComboBox.SelectedItem = "LVD Editor";
                     mvp.Text = Path.GetFileName(fileName);
-                    mvp.LVD = new LVD(fileName);
+                    mvp.Lvd = new LVD(fileName);
                 }
             }
             if (fileName.EndsWith(".lm"))
             {
                 mvp.ViewComboBox.SelectedItem = "LM Editor";
-                AddDockedControl(new LMList(fileName));
+                AddDockedControl(new LmList(fileName));
             }
 
             if (fileName.EndsWith(".mdl0"))
@@ -1473,9 +1473,9 @@ namespace SmashForge
             {
                 ModelContainer modelContainer = new ModelContainer();
                 VBN targetVbn = new VBN();
-                SMD.read(fileName, new Animation(fileName), targetVbn);
+                Smd.Read(fileName, new Animation(fileName), targetVbn);
                 modelContainer.VBN = targetVbn;
-                modelContainer.NUD = SMD.toNUD(fileName);
+                modelContainer.NUD = Smd.ToNud(fileName);
                 modelContainer.VBN.reset();
 
                 if (CheckCurrentViewport(out mvp))
@@ -1528,10 +1528,10 @@ namespace SmashForge
             {
                 NUS3BANK nus = new NUS3BANK();
                 nus.Read(fileName);
-                Runtime.SoundContainers.Add(nus);
+                Runtime.soundContainers.Add(nus);
                 if (nusEditor == null || nusEditor.IsDisposed)
                 {
-                    nusEditor = new NUS3BANKEditor();
+                    nusEditor = new Nus3BankEditor();
                     nusEditor.Show();
                 }
                 else
@@ -1551,9 +1551,9 @@ namespace SmashForge
             {
                 MTA targetMta = new MTA();
                 targetMta.Read(fileName);
-                Runtime.TargetMTA.Clear();
-                Runtime.TargetMTA.Add(targetMta);
-                MTAEditor temp = new MTAEditor(targetMta) { ShowHint = DockState.DockLeft };
+                Runtime.targetMta.Clear();
+                Runtime.targetMta.Add(targetMta);
+                MtaEditor temp = new MtaEditor(targetMta) { ShowHint = DockState.DockLeft };
                 temp.Text = Path.GetFileName(fileName);
                 AddDockedControl(temp);
                 mtaEditors.Add(temp);
@@ -1562,7 +1562,7 @@ namespace SmashForge
             if (fileName.EndsWith(".mtable"))
             {
                 Runtime.Moveset = new MovesetManager(fileName);
-                Runtime.acmdEditor.updateCrcList();
+                Runtime.acmdEditor.UpdateCrcList();
             }
             if (fileName.EndsWith("path.bin"))
             {
@@ -1575,9 +1575,9 @@ namespace SmashForge
             else if (fileName.EndsWith(".bin"))
             {
                 FileData f = new FileData(fileName);
-                if (f.readUShort() == 0xFFFF)
+                if (f.ReadUShort() == 0xFFFF)
                 {
-                    PARAMEditor p = new PARAMEditor(fileName) { ShowHint = DockState.Document };
+                    ParamEditor p = new ParamEditor(fileName) { ShowHint = DockState.Document };
                     p.Text = Path.GetFileName(fileName);
                     AddDockedControl(p);
                     paramEditors.Add(p);
@@ -1596,53 +1596,53 @@ namespace SmashForge
                     }
 
                 }
-                else if (f.readString(4, 4) == "PATH")
+                else if (f.ReadString(4, 4) == "PATH")
                 {
                     Runtime.TargetPath = new PathBin(fileName);
                 }
-                else if (f.readString(0, 4) == "LIGH")
+                else if (f.ReadString(0, 4) == "LIGH")
                 {
                     Runtime.TargetLigh = new LIGH.LighBin(fileName);
                 }
-                else if (f.readString(6, 4) == "LVD1")
+                else if (f.ReadString(6, 4) == "LVD1")
                 {
-                    if (Runtime.TargetLVD == null)
-                        Runtime.TargetLVD = new LVD(fileName);
+                    if (Runtime.TargetLvd == null)
+                        Runtime.TargetLvd = new LVD(fileName);
                     else
-                        Runtime.TargetLVD.Read(fileName);
-                    lvdList.fillList();
+                        Runtime.TargetLvd.Read(fileName);
+                    lvdList.FillList();
                 }
-                else if (f.readString(0, 4) == "ATKD")
+                else if (f.ReadString(0, 4) == "ATKD")
                 {
-                    AddDockedControl(new ATKD_Editor(fileName));
+                    AddDockedControl(new AtkdEditor(fileName));
                 }
                 else
                 {
-                    Runtime.TargetCMR0 = new CMR0();
-                    Runtime.TargetCMR0.read(new FileData(fileName));
+                    Runtime.TargetCmr0 = new CMR0();
+                    Runtime.TargetCmr0.read(new FileData(fileName));
                 }
             }
 
             if (fileName.EndsWith("area_light.xmb"))
             {
-                LightTools.CreateAreaLightsFromXMB(new XMBFile(fileName));
+                LightTools.CreateAreaLightsFromXmb(new XMBFile(fileName));
             }
 
             if (fileName.EndsWith("lightmap.xmb"))
             {
-                LightTools.CreateLightMapsFromXMB(new XMBFile(fileName));
+                LightTools.CreateLightMapsFromXmb(new XMBFile(fileName));
             }
 
             if (fileName.EndsWith(".moi"))
             {
                 MOI moi = new MOI(fileName);
-                AddDockedControl(new MOIEditor(moi) { ShowHint = DockState.DockRight });
+                AddDockedControl(new MoiEditor(moi) { ShowHint = DockState.DockRight });
             }
 
             if (fileName.EndsWith(".drp"))
             {
                 DRP drp = new DRP(fileName);
-                DRPViewer v = new DRPViewer();
+                DrpViewer v = new DrpViewer();
                 v.treeView1.Nodes.Add(drp);
                 v.Show();
             }
@@ -1656,14 +1656,14 @@ namespace SmashForge
             // Don't want to mess up the project tree if we
             // just set it up already
             if (!fileName.EndsWith(".wrkspc"))
-                project.fillTree();
+                project.FillTree();
         }
 
         public static byte[] GetUncompressedSzsSbfresData(string fileName)
         {
             FileData f = new FileData(fileName);
-            byte[] fileBytes = f.getSection(0, f.eof());
-            string magic = f.readString(0, 4);
+            byte[] fileBytes = f.GetSection(0, f.Eof());
+            string magic = f.ReadString(0, 4);
 
             if (magic == "Yaz0") //YAZO compressed
                 fileBytes = EveryFileExplorer.YAZ0.Decompress(fileName);
@@ -1837,7 +1837,7 @@ namespace SmashForge
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     Runtime.ParamManager = new CharacterParamManager(ofd.FileName);
-                    hurtboxList.refresh();
+                    hurtboxList.Refresh();
                 }
             }
         }
@@ -1845,7 +1845,7 @@ namespace SmashForge
         private void clearParamsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Runtime.ParamManager.Reset();
-            hurtboxList.refresh();
+            hurtboxList.Refresh();
         }
 
         private void openDATTextureEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1938,7 +1938,7 @@ namespace SmashForge
         private void nutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NUT nut = new NUT();
-            NUTEditor editor = new NUTEditor(nut);
+            NutEditor editor = new NutEditor(nut);
             AddDockedControl(editor);
         }
 
@@ -2054,11 +2054,11 @@ namespace SmashForge
         private void HackyWiiUtoPs3Nut(FileData data)
         {
             NUT n = new NUT();
-            data.Endian = Endianness.Big;
-            data.seek(0x6);
-            int count = data.readUShort();
+            data.endian = Endianness.Big;
+            data.Seek(0x6);
+            int count = data.ReadUShort();
 
-            data.seek(0x10);
+            data.Seek(0x10);
 
             int padfix = 0;
             int headerSize = 0;
@@ -2067,64 +2067,64 @@ namespace SmashForge
             {
                 if (i > 0)
                     padfix += headerSize;
-                data.skip(4); //int fullsize = d.readInt();
-                data.skip(4);
-                int size = data.readInt();
+                data.Skip(4); //int fullsize = d.readInt();
+                data.Skip(4);
+                int size = data.ReadInt();
                 int ddsSize = size;
-                headerSize = data.readUShort();
-                data.skip(5);
-                int typet = data.readByte();
-                int width = data.readUShort();
-                int height = data.readUShort();
+                headerSize = data.ReadUShort();
+                data.Skip(5);
+                int typet = data.ReadByte();
+                int width = data.ReadUShort();
+                int height = data.ReadUShort();
 
-                data.skip(8);// mipmaps and padding
+                data.Skip(8);// mipmaps and padding
 
-                int offset1 = data.readInt() + 16;
-                int offset2 = data.readInt() + 16;
-                int offset3 = data.readInt() + 16;
-                data.skip(4);
+                int offset1 = data.ReadInt() + 16;
+                int offset2 = data.ReadInt() + 16;
+                int offset3 = data.ReadInt() + 16;
+                data.Skip(4);
                 if (i == 0)
                 {
                     offheader = offset3;
                 }
                 if (headerSize == 0x90)
                 {
-                    ddsSize = data.readInt();
-                    data.skip(0x3C);
+                    ddsSize = data.ReadInt();
+                    data.Skip(0x3C);
                 }
                 if (headerSize == 0x80)
                 {
-                    ddsSize = data.readInt();
-                    data.skip(44);
+                    ddsSize = data.ReadInt();
+                    data.Skip(44);
                 }
                 if (headerSize == 0x70)
                 {
-                    ddsSize = data.readInt();
-                    data.skip(28);
+                    ddsSize = data.ReadInt();
+                    data.Skip(28);
                 }
                 if (headerSize == 0x60)
                 {
-                    ddsSize = data.readInt();
-                    data.skip(12);
+                    ddsSize = data.ReadInt();
+                    data.Skip(12);
                 }
 
-                data.skip(16);
-                data.skip(4);
-                data.skip(4);
-                int fileNum = data.readInt();
-                data.skip(4);
+                data.Skip(16);
+                data.Skip(4);
+                data.Skip(4);
+                int fileNum = data.ReadInt();
+                data.Skip(4);
                 {
                     {
                         FileOutput o = new FileOutput();
                         String mem = "4766783200000020000000070000000100000002000000000000000000000000424C4B7B0000002000000001000000000000000B0000009C0000000000000000";
-                        o.writeHex(mem);
+                        o.WriteHex(mem);
 
-                        int t = data.pos();
-                        data.seek(offheader);
+                        int t = data.Pos();
+                        data.Seek(offheader);
                         for (int k = 0; k < 0x80; k++)
-                            o.writeByte(data.readByte());
+                            o.WriteByte(data.ReadByte());
                         offheader += 0x80;
-                        data.seek(t);
+                        data.Seek(t);
                         if (i > 0)
                         {
                             //offset1 += padfix;
@@ -2132,19 +2132,19 @@ namespace SmashForge
                         }
 
                         mem = "00000001000102031FF87F21C40003FF068880000000000A80000010424C4B7B0000002000000001000000000000000C000800000000000000000000";
-                        o.writeHex(mem);
+                        o.WriteHex(mem);
 
                         Console.WriteLine(fileNum.ToString("x"));
-                        o.writeBytes(data.getSection(offset1 + padfix, ddsSize));
+                        o.WriteBytes(data.GetSection(offset1 + padfix, ddsSize));
 
                         mem = "424C4B7B00000020000000010000000000000001000000000000000000000000";
-                        o.writeHex(mem);
+                        o.WriteHex(mem);
 
-                        o.Endian = Endianness.Big;
-                        o.writeIntAt(1, 0x50);
-                        o.writeIntAt(ddsSize, 0xF0);
+                        o.endian = Endianness.Big;
+                        o.WriteIntAt(1, 0x50);
+                        o.WriteIntAt(ddsSize, 0xF0);
 
-                        o.save("TexConv/temp.gtx");
+                        o.Save("TexConv/temp.gtx");
 
                         String command = " -i temp.gtx -o temp.dds";
                         ProcessStartInfo cmdsi = new ProcessStartInfo();
@@ -2155,15 +2155,15 @@ namespace SmashForge
                         Process cmd = Process.Start(cmdsi);
                         cmd.WaitForExit();
 
-                        NutTexture tex = new DDS(new FileData("TexConv/temp.dds")).ToNutTexture();
+                        NutTexture tex = new Dds(new FileData("TexConv/temp.dds")).ToNutTexture();
                         tex.HashId = fileNum;
                         n.glTexByHashId.Add(fileNum, NUT.CreateTexture2D(tex));
                         n.Nodes.Add(tex);
                     }
                 }
             }
-            NUTEditor editor = new NUTEditor();
-            editor.SelectNUT(n);
+            NutEditor editor = new NutEditor();
+            editor.SelectNut(n);
             AddDockedControl(editor);
         }
 
@@ -2250,7 +2250,7 @@ namespace SmashForge
 
             FileData t = new FileData(data);
 
-            var szsFiles = new SARC().unpackRam(t.getSection(0, t.eof()));
+            var szsFiles = new SARC().unpackRam(t.GetSection(0, t.Eof()));
 
             foreach (var s in szsFiles.Keys)
             {

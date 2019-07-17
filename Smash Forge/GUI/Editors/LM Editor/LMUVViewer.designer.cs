@@ -1,6 +1,6 @@
 ﻿namespace SmashForge.Gui.Menus
 {
-    partial class LMUVViewer
+    partial class LmuvViewer
     {
         /// <summary>
         /// Required designer variable.
@@ -51,7 +51,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 562);
             this.Controls.Add(this.glControl1);
-            this.Name = "LMUVViewer";
+            this.Name = "LmuvViewer";
             this.Text = "LMUVViewer";
             this.ResumeLayout(false);
 
