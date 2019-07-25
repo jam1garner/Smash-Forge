@@ -1500,7 +1500,7 @@ namespace SmashForge
                     // load vbn
                     modelContainer.VBN = daeImportSettings.getVBN();
 
-                    Collada.DaetoNud(fileName, modelContainer, daeImportSettings.importTexCB.Checked);
+                    Collada.DaetoNudAsync(fileName, modelContainer, daeImportSettings.importTexCB.Checked);
                     if (modelContainer.NUD == null)
                         return;
 

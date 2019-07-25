@@ -890,7 +890,7 @@ namespace SmashForge
             }
         }
 
-        private void importFromDAEToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void importFromDAEToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!(filesTreeView.SelectedNode is ModelContainer))
                 return;
@@ -916,7 +916,7 @@ namespace SmashForge
                         {
                             con.VBN = daeImport.getVBN();
 
-                            Collada.DaetoNud(ofd.FileName, con, daeImport.importTexCB.Checked);
+                            Collada.DaetoNudAsync(ofd.FileName, con, daeImport.importTexCB.Checked);
 
                             // apply settings
                             if (con.NUD != null)

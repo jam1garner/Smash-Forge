@@ -98,7 +98,7 @@ namespace SmashForge
                             // load vbn
                             con.VBN = skeleton;
 
-                            Collada.DaetoNud(f, con, daeImport.importTexCB.Checked);
+                            Collada.DaetoNudAsync(f, con, daeImport.importTexCB.Checked);
 
                             if (con.NUD != null)
                             {
