@@ -182,9 +182,8 @@ namespace SmashForge
             {
                 for (int i = 0; i < vertices.Count; i++)
                 {
-                    Vertex v = vertices[i];
-                    Vector3 newTan = tanArray[i];
-                    Vector3 newBitan = bitanArray[i];
+                    vertices[i].tan = new Vector4(tanArray[i], 1);
+                    vertices[i].bitan = new Vector4(bitanArray[i], 1);
                 }
             }
 
