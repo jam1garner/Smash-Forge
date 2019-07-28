@@ -1,5 +1,5 @@
 ﻿using ColladaSharp.Models;
-using OpenTK;
+using ColladaSharp.Transforms;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -9,8 +9,6 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-using ColladaSharp.Transforms;
-using Matrix4 = OpenTK.Matrix4;
 
 namespace SmashForge
 {
@@ -31,7 +29,7 @@ namespace SmashForge
             var importOptions = new ColladaSharp.ColladaImportOptions
             {
                 // TODO: Models are too small?
-                InitialTransform = new TRSTransform(Vec3.Zero, Quat.FromAxisAngleDeg(new Vec3(1, 0, 0), 90), new Vec3(39))
+                InitialTransform = new TRSTransform(Vec3.Zero, Quat.FromAxisAngleDeg(new Vec3(1, 0, 0), 90), new Vec3(1))
             };
 
             var collection = await ColladaSharp.Collada.ImportAsync(fileName, importOptions, new Progress<float>(), CancellationToken.None);
@@ -99,9 +97,9 @@ namespace SmashForge
         private static Nud.Vertex GetNudVertex(Vertex vertex, VBN vbn)
         {
             // TODO: Orientation?
-            var position = new Vector4(vertex.Position.X, vertex.Position.Y, vertex.Position.Z, 1);
-            var normal = new Vector4(vertex.Normal.X, vertex.Normal.Y, vertex.Normal.Z, 1);
-            var texCoord = new Vector2(vertex.TexCoord.X, vertex.TexCoord.Y);
+            var position = new OpenTK.Vector4(vertex.Position.X, vertex.Position.Y, vertex.Position.Z, 1);
+            var normal = new OpenTK.Vector4(vertex.Normal.X, vertex.Normal.Y, vertex.Normal.Z, 1);
+            var texCoord = new OpenTK.Vector2(vertex.TexCoord.X, vertex.TexCoord.Y);
 
             var boneIds = new List<int>();
             var boneWeights = new List<float>();
@@ -130,7 +128,7 @@ namespace SmashForge
             {
                 pos = position.Xyz,
                 nrm = normal.Xyz.Normalized(),
-                uv = new List<Vector2> { texCoord },
+                uv = new List<OpenTK.Vector2> { texCoord },
                 boneIds = boneIds,
                 boneWeights = boneWeights
             };
@@ -293,20 +291,20 @@ namespace SmashForge
             return v;
         }
 
-        private static void TransformVertexNormalAndPosition(Collada dae, Dictionary<string, Matrix4> bindMatrixBySkinSource, ColladaGeometry geom, Matrix4 nodeTrans, Nud.Vertex v)
+        private static void TransformVertexNormalAndPosition(Collada dae, Dictionary<string, OpenTK.Matrix4> bindMatrixBySkinSource, ColladaGeometry geom, OpenTK.Matrix4 nodeTrans, Nud.Vertex v)
         {
             // Transform some vectors.
-            v.pos = Vector3.TransformPosition(v.pos, nodeTrans);
+            v.pos = OpenTK.Vector3.TransformPosition(v.pos, nodeTrans);
             if (v.nrm != null)
-                v.nrm = Vector3.TransformNormal(v.nrm, nodeTrans);
+                v.nrm = OpenTK.Vector3.TransformNormal(v.nrm, nodeTrans);
 
             if (dae.library_controllers.Count > 0)
             {
                 if (bindMatrixBySkinSource.ContainsKey("#" + geom.id))
                 {
-                    v.pos = Vector3.TransformPosition(v.pos, bindMatrixBySkinSource["#" + geom.id]);
+                    v.pos = OpenTK.Vector3.TransformPosition(v.pos, bindMatrixBySkinSource["#" + geom.id]);
                     if (v.nrm != null)
-                        v.nrm = Vector3.TransformNormal(v.nrm, bindMatrixBySkinSource["#" + geom.id]);
+                        v.nrm = OpenTK.Vector3.TransformNormal(v.nrm, bindMatrixBySkinSource["#" + geom.id]);
                 }
             }
         }
@@ -340,7 +338,7 @@ namespace SmashForge
 
             // controllers
             Dictionary<string, List<BFRES.Vertex>> vertices = new Dictionary<string, List<BFRES.Vertex>>();
-            Dictionary<string, Matrix4> bindMatrix = new Dictionary<string, Matrix4>();
+            Dictionary<string, OpenTK.Matrix4> bindMatrix = new Dictionary<string, OpenTK.Matrix4>();
             foreach (ColladaController control in dae.library_controllers)
             {
                 ColladaSkin skin = control.skin;
@@ -432,7 +430,7 @@ namespace SmashForge
                                 sources.Add("#" + s.id, s);
                             }
 
-                            Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
+                            OpenTK.Matrix4 nodeTrans = OpenTK.Matrix4.CreateScale(1, 1, 1);
                             ColladaNode cnode = null;
                             foreach (ColladaNode node in dae.scene.nodes)
                             {
@@ -460,48 +458,6 @@ namespace SmashForge
                                         string matId = null;
 
                                         dae.scene.MaterialIds.TryGetValue(colladaPoly.materialid, out matId);
-
-                                        /*        if (matId != null && matId[0] == '#')
-                                                    materials.TryGetValue(matId.Substring(1, matId.Length - 1), out mat);
-                                                if (mat != null && mat.effecturl[0] == '#')
-                                                    effects.TryGetValue(mat.effecturl.Substring(1, mat.effecturl.Length - 1), out eff);
-                                                if (eff != null && eff.source[0] == '#')
-                                                    images.TryGetValue(eff.source.Substring(1, eff.source.Length - 1), out img);
-                                                if (img != null)
-                                                    existingTextures.TryGetValue(img.initref, out tempTex);
-
-                                                if (texturemap.ContainsKey(img.initref))
-                                                {
-                                                    tempTex = texturemap[img.initref];
-                                                }
-                                                else
-                                                if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))))
-                                                {
-                                                    NutTexture tex = null;
-                                                    if (img.initref.ToLower().EndsWith(".dds"))
-                                                    {
-                                                        DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))));
-                                                        tex = dds.toNUT_Texture();
-                                                    }
-                                                    if (img.initref.ToLower().EndsWith(".png"))
-                                                    {
-                                                        tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref)), 1);
-                                                    }
-                                                    if (tex == null)
-                                                        continue;
-                                                    texturemap.Add(img.initref, tex);
-                                                    tex.HASHID = 0x40FFFF00;
-                                                    while (NUT.texIdUsed(tex.HASHID))
-                                                        tex.HASHID++;
-                                                    thisNut.Nodes.Add(tex);
-                                                    thisNut.draw.Add(tex.HASHID, NUT.loadImage(tex));
-                                                    existingTextures.Add(img.initref, tex);
-                                                    tempTex = tex;
-                                                }
-                                                if (tempTex != null)
-                                                {
-                                                    npoly.materials[0].textures[0].hash = tempTex.HASHID;
-                                                }*/
                                     }
                                 }
 
@@ -562,17 +518,17 @@ namespace SmashForge
                                         BFRESReadSemantic(input, v, colladaPoly.p[(maxoffset * i) + input.offset], sources);
                                 }
 
-                                v.pos = Vector3.TransformPosition(v.pos, nodeTrans);
+                                v.pos = OpenTK.Vector3.TransformPosition(v.pos, nodeTrans);
                                 if (v.nrm != null)
-                                    v.nrm = Vector3.TransformNormal(v.nrm, nodeTrans);
+                                    v.nrm = OpenTK.Vector3.TransformNormal(v.nrm, nodeTrans);
 
                                 if (dae.library_controllers.Count > 0)
                                 {
                                     if (!bindMatrix.ContainsKey("#" + geom.id))
                                         continue;
-                                    v.pos = Vector3.TransformPosition(v.pos, bindMatrix["#" + geom.id]);
+                                    v.pos = OpenTK.Vector3.TransformPosition(v.pos, bindMatrix["#" + geom.id]);
                                     if (v.nrm != null)
-                                        v.nrm = Vector3.TransformNormal(v.nrm, bindMatrix["#" + geom.id]);
+                                        v.nrm = OpenTK.Vector3.TransformNormal(v.nrm, bindMatrix["#" + geom.id]);
                                 }
                             }
                             Console.WriteLine(nmesh.vertices.Count);
@@ -580,128 +536,6 @@ namespace SmashForge
                     }
                 }
 
-
-                //For adding
-                /*    foreach (ColladaGeometry geom in dae.library_geometries)
-                    {
-                        ColladaMesh mesh = geom.mesh;
-                        ColladaPolygons colladaPoly = mesh.polygons[0];
-
-                            // first create vertices?
-
-                                            Dictionary<string, ColladaSource> sources = new Dictionary<string, ColladaSource>();
-                                            foreach (ColladaSource s in mesh.sources)
-                                            {
-                                                sources.Add("#" + s.id, s);
-                                            }
-
-                                            BFRES.Mesh nmesh = new BFRES.Mesh();
-                                            Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
-                                            ColladaNode cnode = null;
-                                            foreach (ColladaNode node in dae.scene.nodes)
-                                            {
-                                                if (node.geom_id.Equals(geom.id))
-                                                {
-                                                    cnode = node;
-                                                    nodeTrans = node.mat;
-                                                    break;
-                                                }
-                                            }
-
-                                            geometries.Add("#" + geom.id, nmesh);
-                                            nmodel.Nodes.Add(nmesh);
-                                            nmesh.Text = geom.name;
-                                            for (int i = 0; i < colladaPoly.p.Length; i++)
-                                            {
-                                                if (importTexture)
-                                                {
-                                                    if (colladaPoly.type == ColladaPrimitiveType.triangles)
-                                                    {
-                                                        NutTexture tempTex = null;
-                                                        ColladaMaterials mat = null;
-                                                        ColladaEffects eff = null;
-                                                        ColladaImages img = null;
-                                                        string matId = null;
-
-                                                        dae.scene.MaterialIds.TryGetValue(colladaPoly.materialid, out matId);
-
-                                                    }
-                                                }
-
-                                                BFRES.Vertex v = new BFRES.Vertex();
-                                                int maxoffset = 0;
-                                                foreach (ColladaInput input in colladaPoly.inputs)
-                                                    if (input.offset > maxoffset) maxoffset = input.offset;
-                                                maxoffset += 1;
-                                                if (i * maxoffset >= colladaPoly.p.Length) break;
-                                                foreach (ColladaInput input in colladaPoly.inputs)
-                                                {
-                                                    if (input.semantic == SemanticType.POSITION)
-                                                    {
-                                                        if (dae.library_controllers.Count > 0)
-                                                        {
-                                                            if (vertices.ContainsKey("#" + geom.id))
-                                                            {
-                                                                v.boneIds.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
-                                                                v.boneWeights.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            v.boneIds.Add(-1);
-                                                            v.boneWeights.Add(1);
-                                                        }
-                                                    }
-                                                    if (input.semantic == SemanticType.VERTEX)
-                                                    {
-                                                        v = new BFRES.Vertex();
-
-                                                        nmesh.vertices.Add(v);
-
-                                                        BFRES.Mesh.LOD_Mesh lod = new BFRES.Mesh.LOD_Mesh();
-                                                        lod.faces.Add(nmesh.vertices.IndexOf(v));
-                                                        nmesh.lodMeshes.Add(lod);
-
-                                                        foreach (ColladaInput vinput in mesh.vertices.inputs)
-                                                        {
-                                                            if (vinput.semantic == SemanticType.POSITION)
-                                                            {
-                                                                if (dae.library_controllers.Count > 0)
-                                                                {
-                                                                    if (vertices.ContainsKey("#" + geom.id))
-                                                                    {
-                                                                        v.boneIds.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
-                                                                        v.boneWeights.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
-                                                                    }
-                                                                }
-                                                                else
-                                                                {
-                                                                    v.boneIds.Add(-1);
-                                                                    v.boneWeights.Add(1);
-                                                                }
-                                                            }
-                                                            BFRESReadSemantic(vinput, v, colladaPoly.p[maxoffset * i], sources);
-                                                        }
-                                                    }
-                                                    else
-                                                       BFRESReadSemantic(input, v, colladaPoly.p[(maxoffset * i) + input.offset], sources);
-                                                }
-
-                                                v.pos = Vector3.TransformPosition(v.pos, nodeTrans);
-                                                if (v.nrm != null)
-                                                    v.nrm = Vector3.TransformNormal(v.nrm, nodeTrans);
-
-                                                if (dae.library_controllers.Count > 0)
-                                                {
-                                                    if (!bindMatrix.ContainsKey("#" + geom.id))
-                                                        continue;
-                                                    v.pos = Vector3.TransformPosition(v.pos, bindMatrix["#" + geom.id]);
-                                                    if (v.nrm != null)
-                                                        v.nrm = Vector3.TransformNormal(v.nrm, bindMatrix["#" + geom.id]);
-                                                }
-                                            }*/
-
-                // AddMaterialsForEachUvChannel(npoly);
                 b.UpdateRenderMeshes();
             }
         }
@@ -875,7 +709,7 @@ namespace SmashForge
                     targetVert.nrm.Z = float.Parse(colladaSource.data[startIndex + 2]);
                     break;
                 case SemanticType.TEXCOORD:
-                    Vector2 tx = new Vector2();
+                    OpenTK.Vector2 tx = new OpenTK.Vector2();
                     tx.X = float.Parse(colladaSource.data[startIndex + 0]);
                     tx.Y = float.Parse(colladaSource.data[startIndex + 1]);
                     targetVert.uv.Add(tx);
@@ -906,7 +740,7 @@ namespace SmashForge
                     v.nrm.Z = float.Parse(sources[input.source].data[p * 3 + 2]);
                     break;
                 case SemanticType.TEXCOORD:
-                    Vector2 tx = new Vector2();
+                    OpenTK.Vector2 tx = new OpenTK.Vector2();
                     tx.X = float.Parse(sources[input.source].data[p * 2 + 0]);
                     tx.Y = float.Parse(sources[input.source].data[p * 2 + 1]);
                     v.uv0 = tx;
@@ -1100,7 +934,7 @@ namespace SmashForge
                     ColladaSkin skin = new ColladaSkin();
                     control.skin = skin;
                     skin.source = "#" + geom.id;
-                    skin.mat = Matrix4.CreateScale(1, 1, 1);
+                    skin.mat = OpenTK.Matrix4.CreateScale(1, 1, 1);
                     skin.joints = new ColladaJoints();
 
                     ColladaVertexWeights weights = new ColladaVertexWeights();
@@ -1226,10 +1060,10 @@ namespace SmashForge
             node.name = b.Text;
             node.id = node.name + "_id";
             node.type = "JOINT";
-            node.pos = new Vector3(b.position[0], b.position[1], b.position[2]);
-            node.scale = new Vector3(b.scale[0], b.scale[1], b.scale[2]);
-            node.rot = new Vector3(b.rotation[0], b.rotation[1], b.rotation[2]);
-            node.mat = Matrix4.CreateScale(node.scale) * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(node.rot.Z, node.rot.Y, node.rot.X)) * Matrix4.CreateTranslation(node.pos);
+            node.pos = new OpenTK.Vector3(b.position[0], b.position[1], b.position[2]);
+            node.scale = new OpenTK.Vector3(b.scale[0], b.scale[1], b.scale[2]);
+            node.rot = new OpenTK.Vector3(b.rotation[0], b.rotation[1], b.rotation[2]);
+            node.mat = OpenTK.Matrix4.CreateScale(node.scale) * OpenTK.Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(node.rot.Z, node.rot.Y, node.rot.X)) * OpenTK.Matrix4.CreateTranslation(node.pos);
             foreach (var bone in b.GetChildren())
                 SaveBoneNodes(dae, bone, vbn, node);
         }
@@ -1428,7 +1262,7 @@ namespace SmashForge
                 ColladaSkin skin = new ColladaSkin();
                 control.skin = skin;
                 skin.source = "#" + geom.id;
-                skin.mat = Matrix4.CreateScale(1, 1, 1);
+                skin.mat = OpenTK.Matrix4.CreateScale(1, 1, 1);
                 skin.joints = new ColladaJoints();
 
                 ColladaVertexWeights weights = new ColladaVertexWeights();
@@ -1698,7 +1532,7 @@ namespace SmashForge
                     ColladaSkin skin = new ColladaSkin();
                     control.skin = skin;
                     skin.source = "#" + geom.id;
-                    skin.mat = Matrix4.CreateScale(1, 1, 1);
+                    skin.mat = OpenTK.Matrix4.CreateScale(1, 1, 1);
                     skin.joints = new ColladaJoints();
 
                     ColladaVertexWeights weights = new ColladaVertexWeights();
@@ -2586,7 +2420,7 @@ namespace SmashForge
         public class ColladaSkin
         {
             public string source;
-            public Matrix4 mat = Matrix4.CreateScale(1, 1, 1);
+            public OpenTK.Matrix4 mat = OpenTK.Matrix4.CreateScale(1, 1, 1);
             public List<ColladaSource> sources = new List<ColladaSource>();
             public ColladaJoints joints = new ColladaJoints();
             public ColladaVertexWeights weights = new ColladaVertexWeights();
@@ -2795,10 +2629,10 @@ namespace SmashForge
             public string id, name, type = "NODE", geomid, instance = "";
             public List<ColladaNode> children = new List<ColladaNode>();
 
-            public Matrix4 mat = Matrix4.CreateScale(1, 1, 1);
-            public Vector3 pos = new Vector3();
-            public Vector3 scale = new Vector3();
-            public Vector3 rot = new Vector3();
+            public OpenTK.Matrix4 mat = OpenTK.Matrix4.CreateScale(1, 1, 1);
+            public OpenTK.Vector3 pos = new OpenTK.Vector3();
+            public OpenTK.Vector3 scale = new OpenTK.Vector3();
+            public OpenTK.Vector3 rot = new OpenTK.Vector3();
 
             // material
             public string materialSymbol, materialTarget;
@@ -2826,13 +2660,13 @@ namespace SmashForge
                     else if (node.Name.Equals("matrix"))
                     {
                         string[] data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
-                        mat = new Matrix4();
+                        mat = new OpenTK.Matrix4();
                         mat.M11 = float.Parse(data[0]); mat.M12 = float.Parse(data[1]); mat.M13 = float.Parse(data[2]); mat.M14 = float.Parse(data[3]);
                         mat.M21 = float.Parse(data[4]); mat.M22 = float.Parse(data[5]); mat.M23 = float.Parse(data[6]); mat.M24 = float.Parse(data[7]);
                         mat.M31 = float.Parse(data[8]); mat.M32 = float.Parse(data[9]); mat.M33 = float.Parse(data[10]); mat.M34 = float.Parse(data[11]);
                         mat.M41 = float.Parse(data[12]); mat.M42 = float.Parse(data[13]); mat.M43 = float.Parse(data[14]); mat.M44 = float.Parse(data[15]);
 
-                        pos = new Vector3(mat.M14, mat.M24, mat.M34);
+                        pos = new OpenTK.Vector3(mat.M14, mat.M24, mat.M34);
                         scale = mat.ExtractScale();
 
                         mat.ClearScale();
@@ -2876,17 +2710,17 @@ namespace SmashForge
                     else if (node.Name.Equals("translate"))
                     {
                         string[] data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
-                        pos = new Vector3(float.Parse(data[0]), float.Parse(data[1]), float.Parse(data[2]));
+                        pos = new OpenTK.Vector3(float.Parse(data[0]), float.Parse(data[1]), float.Parse(data[2]));
                     }
                     else if (node.Name.Equals("scale"))
                     {
                         string[] data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
-                        scale = new Vector3(float.Parse(data[0]), float.Parse(data[1]), float.Parse(data[2]));
+                        scale = new OpenTK.Vector3(float.Parse(data[0]), float.Parse(data[1]), float.Parse(data[2]));
                     }
                     else if (node.Name.Equals("rotate"))
                     {
                         string[] data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
-                        rot = new Vector3(float.Parse(data[0]), float.Parse(data[1]), float.Parse(data[2]));
+                        rot = new OpenTK.Vector3(float.Parse(data[0]), float.Parse(data[1]), float.Parse(data[2]));
                     }
                 }
             }
