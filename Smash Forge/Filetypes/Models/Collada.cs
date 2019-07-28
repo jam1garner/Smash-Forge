@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Globalization;
-using System.Xml;
-using System.Drawing;
-using System.IO;
+﻿using ColladaSharp.Models;
 using OpenTK;
-using System.Windows.Forms;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
-using ColladaSharp.Models;
+using System.Windows.Forms;
+using System.Xml;
+using ColladaSharp.Transforms;
+using Matrix4 = OpenTK.Matrix4;
 
 namespace SmashForge
 {
@@ -26,8 +27,14 @@ namespace SmashForge
 
         public static async void DaetoNudAsync(string fileName, ModelContainer container, bool importTexture = false)
         {
-            var collection = await ColladaSharp.Collada.ImportAsync(fileName, new ColladaSharp.ColladaImportOptions(),
-                new Progress<float>(), CancellationToken.None);
+            // TODO: Show progress
+            var importOptions = new ColladaSharp.ColladaImportOptions
+            {
+                // TODO: Models are too small?
+                InitialTransform = new TRSTransform(Vec3.Zero, Quat.FromAxisAngleDeg(new Vec3(1, 0, 0), 90), new Vec3(39))
+            };
+
+            var collection = await ColladaSharp.Collada.ImportAsync(fileName, importOptions, new Progress<float>(), CancellationToken.None);
 
             Nud nud = new Nud();
             NUT nut = new NUT();
@@ -105,12 +112,16 @@ namespace SmashForge
 
                 foreach (var influence in vertex.Influence.Weights)
                 {
-                    // TODO: null influences?
                     if (influence == null)
-                        continue;
-                    
-                    boneIds.Add(vbn.boneIndex(influence.Bone));
-                    boneWeights.Add(influence.Weight);
+                    {
+                        boneIds.Add(-1);
+                        boneWeights.Add(0);
+                    }
+                    else
+                    {
+                        boneIds.Add(vbn.boneIndex(influence.Bone));
+                        boneWeights.Add(influence.Weight);
+                    }
                 }
             }
 
