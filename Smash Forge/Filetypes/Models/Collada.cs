@@ -9,6 +9,7 @@ using OpenTK;
 using System.Windows.Forms;
 using System.Threading;
 using System.Threading.Tasks;
+using ColladaSharp.Models;
 
 namespace SmashForge
 {
@@ -31,34 +32,22 @@ namespace SmashForge
             Nud nud = new Nud();
             NUT nut = new NUT();
 
-            // TODO: Create geometry
-            var colladaVertices = new List<Nud.Vertex>();
+            // TODO: SubMesh names are always unique?
+            var meshByName = new Dictionary<string, Nud.Mesh>();
 
             foreach (var subMesh in collection.Scenes[0].Model.Children)
             {
-                for (int i = 0; i < subMesh.Primitives.Triangles.Count; i++)
-                {
-                    var face = subMesh.Primitives.GetFace(i);
-                    colladaVertices.Add(GetVertex(face.Vertex0));
-                    colladaVertices.Add(GetVertex(face.Vertex1));
-                    colladaVertices.Add(GetVertex(face.Vertex2));
-                }
+                // TODO: Create vbn if not present.
+                var poly = CreatePolygonFromSubMesh(subMesh, container.VBN);
+                if (!meshByName.ContainsKey(subMesh.Name))
+                    meshByName[subMesh.Name] = new Nud.Mesh { Text = subMesh.Name };
+
+                meshByName[subMesh.Name].Nodes.Add(poly);
             }
 
-            // TODO: Read the existing indices.
-            var colladaVertexIndices = SFGenericModel.Utils.IndexUtils.GenerateIndices(colladaVertices.Count);
-
-            var poly = new Nud.Polygon
-            {
-                vertices = colladaVertices,
-                vertexIndices = colladaVertexIndices,
-                materials = new List<Nud.Material>() { new Nud.Material() }
-            };
-
-            var mesh = new Nud.Mesh { Name = "mesh1" };
-            mesh.Nodes.Add(poly);
-            nud.Nodes.Add(mesh);
-
+            // TODO: How should mesh order be preserved?
+            foreach (var mesh in meshByName.Values)
+                nud.Nodes.Add(mesh);
 
             // Modify model container.
             // The texture IDs won't be correct at this point.
@@ -70,17 +59,69 @@ namespace SmashForge
             // TODO: Create bones
         }
 
-        private static Nud.Vertex GetVertex(ColladaSharp.Models.Vertex vertex)
+        private static Nud.Polygon CreatePolygonFromSubMesh(SubMesh subMesh, VBN vbn)
+        {
+            var colladaVertices = new List<Nud.Vertex>();
+            for (int i = 0; i < subMesh.Primitives.Triangles.Count; i++)
+            {
+                var triangle = subMesh.Primitives.Triangles[i];
+                var face = subMesh.Primitives.GetFace(i);
+
+                // HACK: Workaround for influences not being initialized.
+                face.Vertex0.Influence = subMesh.Primitives.FacePoints[triangle.Point0].GetInfluence();
+                face.Vertex1.Influence = subMesh.Primitives.FacePoints[triangle.Point1].GetInfluence();
+                face.Vertex2.Influence = subMesh.Primitives.FacePoints[triangle.Point2].GetInfluence();
+
+                colladaVertices.Add(GetNudVertex(face.Vertex0, vbn));
+                colladaVertices.Add(GetNudVertex(face.Vertex1, vbn));
+                colladaVertices.Add(GetNudVertex(face.Vertex2, vbn));
+            }
+
+            // TODO: Optimized indices?
+            var colladaVertexIndices = SFGenericModel.Utils.IndexUtils.GenerateIndices(colladaVertices.Count);
+
+            var poly = new Nud.Polygon
+            {
+                vertices = colladaVertices,
+                vertexIndices = colladaVertexIndices,
+                materials = new List<Nud.Material> { new Nud.Material() }
+            };
+            return poly;
+        }
+
+        private static Nud.Vertex GetNudVertex(Vertex vertex, VBN vbn)
         {
             // TODO: Orientation?
-            var position = new Vector4(vertex.Position.X, vertex.Position.Y, vertex.Position.Z, 1) * Matrix4.CreateRotationX(90);
-            var normal = new Vector4(vertex.Normal.X, vertex.Normal.Y, vertex.Normal.Z, 1) * Matrix4.CreateRotationX(90);
+            var position = new Vector4(vertex.Position.X, vertex.Position.Y, vertex.Position.Z, 1);
+            var normal = new Vector4(vertex.Normal.X, vertex.Normal.Y, vertex.Normal.Z, 1);
             var texCoord = new Vector2(vertex.TexCoord.X, vertex.TexCoord.Y);
+
+            var boneIds = new List<int>();
+            var boneWeights = new List<float>();
+            if (vertex.Influence != null)
+            {
+                if (vertex.Influence.WeightCount > 4)
+                    throw new NotSupportedException("More than 4 weights detected.");
+
+                foreach (var influence in vertex.Influence.Weights)
+                {
+                    // TODO: null influences?
+                    if (influence == null)
+                        continue;
+                    
+                    boneIds.Add(vbn.boneIndex(influence.Bone));
+                    boneWeights.Add(influence.Weight);
+                }
+            }
+
+            // TODO: Do normals always need to be normalized?
             return new Nud.Vertex
             {
                 pos = position.Xyz,
-                nrm = normal.Xyz,
-                uv = new List<Vector2> { texCoord }
+                nrm = normal.Xyz.Normalized(),
+                uv = new List<Vector2> { texCoord },
+                boneIds = boneIds,
+                boneWeights = boneWeights
             };
         }
 
