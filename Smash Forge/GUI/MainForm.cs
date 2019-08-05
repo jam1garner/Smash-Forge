@@ -1501,7 +1501,8 @@ namespace SmashForge
                     // load vbn
                     modelContainer.VBN = daeImportSettings.getVBN();
 
-                    var task = Task.Run(() => Collada.DaetoNudAsync(fileName, modelContainer, daeImportSettings.importTexCB.Checked));
+                    // Run on a separate thread to avoid blocking this thread.
+                    var task = Task.Run(() => Collada.DaetoNudAsync(fileName, modelContainer));
                     task.Wait();
                     if (modelContainer.NUD == null)
                         return;

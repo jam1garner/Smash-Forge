@@ -14,7 +14,7 @@ namespace SmashForge
 {
     class Collada
     {
-        public static async Task DaetoNudAsync(string fileName, ModelContainer container, bool importTexture = false)
+        public static async Task DaetoNudAsync(string fileName, ModelContainer container)
         {
             var importOptions = new ColladaSharp.ColladaImportOptions
             {
