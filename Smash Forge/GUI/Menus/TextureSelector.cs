@@ -49,6 +49,10 @@ namespace SmashForge.Gui.Menus
             {
                 foreach (var texture in nut.glTexByHashId)
                 {
+                    // TODO: Generate a proper preview for cube maps.
+                    if (!(texture.Value is Texture2D))
+                        continue;
+
                     // Use the texture ID in hex for the display text and image key.
                     listView1.Items.Add(texture.Key.ToString("X"), texture.Key.ToString("X"));
 

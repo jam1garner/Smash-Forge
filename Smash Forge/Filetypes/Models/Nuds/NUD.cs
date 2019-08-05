@@ -195,6 +195,10 @@ namespace SmashForge
                 foreach (Polygon p in mesh.Nodes)
                 {
                     p.renderMesh = CreateRenderMesh(p);
+
+                    // Ensure the newly created uniform buffer has its data set.
+                    foreach (var material in p.materials)
+                        material.ShouldUpdateRendering = true;
                 }
             }
         }
@@ -206,11 +210,7 @@ namespace SmashForge
             List<int> vertexIndicesList;
             p.GetDisplayVerticesAndIndices(out displayVerticesList, out vertexIndicesList);
 
-            NudRenderMesh nudRenderMesh = new NudRenderMesh(displayVerticesList, vertexIndicesList);
-            // Only use the first material for now.
-            if (p.materials.Count > 0)
-                nudRenderMesh.SetRenderSettings(p.materials[0]);
-            return nudRenderMesh;
+            return new NudRenderMesh(displayVerticesList, vertexIndicesList);
         }
 
         public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
