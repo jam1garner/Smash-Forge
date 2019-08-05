@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
@@ -14,15 +13,6 @@ namespace SmashForge
 {
     class Collada
     {
-        public Collada()
-        {
-        }
-
-        public Collada(string fileName)
-        {
-            Read(fileName);
-        }
-
         public static async void DaetoNudAsync(string fileName, ModelContainer container, bool importTexture = false)
         {
             var importOptions = new ColladaSharp.ColladaImportOptions
@@ -108,8 +98,25 @@ namespace SmashForge
             var normal = new OpenTK.Vector4(vertex.Normal.X, vertex.Normal.Y, vertex.Normal.Z, 1);
             var texCoord = new OpenTK.Vector2(vertex.TexCoord.X, vertex.TexCoord.Y);
 
-            var boneIds = new List<int>();
-            var boneWeights = new List<float>();
+            List<int> boneIds;
+            List<float> boneWeights;
+            GetInfluences(vertex, vbn, out boneIds, out boneWeights);
+
+            // TODO: Do normals always need to be normalized?
+            return new Nud.Vertex
+            {
+                pos = position.Xyz,
+                nrm = normal.Xyz.Normalized(),
+                uv = new List<OpenTK.Vector2> { texCoord },
+                boneIds = boneIds,
+                boneWeights = boneWeights
+            };
+        }
+
+        private static void GetInfluences(Vertex vertex, VBN vbn, out List<int> boneIds, out List<float> boneWeights)
+        {
+            boneIds = new List<int>();
+            boneWeights = new List<float>();
             if (vertex.Influence != null)
             {
                 if (vertex.Influence.WeightCount > 4)
@@ -129,16 +136,6 @@ namespace SmashForge
                     }
                 }
             }
-
-            // TODO: Do normals always need to be normalized?
-            return new Nud.Vertex
-            {
-                pos = position.Xyz,
-                nrm = normal.Xyz.Normalized(),
-                uv = new List<OpenTK.Vector2> { texCoord },
-                boneIds = boneIds,
-                boneWeights = boneWeights
-            };
         }
 
         public static string RemoveInitialUnderscoreId(string geometryName)
@@ -173,146 +170,6 @@ namespace SmashForge
             }
 
             return sources;
-        }
-
-        private static void TryReadTexture(string fileName, Collada dae, NUT nut, ColladaPolygons colladaPoly, Nud.Polygon npoly)
-        {
-            // Grab all that material data so we can apply images later.
-            // TODO: It's inefficient to do it here, but it makes the code less gross.
-            Dictionary<string, ColladaImages> images = new Dictionary<string, ColladaImages>();
-            foreach (var img in dae.library_images)
-                if (!images.ContainsKey(img.id))
-                    images.Add(img.id, img);
-            Dictionary<string, ColladaEffects> effects = new Dictionary<string, ColladaEffects>();
-            foreach (var efc in dae.library_effects)
-                if (!effects.ContainsKey(efc.id))
-                    effects.Add(efc.id, efc);
-            Dictionary<string, ColladaMaterials> materials = new Dictionary<string, ColladaMaterials>();
-            foreach (var mat in dae.library_materials)
-                if (!materials.ContainsKey(mat.id))
-                    materials.Add(mat.id, mat);
-
-            NutTexture tempTex = null;
-            ColladaMaterials material = null;
-            ColladaEffects effect = null;
-            ColladaImages image = null;
-            string matId = null;
-
-            Dictionary<string, NutTexture> existingTextures = new Dictionary<string, NutTexture>();
-            Dictionary<string, NutTexture> texturemap = new Dictionary<string, NutTexture>();
-
-
-            dae.scene.MaterialIds.TryGetValue(colladaPoly.materialid, out matId);
-
-            if (matId != null && matId[0] == '#')
-                materials.TryGetValue(matId.Substring(1, matId.Length - 1), out material);
-            if (material != null && material.effecturl[0] == '#')
-                effects.TryGetValue(material.effecturl.Substring(1, material.effecturl.Length - 1), out effect);
-            if (effect != null && effect.source[0] == '#')
-                images.TryGetValue(effect.source.Substring(1, effect.source.Length - 1), out image);
-            if (image != null)
-                existingTextures.TryGetValue(image.initref, out tempTex);
-
-            if (texturemap.ContainsKey(image.initref))
-            {
-                tempTex = texturemap[image.initref];
-            }
-            else if (tempTex == null && image != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref))))
-            {
-                NutTexture tex = null;
-                if (image.initref.ToLower().EndsWith(".dds"))
-                {
-                    Dds dds = new Dds(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref))));
-                    tex = dds.ToNutTexture();
-                }
-                if (image.initref.ToLower().EndsWith(".png"))
-                {
-                    tex = NutEditor.FromPng(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref)), 1);
-                }
-                if (tex == null)
-                    //continue;
-                    texturemap.Add(image.initref, tex);
-                tex.HashId = 0x40FFFF00;
-                while (NUT.texIdUsed(tex.HashId))
-                    tex.HashId++;
-                nut.Nodes.Add(tex);
-                nut.glTexByHashId.Add(tex.HashId, NUT.CreateTexture2D(tex));
-                existingTextures.Add(image.initref, tex);
-                tempTex = tex;
-            }
-            if (tempTex != null)
-            {
-                npoly.materials[0].textures[0].hash = tempTex.HashId;
-            }
-        }
-
-        private static int CalculateMaxOffset(ColladaPolygons colladaPoly)
-        {
-            // It calculates something...
-            int maxOffset = 0;
-            foreach (ColladaInput input in colladaPoly.inputs)
-            {
-                if (input.offset > maxOffset)
-                    maxOffset = input.offset;
-            }
-            maxOffset += 1;
-            return maxOffset;
-        }
-
-        private static Nud.Vertex ReadVertexSemantics(Collada dae, Dictionary<string, List<Nud.Vertex>> vertexListBySkinSource, ColladaGeometry geom, ColladaMesh mesh, ColladaPolygons colladaPoly, Dictionary<string, ColladaSource> sources, Nud.Polygon npoly, int pIndex, int maxoffset)
-        {
-            Nud.Vertex v = new Nud.Vertex();
-            foreach (ColladaInput input in colladaPoly.inputs)
-            {
-                // The SemanticType for input is always SemanticType.Vertex.
-                if (input.semanticType == SemanticType.POSITION)
-                {
-                    // Probably won't be reached.
-                    AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, pIndex, maxoffset, v);
-                }
-                if (input.semanticType == SemanticType.VERTEX)
-                {
-                    v = new Nud.Vertex();
-
-                    // Read the position, normals, texcoord, and vert color semantics.
-                    foreach (ColladaInput vinput in mesh.vertices.inputs)
-                    {
-                        // If there is a position semantic, try and find the bone weights and IDs.
-                        if (vinput.semanticType == SemanticType.POSITION)
-                        {
-                            AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, pIndex, maxoffset, v);
-                        }
-                        // Read position, normals, texcoord, or vert color semantic.
-                        ReadSemantic(v, vinput, colladaPoly.p[maxoffset * pIndex], sources);
-                    }
-                }
-                else
-                {
-                    // Probably won't be reached.
-                    // Read position, normals, texcoord, or vert color semantic.
-                    ReadSemantic(v, input, colladaPoly.p[(maxoffset * pIndex) + input.offset], sources);
-                }
-            }
-
-            return v;
-        }
-
-        private static void TransformVertexNormalAndPosition(Collada dae, Dictionary<string, OpenTK.Matrix4> bindMatrixBySkinSource, ColladaGeometry geom, OpenTK.Matrix4 nodeTrans, Nud.Vertex v)
-        {
-            // Transform some vectors.
-            v.pos = OpenTK.Vector3.TransformPosition(v.pos, nodeTrans);
-            if (v.nrm != null)
-                v.nrm = OpenTK.Vector3.TransformNormal(v.nrm, nodeTrans);
-
-            if (dae.library_controllers.Count > 0)
-            {
-                if (bindMatrixBySkinSource.ContainsKey("#" + geom.id))
-                {
-                    v.pos = OpenTK.Vector3.TransformPosition(v.pos, bindMatrixBySkinSource["#" + geom.id]);
-                    if (v.nrm != null)
-                        v.nrm = OpenTK.Vector3.TransformNormal(v.nrm, bindMatrixBySkinSource["#" + geom.id]);
-                }
-            }
         }
 
         private static void AddBoneIdsAndWeights(Collada dae, Dictionary<string, List<Nud.Vertex>> vertexListBySkinSource, ColladaGeometry geom, ColladaPolygons colladaPoly, int i, int maxoffset, Nud.Vertex v)
@@ -546,16 +403,6 @@ namespace SmashForge
             }
         }
 
-        private static void AddMaterialsForEachUvChannel(Nud.Polygon npoly)
-        {
-            // Don't add more than 2 materials to a polygon.
-            while (npoly.materials.Count < npoly.vertices[0].uv.Count && npoly.materials.Count < 2)
-            {
-                Nud.Material material = Nud.Material.GetDefault();
-                npoly.materials.Add(material);
-            }
-        }
-
         private static void BFRESSkinVerts(ModelContainer con, ColladaSkin skin, Dictionary<string, ColladaSource> sources, List<BFRES.Vertex> verts, Dictionary<string[], float[]> GetBoneNamesAndWeights)
 
         {
@@ -601,48 +448,6 @@ namespace SmashForge
                     }
                 }
                 GetBoneNamesAndWeights.Add(BoneNames, weightArr);
-
-                verts.Add(newVertex);
-            }
-        }
-
-        private static void SkinVerts(ModelContainer con, ColladaSkin skin, Dictionary<string, ColladaSource> sources, List<Nud.Vertex> verts)
-        {
-            int v = 0;
-            for (int i = 0; i < skin.weights.count; i++)
-            {
-                //basically, I need to find all verts that use this position and apply that.........
-
-                int count = skin.weights.vcount[i];
-                if (count > 4)
-                {
-                    MessageBox.Show("Error: More than 4 weights detected!");
-                    return;
-                }
-
-                Nud.Vertex newVertex = new Nud.Vertex();
-
-                for (int j = 0; j < count; j++)
-                {
-                    foreach (ColladaInput input in skin.weights.inputs)
-                    {
-                        switch (input.semanticType)
-                        {
-                            case SemanticType.JOINT:
-                                string bname = sources[input.source].data[skin.weights.v[v]];
-                                if (bname.StartsWith("_"))
-                                    bname = bname.Substring(6, bname.Length - 6);
-                                int index = con.VBN.boneIndex(bname);
-                                newVertex.boneIds.Add(index);
-                                break;
-                            case SemanticType.WEIGHT:
-                                float weight = float.Parse(sources[input.source].data[skin.weights.v[v]]);
-                                newVertex.boneWeights.Add(weight);
-                                break;
-                        }
-                        v++;
-                    }
-                }
 
                 verts.Add(newVertex);
             }
@@ -694,40 +499,6 @@ namespace SmashForge
                     vbn.reset();
                     vbn.update();
                 }
-            }
-        }
-
-        private static void ReadSemantic(Nud.Vertex targetVert, ColladaInput input, int pIndex, Dictionary<string, ColladaSource> sources)
-        {
-            ColladaSource colladaSource = sources[input.source];
-            int startIndex = (pIndex * colladaSource.stride) + input.offset;
-
-            switch (input.semanticType)
-            {
-                case SemanticType.POSITION:
-                    targetVert.pos.X = float.Parse(colladaSource.data[startIndex + 0]);
-                    targetVert.pos.Y = float.Parse(colladaSource.data[startIndex + 1]);
-                    targetVert.pos.Z = float.Parse(colladaSource.data[startIndex + 2]);
-                    break;
-                case SemanticType.NORMAL:
-                    targetVert.nrm.X = float.Parse(colladaSource.data[startIndex + 0]);
-                    targetVert.nrm.Y = float.Parse(colladaSource.data[startIndex + 1]);
-                    targetVert.nrm.Z = float.Parse(colladaSource.data[startIndex + 2]);
-                    break;
-                case SemanticType.TEXCOORD:
-                    OpenTK.Vector2 tx = new OpenTK.Vector2();
-                    tx.X = float.Parse(colladaSource.data[startIndex + 0]);
-                    tx.Y = float.Parse(colladaSource.data[startIndex + 1]);
-                    targetVert.uv.Add(tx);
-                    break;
-                case SemanticType.COLOR:
-                    // Vertex colors are stored as integers [0,255]. (127,127,127) is white.
-                    targetVert.color.X = float.Parse(colladaSource.data[startIndex + 0]) * 255;
-                    targetVert.color.Y = float.Parse(colladaSource.data[startIndex + 1]) * 255;
-                    targetVert.color.Z = float.Parse(colladaSource.data[startIndex + 2]) * 255;
-                    if (colladaSource.accessorParams.Count > 3)
-                        targetVert.color.W = float.Parse(colladaSource.data[startIndex + 3]) * 127;
-                    break;
             }
         }
 
