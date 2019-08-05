@@ -1,4 +1,5 @@
-﻿using ColladaSharp.Models;
+﻿using ColladaSharp.Definition;
+using ColladaSharp.Models;
 using ColladaSharp.Transforms;
 using System;
 using System.Collections.Generic;
@@ -6,10 +7,8 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-using ColladaSharp.Definition;
 
 namespace SmashForge
 {
@@ -26,7 +25,6 @@ namespace SmashForge
 
         public static async void DaetoNudAsync(string fileName, ModelContainer container, bool importTexture = false)
         {
-            // TODO: Show progress
             var importOptions = new ColladaSharp.ColladaImportOptions
             {
                 // TODO: Disable scene units?
@@ -36,27 +34,26 @@ namespace SmashForge
                 InvertTexCoordY = true
             };
 
-            var collection = await ColladaSharp.Collada.ImportAsync(fileName, importOptions, new Progress<float>(), CancellationToken.None);
+            var collection = await ColladaSharp.Collada.ImportAsync(fileName, importOptions);
 
             Nud nud = new Nud();
             NUT nut = new NUT();
 
-            // TODO: SubMesh names are always unique?
             var meshByName = new Dictionary<string, Nud.Mesh>();
 
             foreach (var subMesh in collection.Scenes[0].Model.Children)
             {
+                if (!meshByName.ContainsKey(subMesh.Name))
+                {
+                    var nudMesh = new Nud.Mesh { Text = subMesh.Name };
+                    meshByName.Add(subMesh.Name, nudMesh);
+                    nud.Nodes.Add(nudMesh);
+                }
+
                 // TODO: Create vbn if not present.
                 var poly = CreatePolygonFromSubMesh(subMesh, container.VBN);
-                if (!meshByName.ContainsKey(subMesh.Name))
-                    meshByName[subMesh.Name] = new Nud.Mesh { Text = subMesh.Name };
-
                 meshByName[subMesh.Name].Nodes.Add(poly);
             }
-
-            // TODO: How should mesh order be preserved?
-            foreach (var mesh in meshByName.Values)
-                nud.Nodes.Add(mesh);
 
             // Final setup.
             nud.GenerateBoundingSpheres();
@@ -89,13 +86,10 @@ namespace SmashForge
                 colladaVertices.Add(GetNudVertex(face.Vertex2, vbn));
             }
 
-            // TODO: Optimized indices?
-            var colladaVertexIndices = SFGenericModel.Utils.IndexUtils.GenerateIndices(colladaVertices.Count);
-
             // TODO: Is there a way to use imported indices and skip the optimization step?
             List<Nud.Vertex> optimizedVertices;
             List<int> optimizedIndices;
-            SFGraphics.Utils.VertexOptimization.OptimizeVertexData(colladaVertices, colladaVertexIndices, out optimizedVertices, out optimizedIndices);
+            SFGraphics.Utils.VertexOptimization.OptimizeVertexData(colladaVertices, out optimizedVertices, out optimizedIndices);
 
             // TODO: Create a default material.
             var poly = new Nud.Polygon
@@ -149,8 +143,7 @@ namespace SmashForge
 
         public static string RemoveInitialUnderscoreId(string geometryName)
         {
-            bool hasId = HasInitialUnderscoreId(geometryName);
-            if (hasId)
+            if (HasInitialUnderscoreId(geometryName))
                 geometryName = geometryName.Substring(5);
 
             return geometryName;
