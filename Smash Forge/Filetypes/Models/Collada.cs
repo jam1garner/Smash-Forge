@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
+using ColladaSharp.Definition;
 
 namespace SmashForge
 {
@@ -28,8 +29,11 @@ namespace SmashForge
             // TODO: Show progress
             var importOptions = new ColladaSharp.ColladaImportOptions
             {
-                // TODO: Models are too small?
-                InitialTransform = new TRSTransform(Vec3.Zero, Quat.FromAxisAngleDeg(new Vec3(1, 0, 0), 90), new Vec3(1))
+                // TODO: Disable scene units?
+                // Models exported with unit conversions will be scaled incorrectly.
+                InitialTransform = new TRSTransform(Vec3.Zero, Quat.Identity, new Vec3(1)),
+                IgnoreFlags = EIgnoreFlags.Animations | EIgnoreFlags.Extra | EIgnoreFlags.Lights,
+                InvertTexCoordY = true
             };
 
             var collection = await ColladaSharp.Collada.ImportAsync(fileName, importOptions, new Progress<float>(), CancellationToken.None);
@@ -85,6 +89,7 @@ namespace SmashForge
             // TODO: Optimized indices?
             var colladaVertexIndices = SFGenericModel.Utils.IndexUtils.GenerateIndices(colladaVertices.Count);
 
+            // TODO: Create a default material.
             var poly = new Nud.Polygon
             {
                 vertices = colladaVertices,
