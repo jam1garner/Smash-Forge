@@ -14,6 +14,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -1500,7 +1501,8 @@ namespace SmashForge
                     // load vbn
                     modelContainer.VBN = daeImportSettings.getVBN();
 
-                    Collada.DaetoNudAsync(fileName, modelContainer, daeImportSettings.importTexCB.Checked);
+                    var task = Task.Run(() => Collada.DaetoNudAsync(fileName, modelContainer, daeImportSettings.importTexCB.Checked));
+                    task.Wait();
                     if (modelContainer.NUD == null)
                         return;
 

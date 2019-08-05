@@ -8,12 +8,13 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
+using System.Threading.Tasks;
 
 namespace SmashForge
 {
     class Collada
     {
-        public static async void DaetoNudAsync(string fileName, ModelContainer container, bool importTexture = false)
+        public static async Task DaetoNudAsync(string fileName, ModelContainer container, bool importTexture = false)
         {
             var importOptions = new ColladaSharp.ColladaImportOptions
             {

@@ -916,7 +916,7 @@ namespace SmashForge
                         {
                             con.VBN = daeImport.getVBN();
 
-                            Collada.DaetoNudAsync(ofd.FileName, con, daeImport.importTexCB.Checked);
+                            await Collada.DaetoNudAsync(ofd.FileName, con, daeImport.importTexCB.Checked);
 
                             // apply settings
                             if (con.NUD != null)
