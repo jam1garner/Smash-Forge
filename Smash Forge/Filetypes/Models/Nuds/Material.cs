@@ -224,7 +224,7 @@ namespace SmashForge
                 material.propertyValuesByName.Add("NU_alphaBlendParams", new float[] { 0, 0, 0, 0 });
                 material.propertyValuesByName.Add("NU_materialHash", new float[] { FileData.ToFloat(0x7E538F65), 0, 0, 0 });
 
-                material.textures.Add(new MatTexture(0x10000000));
+                material.textures.Add(MatTexture.GetDefault());
                 material.textures.Add(MatTexture.GetDefault());
                 return material;
             }

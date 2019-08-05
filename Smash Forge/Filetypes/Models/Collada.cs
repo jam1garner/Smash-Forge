@@ -92,12 +92,17 @@ namespace SmashForge
             // TODO: Optimized indices?
             var colladaVertexIndices = SFGenericModel.Utils.IndexUtils.GenerateIndices(colladaVertices.Count);
 
+            // TODO: Is there a way to use imported indices and skip the optimization step?
+            List<Nud.Vertex> optimizedVertices;
+            List<int> optimizedIndices;
+            SFGraphics.Utils.VertexOptimization.OptimizeVertexData(colladaVertices, colladaVertexIndices, out optimizedVertices, out optimizedIndices);
+
             // TODO: Create a default material.
             var poly = new Nud.Polygon
             {
-                vertices = colladaVertices,
-                vertexIndices = colladaVertexIndices,
-                materials = new List<Nud.Material> { new Nud.Material() }
+                vertices = optimizedVertices,
+                vertexIndices = optimizedIndices,
+                materials = new List<Nud.Material> { Nud.Material.GetDefault() }
             };
             return poly;
         }
