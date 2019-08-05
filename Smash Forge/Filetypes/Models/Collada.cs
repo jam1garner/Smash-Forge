@@ -58,6 +58,9 @@ namespace SmashForge
             foreach (var mesh in meshByName.Values)
                 nud.Nodes.Add(mesh);
 
+            // Final setup.
+            nud.GenerateBoundingSpheres();
+
             // Modify model container.
             // The texture IDs won't be correct at this point.
             container.NUD = nud;
@@ -65,7 +68,7 @@ namespace SmashForge
             container.NUT = nut;
             Runtime.checkNudTexIdOnOpen = true;
 
-            // TODO: Create bones
+            // TODO: Create bones?
         }
 
         private static Nud.Polygon CreatePolygonFromSubMesh(SubMesh subMesh, VBN vbn)
