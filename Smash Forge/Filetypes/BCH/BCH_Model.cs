@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -98,12 +99,10 @@ namespace SmashForge
                             // load vbn
                             con.VBN = skeleton;
 
-                            Collada.DaetoNudAsync(f, con);
-
                             if (con.NUD != null)
                             {
                                 // apply settings
-                                daeImport.Apply(con.NUD);
+                                daeImport.DaeToNud(f, con);
                                 CreateFromNUD(con.NUD);
                             }
                         }

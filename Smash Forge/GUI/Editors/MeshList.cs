@@ -890,7 +890,7 @@ namespace SmashForge
             }
         }
 
-        private async void importFromDAEToolStripMenuItem_Click(object sender, EventArgs e)
+        private void importFromDAEToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!(filesTreeView.SelectedNode is ModelContainer))
                 return;
@@ -914,13 +914,8 @@ namespace SmashForge
                         daeImport.ShowDialog();
                         if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
                         {
-                            con.VBN = daeImport.getVBN();
-
-                            await Collada.DaetoNudAsync(ofd.FileName, con);
-
-                            // apply settings
-                            if (con.NUD != null)
-                                daeImport.Apply(con.NUD);
+                            con.VBN = daeImport.GetVBN();
+                            daeImport.DaeToNud(ofd.FileName, con);
                         }
                     }
                 }

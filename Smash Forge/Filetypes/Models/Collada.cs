@@ -12,17 +12,30 @@ using System.Threading.Tasks;
 
 namespace SmashForge
 {
+    // TODO: Move this somewhere.
+    internal class ColladaPostProcessOptions
+    {
+        public bool TranslateUvs { get; set; }
+
+        public bool FlipUvs { get; set; }
+
+        public bool SmoothNormals { get; set; }
+
+        public bool RotateX90 { get; set; }
+
+        public float Scale { get; set; }
+    }
+
     class Collada
     {
-        public static async Task DaetoNudAsync(string fileName, ModelContainer container)
+        public static async Task DaetoNudAsync(string fileName, ModelContainer container, ColladaPostProcessOptions postProcessOptions)
         {
+            // Uvs always need to be flipped, so negate the user interface option.
             var importOptions = new ColladaSharp.ColladaImportOptions
             {
-                // TODO: Disable scene units?
-                // Models exported with unit conversions will be scaled incorrectly.
-                InitialTransform = new TRSTransform(Vec3.Zero, Quat.Identity, new Vec3(1)),
+                InitialTransform = new TRSTransform(Vec3.Zero, Quat.FromAxisAngleDeg(Vec3.UnitX, postProcessOptions.RotateX90 ? 90 : 0), new Vec3(postProcessOptions.Scale)),
                 IgnoreFlags = EIgnoreFlags.Animations | EIgnoreFlags.Extra | EIgnoreFlags.Lights,
-                InvertTexCoordY = true
+                InvertTexCoordY = !postProcessOptions.FlipUvs
             };
 
             var collection = await ColladaSharp.Collada.ImportAsync(fileName, importOptions);
@@ -50,8 +63,9 @@ namespace SmashForge
             nud.GenerateBoundingSpheres();
 
             // Modify model container.
-            // The texture IDs won't be correct at this point.
             container.NUD = nud;
+
+            // The texture IDs won't be correct at this point.
             Runtime.checkNudTexIdOnOpen = false;
             container.NUT = nut;
             Runtime.checkNudTexIdOnOpen = true;
@@ -268,10 +282,6 @@ namespace SmashForge
                 vertices.Add(skin.source, BoneFixIndex);
             }
 
-            BFRES.FMDL_Model nmodel = new BFRES.FMDL_Model();
-            //  b.Nodes.Add(nmodel);
-
-            Dictionary<string, BRTI> texturemap = new Dictionary<string, BRTI>();
             Dictionary<string, BFRES.Mesh> geometries = new Dictionary<string, BFRES.Mesh>();
 
             foreach (BFRES.FMDL_Model mdl in b.models)
@@ -533,7 +543,8 @@ namespace SmashForge
                     break;
             }
         }
-        public static void BFRES2DAESave(string fname, BFRES bfres, ModelContainer con)
+
+        public static void Bfres2DaeSave(string fname, BFRES bfres, ModelContainer con)
         {
             Collada dae = new Collada();
             // bones
@@ -606,11 +617,11 @@ namespace SmashForge
                         samp.url = $"Tex_0x{0}";
                     eff.sampler = samp;
                     Dictionary<int, COLLADA_WRAPMODE> wraptranslate = new Dictionary<int, COLLADA_WRAPMODE>
-                {
-                    {0, COLLADA_WRAPMODE.CLAMP },
-                    {1, COLLADA_WRAPMODE.REPEAT },
-                    {2, COLLADA_WRAPMODE.MIRROR }
-                };
+                    {
+                        {0, COLLADA_WRAPMODE.CLAMP },
+                        {1, COLLADA_WRAPMODE.REPEAT },
+                        {2, COLLADA_WRAPMODE.MIRROR }
+                    };
                     //samp.wrap_t = wraptranslate[poly.materials[0].textures[0].WrapMode1];
                     //samp.wrap_s = wraptranslate[poly.materials[0].textures[0].WrapMode2];
 
@@ -1132,7 +1143,7 @@ namespace SmashForge
 
             if (con.Bfres != null)
             {
-                BFRES2DAESave(fname, con.Bfres, con);
+                Bfres2DaeSave(fname, con.Bfres, con);
                 return;
             }
 

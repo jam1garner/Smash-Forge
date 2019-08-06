@@ -1499,16 +1499,10 @@ namespace SmashForge
                     ModelContainer modelContainer = new ModelContainer();
 
                     // load vbn
-                    modelContainer.VBN = daeImportSettings.getVBN();
+                    modelContainer.VBN = daeImportSettings.GetVBN();
 
-                    // Run on a separate thread to avoid blocking this thread.
-                    var task = Task.Run(() => Collada.DaetoNudAsync(fileName, modelContainer));
-                    task.Wait();
-                    if (modelContainer.NUD == null)
-                        return;
-
-                    // apply settings
-                    daeImportSettings.Apply(modelContainer.NUD);
+                    // Import the model
+                    daeImportSettings.DaeToNud(fileName, modelContainer);
 
                     if (CheckCurrentViewport(out mvp))
                     {

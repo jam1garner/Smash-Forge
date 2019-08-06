@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 
@@ -7,9 +8,6 @@ namespace SmashForge
 {
     public partial class DAEImportSettings : Form
     {
-
-        public string fileName;
-
         public enum ExitStatus
         {
             Running = 0,
@@ -62,18 +60,27 @@ namespace SmashForge
             boneTypeComboBox.EndUpdate();
         }
 
-        public void Apply(Nud nud)
+        public void DaeToNud(string fileName, ModelContainer container)
         {
-            Matrix4 rotXBy90 = Matrix4.CreateRotationX(0.5f * (float)Math.PI);
-            float scale = 1f;
-            bool hasScale = float.TryParse(scaleTB.Text, out scale);
+            // TODO: Scale may be invalid if parsing the text box fails.
+            var options = new ColladaPostProcessOptions
+            {
+                RotateX90 = rotate90CB.Checked,
+                FlipUvs = flipUVCB.Checked,
+                SmoothNormals = smoothNrmCB.Checked,
+                TranslateUvs = transUvVerticalCB.Checked,
+                Scale = GuiTools.TryParseTBFloat(scaleTB)
+            };
+
+            var task = Task.Run(() => Collada.DaetoNudAsync(fileName, container, options));
+            task.Wait();
 
             bool checkedMeshName = false;
             bool fixMeshName = false;
 
             bool hasShownShadowWarning = false;
 
-            foreach (Nud.Mesh mesh in nud.Nodes)
+            foreach (Nud.Mesh mesh in container.NUD.Nodes)
             {
                 if (BoneTypes[(string)boneTypeComboBox.SelectedItem] == BoneTypes["None"])
                     mesh.boneflag = 0;
@@ -125,11 +132,6 @@ namespace SmashForge
                             for (int i = 0; i < v.uv.Count; i++)
                                 v.uv[i] = new Vector2(v.uv[i].X, v.uv[i].Y + 1);
 
-                        // Flip UVs
-                        if (flipUVCB.Checked)
-                            for (int i = 0; i < v.uv.Count; i++)
-                                v.uv[i] = new Vector2(v.uv[i].X, 1 - v.uv[i].Y);
-
                         // Halve vertex colors
                         if (vertColorDivCB.Checked)
                             for (int i = 0; i < 3; i++)
@@ -138,37 +140,20 @@ namespace SmashForge
                         // Set vertex colors to white. 
                         if (vertcolorCB.Checked)
                             v.color = new Vector4(127, 127, 127, 127);
-
-                        // Rotate 90 degrees.
-                        if (rotate90CB.Checked)
-                        {
-                            v.pos = Vector3.TransformPosition(v.pos, rotXBy90);
-                            v.nrm = Vector3.TransformNormal(v.nrm, rotXBy90);
-                        }
-
-                        // Scale.
-                        if (scale != 1f)
-                            v.pos = Vector3.Multiply(v.pos, scale);
                     }
                 }
             }
 
             // Wait until after the model is rotated.
-            nud.GenerateBoundingSpheres();
+            container.NUD.GenerateBoundingSpheres();
         }
 
-        public VBN getVBN()
+        public VBN GetVBN()
         {
             if (!vbnFileLabel.Text.Equals(""))
                 return new VBN(vbnFileLabel.Text);
             else
                 return null;
-        }
-
-        private void closeButton(object sender, EventArgs e)
-        {
-            exitStatus = ExitStatus.Cancelled;
-            Close();
         }
 
         private void importButton_Click(object sender, EventArgs e)
