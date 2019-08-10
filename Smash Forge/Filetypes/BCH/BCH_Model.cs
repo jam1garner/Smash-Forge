@@ -92,7 +92,7 @@ namespace SmashForge
                     {
                         DAEImportSettings daeImport = new DAEImportSettings();
                         daeImport.ShowDialog();
-                        if (daeImport.Status == DAEImportSettings.ExitStatus.Opened)
+                        if (daeImport.ShouldImportCollada)
                         {
                             ModelContainer con = new ModelContainer();
 

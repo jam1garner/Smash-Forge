@@ -32,7 +32,6 @@
             this.importButton = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.scaleTB = new System.Windows.Forms.TextBox();
-            this.vbnFileLabel = new System.Windows.Forms.Label();
             this.openVbnButton = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.boneTypeComboBox = new System.Windows.Forms.ComboBox();
@@ -83,15 +82,6 @@
             this.scaleTB.Size = new System.Drawing.Size(377, 31);
             this.scaleTB.TabIndex = 12;
             this.scaleTB.Text = "1";
-            // 
-            // vbnFileLabel
-            // 
-            this.vbnFileLabel.AutoSize = true;
-            this.vbnFileLabel.Location = new System.Drawing.Point(890, 700);
-            this.vbnFileLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.vbnFileLabel.Name = "vbnFileLabel";
-            this.vbnFileLabel.Size = new System.Drawing.Size(0, 25);
-            this.vbnFileLabel.TabIndex = 10;
             // 
             // openVbnButton
             // 
@@ -242,7 +232,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(599, 458);
             this.Controls.Add(this.optionsGroupBox);
-            this.Controls.Add(this.vbnFileLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(6);
@@ -263,10 +252,9 @@
         private System.Windows.Forms.Button importButton;
         private System.Windows.Forms.CheckBox rotate90CB;
         private System.Windows.Forms.Label label4;
-        public System.Windows.Forms.ComboBox boneTypeComboBox;
+        private System.Windows.Forms.ComboBox boneTypeComboBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox vertTypeComboBox;
-        public System.Windows.Forms.Label vbnFileLabel;
         private System.Windows.Forms.Button openVbnButton;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox scaleTB;

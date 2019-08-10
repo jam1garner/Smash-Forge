@@ -8,13 +8,9 @@ namespace SmashForge
 {
     public partial class DAEImportSettings : Form
     {
-        public enum ExitStatus
-        {
-            Running = 0,
-            Opened = 1,
-        }
+        public bool ShouldImportCollada { get; private set; }
 
-        public ExitStatus Status { get; private set; } = ExitStatus.Running;
+        private string vbnFilePath;
 
         private readonly Dictionary<string, int> boneTypes = new Dictionary<string, int>()
         {
@@ -142,37 +138,37 @@ namespace SmashForge
 
         public VBN GetVBN()
         {
-            if (!vbnFileLabel.Text.Equals(""))
-                return new VBN(vbnFileLabel.Text);
-            else
-                return null;
+            if (!string.IsNullOrEmpty(vbnFilePath))
+                return new VBN(vbnFilePath);
+
+            return null;
         }
 
         private void importButton_Click(object sender, EventArgs e)
         {
-            if (vbnFileLabel.Text.Equals(""))
+            if (string.IsNullOrEmpty(vbnFilePath))
             {
                 DialogResult dialogResult = MessageBox.Show("You are not using a VBN to import.\nDo you want to generate one?", "Warning", MessageBoxButtons.OKCancel);
                 if (dialogResult == DialogResult.OK)
                 {
-                    Status = ExitStatus.Opened;
-                    Close();
+                    ShouldImportCollada = true;
                 }
             }
             else
             {
-                Status = ExitStatus.Opened;
-                Close();
+                ShouldImportCollada = true;
             }
+
+            Close();
         }
 
         private void openVbnButton_Click(object sender, EventArgs e)
         {
-            using (var ofd = new OpenFileDialog() { Filter = "Visual Bone Namco (.vbn)|*.vbn|All Files (*.*)|*.*" })
+            using (var ofd = new OpenFileDialog { Filter = "Visual Bone Namco (.vbn)|*.vbn|All Files (*.*)|*.*" })
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    vbnFileLabel.Text = ofd.FileName;
+                    vbnFilePath = ofd.FileName;
                 }
             }
         }
