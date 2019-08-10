@@ -12,12 +12,11 @@ namespace SmashForge
         {
             Running = 0,
             Opened = 1,
-            Cancelled = 2
         }
 
-        public ExitStatus exitStatus = ExitStatus.Running; 
+        public ExitStatus Status { get; private set; } = ExitStatus.Running;
 
-        public Dictionary<string, int> BoneTypes = new Dictionary<string, int>()
+        private readonly Dictionary<string, int> boneTypes = new Dictionary<string, int>()
         {
             { "None", (int)Nud.Polygon.BoneTypes.NoBones},
             { "Float", (int)Nud.Polygon.BoneTypes.Float},
@@ -25,7 +24,7 @@ namespace SmashForge
             { "Byte", (int)Nud.Polygon.BoneTypes.Byte}
         };
 
-        public Dictionary<string, int> VertexTypes = new Dictionary<string, int>()
+        private readonly Dictionary<string, int> vertexTypes = new Dictionary<string, int>()
         {
             { "No Normals", (int)Nud.Polygon.VertexTypes.NoNormals},
             { "Normals (Float)", (int)Nud.Polygon.VertexTypes.NormalsFloat},
@@ -38,19 +37,19 @@ namespace SmashForge
         {
             InitializeComponent();
             Populate();
-
-            transUvVerticalCB.Checked = true;
         }
-        
+
         public void Populate()
         {
+            vertColorComboBox.SelectedIndex = 0;
+
             vertTypeComboBox.BeginUpdate();
             boneTypeComboBox.BeginUpdate();
 
-            foreach (string key in VertexTypes.Keys)
+            foreach (string key in vertexTypes.Keys)
                 vertTypeComboBox.Items.Add(key);
 
-            foreach (string key in BoneTypes.Keys)
+            foreach (string key in boneTypes.Keys)
                 boneTypeComboBox.Items.Add(key);
 
             vertTypeComboBox.SelectedIndex = 4;
@@ -66,9 +65,6 @@ namespace SmashForge
             var options = new ColladaPostProcessOptions
             {
                 RotateX90 = rotate90CB.Checked,
-                FlipUvs = flipUVCB.Checked,
-                SmoothNormals = smoothNrmCB.Checked,
-                TranslateUvs = transUvVerticalCB.Checked,
                 Scale = GuiTools.TryParseTBFloat(scaleTB)
             };
 
@@ -82,7 +78,7 @@ namespace SmashForge
 
             foreach (Nud.Mesh mesh in container.NUD.Nodes)
             {
-                if (BoneTypes[(string)boneTypeComboBox.SelectedItem] == BoneTypes["None"])
+                if (boneTypes[(string)boneTypeComboBox.SelectedItem] == boneTypes["None"])
                     mesh.boneflag = 0;
 
                 if (!checkedMeshName)
@@ -97,19 +93,16 @@ namespace SmashForge
 
                 foreach (Nud.Polygon poly in mesh.Nodes)
                 {
-                    if (BoneTypes[(string)boneTypeComboBox.SelectedItem] == BoneTypes["None"])
+                    if (boneTypes[(string)boneTypeComboBox.SelectedItem] == boneTypes["None"])
                         poly.polflag = 0;
-
-                    if (smoothNrmCB.Checked)
-                        poly.SmoothNormals();
 
                     // Set the vertex size before tangent/bitangent calculations.
                     if (poly.vertSize == (int)Nud.Polygon.VertexTypes.NormalsHalfFloat) // what is this supposed to mean?
                         poly.vertSize = 0;
                     else
-                        poly.vertSize = BoneTypes[(string)boneTypeComboBox.SelectedItem] | VertexTypes[(string)vertTypeComboBox.SelectedItem];
+                        poly.vertSize = boneTypes[(string)boneTypeComboBox.SelectedItem] | vertexTypes[(string)vertTypeComboBox.SelectedItem];
 
-                    poly.CalculateTangentBitangent();          
+                    poly.CalculateTangentBitangent();
 
                     int vertSizeShadowWarning = (int)Nud.Polygon.BoneTypes.HalfFloat | (int)Nud.Polygon.VertexTypes.NormalsTanBiTanHalfFloat;
                     if (!hasShownShadowWarning && poly.vertSize == vertSizeShadowWarning)
@@ -119,33 +112,32 @@ namespace SmashForge
                         hasShownShadowWarning = true;
                     }
 
-                    if (stageMatCB.Checked)
+                    switch (vertColorComboBox.SelectedIndex)
                     {
-                        poly.materials.Clear();
-                        poly.materials.Add(Nud.Material.GetStageDefault());
-                    }
-
-                    foreach (Nud.Vertex v in poly.vertices)
-                    {
-                        //Scroll UVs V by -1
-                        if (transUvVerticalCB.Checked)
-                            for (int i = 0; i < v.uv.Count; i++)
-                                v.uv[i] = new Vector2(v.uv[i].X, v.uv[i].Y + 1);
-
-                        // Halve vertex colors
-                        if (vertColorDivCB.Checked)
-                            for (int i = 0; i < 3; i++)
-                                v.color[i] = v.color[i] / 2;
-
-                        // Set vertex colors to white. 
-                        if (vertcolorCB.Checked)
-                            v.color = new Vector4(127, 127, 127, 127);
+                        case 0:
+                            // Preserve existing colors.
+                            break;
+                        case 1:
+                            poly.SetVertexColor(new Vector4(127, 127, 127, 127));
+                            break;
+                        case 2:
+                            DivideVertexColorsBy2(poly);
+                            break;
                     }
                 }
             }
 
-            // Wait until after the model is rotated.
+            // Wait until after the model is rotated to generate bounding spheres.
             container.NUD.GenerateBoundingSpheres();
+        }
+
+        private static void DivideVertexColorsBy2(Nud.Polygon poly)
+        {
+            foreach (Nud.Vertex v in poly.vertices)
+            {
+                for (int i = 0; i < 3; i++)
+                    v.color[i] = v.color[i] / 2.0f;
+            }
         }
 
         public VBN GetVBN()
@@ -163,12 +155,13 @@ namespace SmashForge
                 DialogResult dialogResult = MessageBox.Show("You are not using a VBN to import.\nDo you want to generate one?", "Warning", MessageBoxButtons.OKCancel);
                 if (dialogResult == DialogResult.OK)
                 {
-                    exitStatus = ExitStatus.Opened;
+                    Status = ExitStatus.Opened;
                     Close();
                 }
-            }else
+            }
+            else
             {
-                exitStatus = ExitStatus.Opened;
+                Status = ExitStatus.Opened;
                 Close();
             }
         }

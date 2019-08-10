@@ -912,7 +912,7 @@ namespace SmashForge
                     {
                         DAEImportSettings daeImport = new DAEImportSettings();
                         daeImport.ShowDialog();
-                        if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
+                        if (daeImport.Status == DAEImportSettings.ExitStatus.Opened)
                         {
                             con.VBN = daeImport.GetVBN();
                             daeImport.DaeToNud(ofd.FileName, con);
