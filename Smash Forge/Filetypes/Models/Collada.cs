@@ -112,6 +112,8 @@ namespace SmashForge
             var position = new OpenTK.Vector4(vertex.Position.X, vertex.Position.Y, vertex.Position.Z, 1);
             var normal = new OpenTK.Vector4(vertex.Normal.X, vertex.Normal.Y, vertex.Normal.Z, 1);
             var texCoord = new OpenTK.Vector2(vertex.TexCoord.X, vertex.TexCoord.Y);
+            // TODO: Check for white vertex colors.
+            var color = new OpenTK.Vector4(vertex.Color.R, vertex.Color.G, vertex.Color.B, vertex.Color.A) * 255;
 
             List<int> boneIds;
             List<float> boneWeights;
@@ -123,6 +125,7 @@ namespace SmashForge
                 pos = position.Xyz,
                 nrm = normal.Xyz.Normalized(),
                 uv = new List<OpenTK.Vector2> { texCoord },
+                color = color,
                 boneIds = boneIds,
                 boneWeights = boneWeights
             };
