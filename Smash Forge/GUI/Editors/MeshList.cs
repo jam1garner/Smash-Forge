@@ -1835,5 +1835,10 @@ namespace SmashForge
                 // Something broke. Let's just pretend it didn't happen.
             }
         }
+
+        private void renameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            filesTreeView.SelectedNode?.BeginEdit();
+        }
     }
 }
