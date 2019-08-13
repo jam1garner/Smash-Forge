@@ -23,6 +23,11 @@ namespace SmashForge.Filetypes.Models.Nuds
             { 0x07, BlendingFactor.DstAlpha },
             { 0x08, BlendingFactor.DstColor },
             { 0x0a, BlendingFactor.DstColor },
+            // TODO:
+            { 0x0b, BlendingFactor.One },
+            { 0x0f, BlendingFactor.One },
+            { 0x010, BlendingFactor.One },
+            { 0x021, BlendingFactor.One },
         };
 
         public static readonly Dictionary<int, BlendingFactor> dstFactorByMatValue = new Dictionary<int, BlendingFactor>()
@@ -37,6 +42,19 @@ namespace SmashForge.Filetypes.Models.Nuds
             { 0x07, BlendingFactor.One },
             { 0x08, BlendingFactor.Zero },
             { 0x0a, BlendingFactor.Zero },
+            // TODO:
+            { 0x0b, BlendingFactor.Zero },
+            { 0x0c, BlendingFactor.Zero },
+            { 0x011, BlendingFactor.Zero },
+            { 0x012, BlendingFactor.Zero },
+            { 0x014, BlendingFactor.Zero },
+            { 0x022, BlendingFactor.Zero },
+            { 0x040, BlendingFactor.Zero },
+            { 0x042, BlendingFactor.Zero },
+            { 0x070, BlendingFactor.Zero },
+            { 0x072, BlendingFactor.Zero },
+            { 0x081, BlendingFactor.Zero },
+            { 0x082, BlendingFactor.Zero },
         };
 
         public static readonly Dictionary<int, AlphaFunction> alphaFunctionByMatValue = new Dictionary<int, AlphaFunction>()
