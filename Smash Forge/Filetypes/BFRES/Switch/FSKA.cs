@@ -124,6 +124,8 @@ namespace SmashForge
                             SkeletonAnimation.Nodes[8].Nodes.Add(a);
                         if (i >= 900 && i < 1000)
                             SkeletonAnimation.Nodes[9].Nodes.Add(a);
+                        if (i >= 1000)
+                            SkeletonAnimation.Nodes[10].Nodes.Add(a);
 
                         i++;
                         try
@@ -295,6 +297,8 @@ namespace SmashForge
                             SkeletonAnimation.Nodes[8].Nodes.Add(a);
                         if (i >= 900 && i < 1000)
                             SkeletonAnimation.Nodes[9].Nodes.Add(a);
+                        if (i >= 1000)
+                            SkeletonAnimation.Nodes[10].Nodes.Add(a);
 
 
                         a.frameCount = ska.FrameCount;
