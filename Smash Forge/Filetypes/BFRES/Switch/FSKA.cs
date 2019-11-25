@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using OpenTK;
 using Syroot.NintenTools.Bfres;
@@ -25,107 +26,47 @@ namespace SmashForge
     {
         public class FSKA
         {
+            private static readonly int setSize = 100;
+
             //Here I set an animation list. It's easier to grab a list by the FSKA instance from the bfres
             public static List<Animation> SkeletonAnimations = new List<Animation>();
 
-            public void Read(ResFile TargetWiiUBFRES, AnimationGroupNode ThisAnimation, ResNSW.ResFile b)
+            public void Read(ResFile targetWiiUbfres, AnimationGroupNode thisAnimation, ResNSW.ResFile b)
             {
                 Console.WriteLine("Reading Skeleton Animations ...");
 
                 if (b != null)
                 {
-                    TreeNode SkeletonAnimation = new TreeNode() { Text = "Skeleton Animations" };
+                    TreeNode skeletonAnimationNode = new TreeNode { Text = "Skeleton Animations" };
 
-                    ThisAnimation.Nodes.Add(SkeletonAnimation);
+                    thisAnimation.Nodes.Add(skeletonAnimationNode);
 
-                    TreeNode dummy = new TreeNode() { Text = "Animation Set" };
+                    // Split animation nodes into groups so they can all fit inside the view.
+                    // Make sure to add an additional set if the animations can't be divided evenly.
+                    int setCount = b.SkeletalAnims.Count / setSize;
+                    if (b.SkeletalAnims.Count % setSize != 0)
+                        setCount += 1;
 
-                    int i = 0;
-                    foreach (ResNSW.SkeletalAnim ska in b.SkeletalAnims)
+                    for (int i = 0; i < setCount; i++)
                     {
-                        if (i == 0)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "0 - 100" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 100)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "100 - 200" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 200)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "200 - 300" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 300)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "300 - 400" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 400)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "400 - 500" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 500)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "500 - 600" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 600)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "600 - 700" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 700)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "700 - 800" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 800)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "800 - 900" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 900)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "900 - 1000" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 1000)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "1000+" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
+                        int start = i * setSize;
+                        int end = start + setSize - 1;
+                        skeletonAnimationNode.Nodes.Add(new TreeNode { Text = $"Animation Set {start} - {end}" });
+
+                    }
+
+                    for (int i = 0; i < b.SkeletalAnims.Count; i++)
+                    {
+                        var ska = b.SkeletalAnims[i];
+                        int setIndex = i / setSize;
 
                         Animation a = new Animation(ska.Name);
                         SkeletonAnimations.Add(a);
 
                         a.frameCount = ska.FrameCount;
 
-                        if (i >= 0 && i < 100)
-                            SkeletonAnimation.Nodes[0].Nodes.Add(a);
-                        if (i >= 100 && i < 200)
-                            SkeletonAnimation.Nodes[1].Nodes.Add(a);
-                        if (i >= 200 && i < 300)
-                            SkeletonAnimation.Nodes[2].Nodes.Add(a);
-                        if (i >= 300 && i < 400)
-                            SkeletonAnimation.Nodes[3].Nodes.Add(a);
-                        if (i >= 400 && i < 500)
-                            SkeletonAnimation.Nodes[4].Nodes.Add(a);
-                        if (i >= 500 && i < 600)
-                            SkeletonAnimation.Nodes[5].Nodes.Add(a);
-                        if (i >= 600 && i < 700)
-                            SkeletonAnimation.Nodes[6].Nodes.Add(a);
-                        if (i >= 700 && i < 800)
-                            SkeletonAnimation.Nodes[7].Nodes.Add(a);
-                        if (i >= 800 && i < 900)
-                            SkeletonAnimation.Nodes[8].Nodes.Add(a);
-                        if (i >= 900 && i < 1000)
-                            SkeletonAnimation.Nodes[9].Nodes.Add(a);
+                        skeletonAnimationNode.Nodes[setIndex].Nodes.Add(a);
 
-                        i++;
                         try
                         {
                             foreach (ResNSW.BoneAnim bn in ska.BoneAnims)
@@ -141,12 +82,12 @@ namespace SmashForge
 
                                 bone.Text = bonean.Text;
 
-                                for (int Frame = 0; Frame < ska.FrameCount; Frame++)
+                                for (int frame = 0; frame < ska.FrameCount; frame++)
                                 {
 
                                     //Set base/start values for bones.
                                     //Note. BOTW doesn't use base values as it uses havok engine. Need to add option to disable these
-                                    if (Frame == 0)
+                                    if (frame == 0)
                                     {
                                         if (bn.FlagsBase.HasFlag(ResNSW.BoneAnimFlagsBase.Scale))
                                         {
@@ -170,30 +111,26 @@ namespace SmashForge
                                     }
                                     foreach (FSKATrack track in bonean.tracks)
                                     {
-                                        Animation.KeyFrame frame = new Animation.KeyFrame();
-                                        frame.interType = Animation.InterpolationType.Hermite;
-                                        frame.Frame = Frame;
+                                        Animation.KeyFrame keyFrame = new Animation.KeyFrame();
+                                        keyFrame.interType = Animation.InterpolationType.Hermite;
+                                        keyFrame.Frame = frame;
 
-                                        FSKAKey left = track.GetLeft(Frame);
-                                        FSKAKey right = track.GetRight(Frame);
-                                        float value;
-
-
-
-                                        value = Animation.Hermite(Frame, left.frame, right.frame, 0, 0, left.unk1, right.unk1);
+                                        FSKAKey left = track.GetLeft(frame);
+                                        FSKAKey right = track.GetRight(frame);
 
                                         // interpolate the value and apply
+                                        float value = Animation.Hermite(frame, left.frame, right.frame, 0, 0, left.unk1, right.unk1);
                                         switch (track.flag)
                                         {
-                                            case (int)TrackType.XPOS: frame.Value = value; bone.xpos.keys.Add(frame); break;
-                                            case (int)TrackType.YPOS: frame.Value = value; bone.ypos.keys.Add(frame); break;
-                                            case (int)TrackType.ZPOS: frame.Value = value; bone.zpos.keys.Add(frame); break;
-                                            case (int)TrackType.XROT: frame.Value = value; bone.xrot.keys.Add(frame); break;
-                                            case (int)TrackType.YROT: frame.Value = value; bone.yrot.keys.Add(frame); break;
-                                            case (int)TrackType.ZROT: frame.Value = value; bone.zrot.keys.Add(frame); break;
-                                            case (int)TrackType.XSCA: frame.Value = value; bone.xsca.keys.Add(frame); break;
-                                            case (int)TrackType.YSCA: frame.Value = value; bone.ysca.keys.Add(frame); break;
-                                            case (int)TrackType.ZSCA: frame.Value = value; bone.zsca.keys.Add(frame); break;
+                                            case (int)TrackType.XPOS: keyFrame.Value = value; bone.xpos.keys.Add(keyFrame); break;
+                                            case (int)TrackType.YPOS: keyFrame.Value = value; bone.ypos.keys.Add(keyFrame); break;
+                                            case (int)TrackType.ZPOS: keyFrame.Value = value; bone.zpos.keys.Add(keyFrame); break;
+                                            case (int)TrackType.XROT: keyFrame.Value = value; bone.xrot.keys.Add(keyFrame); break;
+                                            case (int)TrackType.YROT: keyFrame.Value = value; bone.yrot.keys.Add(keyFrame); break;
+                                            case (int)TrackType.ZROT: keyFrame.Value = value; bone.zrot.keys.Add(keyFrame); break;
+                                            case (int)TrackType.XSCA: keyFrame.Value = value; bone.xsca.keys.Add(keyFrame); break;
+                                            case (int)TrackType.YSCA: keyFrame.Value = value; bone.ysca.keys.Add(keyFrame); break;
+                                            case (int)TrackType.ZSCA: keyFrame.Value = value; bone.zsca.keys.Add(keyFrame); break;
                                         }
                                     }
                                 }
@@ -209,12 +146,12 @@ namespace SmashForge
                 {
                     TreeNode SkeletonAnimation = new TreeNode() { Text = "Skeleton Animations" };
 
-                    ThisAnimation.Nodes.Add(SkeletonAnimation);
+                    thisAnimation.Nodes.Add(SkeletonAnimation);
 
                     TreeNode dummy = new TreeNode() { Text = "Animation Set" };
 
                     int i = 0;
-                    foreach (SkeletalAnim ska in TargetWiiUBFRES.SkeletalAnims.Values)
+                    foreach (SkeletalAnim ska in targetWiiUbfres.SkeletalAnims.Values)
                     {
 
                         if (i == 0)
