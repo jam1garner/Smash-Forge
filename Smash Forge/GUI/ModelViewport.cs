@@ -35,10 +35,6 @@ namespace SmashForge
         // Rendering Stuff
         private Framebuffer colorHdrFbo;
 
-        // Frame rate control
-        private Thread renderThread;
-        private bool isOpen = true;
-
         // The texture that will be blurred for bloom.
         private Framebuffer imageBrightHdrFbo;
 
@@ -462,35 +458,16 @@ namespace SmashForge
         {
             // Frame time control.
             glViewport.VSync = Runtime.enableVSync;
-            renderThread = new Thread(RenderAndAnimationLoop);
-            renderThread.Start();
+            glViewport.RenderFrameInterval = 16;
+            glViewport.OnRenderFrame += GlViewportOnOnRenderFrame;
+            glViewport.ResumeRendering();
         }
 
-        private void RenderAndAnimationLoop()
+        private void GlViewportOnOnRenderFrame(object sender, EventArgs e)
         {
-            if (IsDisposed)
-                return;
-
-            Stopwatch frameTimer = Stopwatch.StartNew();
-
-            // Wait for UI to load before triggering paint events.
-            const int waitTimeMs = 500;
-            Thread.Sleep(waitTimeMs);
-
-            glViewport.Invalidate();
-
-            const int frameUpdateInterval = 16;
-
-            while (isOpen)
-            {             
-                if (frameTimer.ElapsedMilliseconds >= frameUpdateInterval)
-                {
-                    frameTimer.Restart();
-                    if (isPlaying)
-                        UpdateAnimationFrame();
-                    glViewport.Invalidate();
-                }
-            }
+            if (isPlaying)
+                UpdateAnimationFrame();
+            glViewport_Paint(null, null);
         }
 
         private void UpdateAnimationFrame()
@@ -827,7 +804,6 @@ namespace SmashForge
         private void ResetCamera_Click(object sender, EventArgs e)
         {
             FrameSelectionAndSort();
-            glViewport.Invalidate();
         }
 
         public void FrameSelectionAndSort()
@@ -1296,7 +1272,6 @@ namespace SmashForge
 
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
         {
-            isOpen = false;
             ClearModelContainers();
             glViewport.Dispose();
         }

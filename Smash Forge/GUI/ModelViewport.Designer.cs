@@ -430,7 +430,6 @@
             this.glViewport.TabIndex = 0;
             this.glViewport.VSync = false;
             this.glViewport.Load += new System.EventHandler(this.glViewport_Load);
-            this.glViewport.Paint += new System.Windows.Forms.PaintEventHandler(this.glViewport_Paint);
             this.glViewport.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.glViewport_KeyPress);
             this.glViewport.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseClick);
             this.glViewport.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseDown);
