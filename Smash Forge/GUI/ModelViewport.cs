@@ -1674,7 +1674,6 @@ namespace SmashForge
             FixedFunctionRendering();
 
             GL.PopAttrib();
-            glViewport.SwapBuffers();
         }
 
         private void DrawModelsNormally(int width, int height, int defaultFbo)
