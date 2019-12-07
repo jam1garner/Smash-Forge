@@ -68,7 +68,7 @@ namespace SmashForge.Filetypes.Models.Nuds
             }
 
             // Always bind the uniform block because each polygon has its own uniform block.
-            uniformBlock.BindBlock(shader, "MaterialProperties");
+            uniformBlock.BindBlock(shader);
 
             // Create some conditionals rather than using different shaders.
             var genericMaterial = new GenericMaterial();

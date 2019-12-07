@@ -1,4 +1,6 @@
 ﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using SFGenericModel.VertexAttributes;
 
 namespace SmashForge
 {
@@ -22,16 +24,34 @@ namespace SmashForge
 
         public struct DisplayVertex
         {
-            // Used for rendering.
+            [VertexFloatAttribute("vPosition", ValueCount.Three, VertexAttribPointerType.Float, false)]
             public Vector3 pos;
+
+            [VertexFloatAttribute("vNormal", ValueCount.Three, VertexAttribPointerType.Float, false)]
             public Vector3 nrm;
+
+            [VertexFloatAttribute("vTangent", ValueCount.Three, VertexAttribPointerType.Float, false)]
             public Vector3 tan;
+
+            [VertexFloatAttribute("vBiTangent", ValueCount.Three, VertexAttribPointerType.Float, false)]
             public Vector3 bit;
+
+            [VertexFloatAttribute("vUV", ValueCount.Two, VertexAttribPointerType.Float, false)]
             public Vector2 uv;
+
+            [VertexFloatAttribute("vColor", ValueCount.Four, VertexAttribPointerType.Float, false)]
             public Vector4 col;
+
+            [VertexIntAttribute("vBone", ValueCount.Four, VertexAttribIntegerType.Int)]
             public Vector4I boneIds;
+
+            [VertexFloatAttribute("vWeight", ValueCount.Four, VertexAttribPointerType.Float, false)]
             public Vector4 weight;
+
+            [VertexFloatAttribute("vUV2", ValueCount.Two, VertexAttribPointerType.Float, false)]
             public Vector2 uv2;
+
+            [VertexFloatAttribute("vUV3", ValueCount.Two, VertexAttribPointerType.Float, false)]
             public Vector2 uv3;
 
             public static int Size = 4 * (3 + 3 + 3 + 3 + 2 + 4 + 4 + 4 + 2 + 2);

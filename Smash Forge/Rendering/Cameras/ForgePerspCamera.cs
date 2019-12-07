@@ -49,7 +49,6 @@ namespace SmashForge.Rendering
             }
 
             UpdateLastMousePosition();
-            UpdateMatrices();
         }
 
         private void UpdateLastMousePosition()

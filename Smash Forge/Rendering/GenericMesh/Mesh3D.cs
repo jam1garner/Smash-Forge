@@ -1,29 +1,15 @@
-﻿using System.Collections.Generic;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SFGenericModel;
-using SFGenericModel.VertexAttributes;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SmashForge.Rendering.Meshes
 {
-    class Mesh3D : GenericMesh<Vector3>
+    class Mesh3D : SFShapes.Mesh3D
     {
-        public Mesh3D(List<Vector3> vertices) : base(vertices, PrimitiveType.Triangles)
+        public Mesh3D(List<Vector3> vertices) : base(vertices.Select(v => new SFShapes.Vertex3d(v.X, v.Y, v.Z)).ToArray(), PrimitiveType.Triangles)
         {
 
-        }
-
-        public Mesh3D(List<Vector3> vertices, List<int> indices) : base(vertices, indices, PrimitiveType.Triangles)
-        {
-
-        }
-
-        public override List<VertexAttribute> GetVertexAttributes()
-        {
-            return new List<VertexAttribute>()
-            {
-                new VertexFloatAttribute("position", ValueCount.Three, VertexAttribPointerType.Float, false)
-            };
         }
     }
 }

@@ -9,24 +9,18 @@
             Draws simple geometry given a collection of vertex positions.
             </summary>
         </member>
-        <member name="M:SFShapes.Mesh3D.#ctor(System.Collections.Generic.List{OpenTK.Vector3},OpenTK.Graphics.OpenGL.PrimitiveType)">
+        <member name="M:SFShapes.Mesh3D.#ctor(SFShapes.Vertex3d[],OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
             
             </summary>
             <param name="vertices">The points for the shape</param>
             <param name="primitiveType">Determines how the shape should be drawn</param>
         </member>
-        <member name="M:SFShapes.Mesh3D.#ctor(System.Tuple{System.Collections.Generic.List{OpenTK.Vector3},OpenTK.Graphics.OpenGL.PrimitiveType})">
+        <member name="M:SFShapes.Mesh3D.#ctor(System.Tuple{SFShapes.Vertex3d[],OpenTK.Graphics.OpenGL.PrimitiveType})">
             <summary>
             
             </summary>
             <param name="vertices">The points of the shape</param>
-        </member>
-        <member name="M:SFShapes.Mesh3D.GetVertexAttributes">
-            <summary>
-            
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:SFShapes.Mesh3D.GetRenderAttributes">
             <summary>
@@ -74,6 +68,30 @@
             <returns>Vertices for a triangle strip sphere</returns>
             <exception cref="T:System.ArgumentOutOfRangeException">Radius is <c>0</c> or negative. 
             Precision is less than <see cref="F:SFShapes.ShapeGenerator.minSpherePrecision"/>.</exception>
+        </member>
+        <member name="T:SFShapes.Vertex3d">
+            <summary>
+            A simple struct for rendering a 3d vertex.
+            </summary>
+        </member>
+        <member name="P:SFShapes.Vertex3d.Position">
+            <summary>
+            The position of the vertex
+            </summary>
+        </member>
+        <member name="M:SFShapes.Vertex3d.#ctor(OpenTK.Vector3)">
+            <summary>
+            Creates a new vertex from the given coordinates
+            </summary>
+            <param name="position">The vertex coordinates</param>
+        </member>
+        <member name="M:SFShapes.Vertex3d.#ctor(System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a new vertex from the given coordinates
+            </summary>
+            <param name="x">The x coordinate</param>
+            <param name="y">The y coordinate</param>
+            <param name="z">The z coordinate</param>
         </member>
     </members>
 </doc>

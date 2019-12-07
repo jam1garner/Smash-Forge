@@ -9,15 +9,14 @@
             A container for 4x4 matrices. The matrices can not be set directly.
             </summary>
         </member>
-        <member name="P:SFGraphics.Cameras.Camera.DefaultPosition">
+        <member name="P:SFGraphics.Cameras.Camera.TransformedPosition">
             <summary>
-            The camera's initial position or position after <see cref="M:SFGraphics.Cameras.Camera.ResetToDefaultPosition"/>.
-            Defaults to (0, 10, -80).
+            The position of the camera in scene units, taking into account translation and rotation.
             </summary>
         </member>
-        <member name="P:SFGraphics.Cameras.Camera.Position">
+        <member name="P:SFGraphics.Cameras.Camera.Translation">
             <summary>
-            The position of the camera in scene units. 
+            The translation component of the camera's transforms in scene units.
             </summary>
         </member>
         <member name="P:SFGraphics.Cameras.Camera.Scale">
@@ -123,7 +122,7 @@
         </member>
         <member name="P:SFGraphics.Cameras.Camera.TranslationMatrix">
             <summary>
-            The result of <see cref="M:OpenTK.Matrix4.CreateTranslation(System.Single,System.Single,System.Single)"/> for X, -Y, Z of <see cref="P:SFGraphics.Cameras.Camera.Position"/>
+            The result of <see cref="M:OpenTK.Matrix4.CreateTranslation(System.Single,System.Single,System.Single)"/> for X, -Y, Z of <see cref="P:SFGraphics.Cameras.Camera.TransformedPosition"/>
             </summary>
         </member>
         <member name="F:SFGraphics.Cameras.Camera.perspectiveMatrix">
@@ -140,7 +139,7 @@
         </member>
         <member name="M:SFGraphics.Cameras.Camera.#ctor">
             <summary>
-            Creates a new <see cref="T:SFGraphics.Cameras.Camera"/> located at <see cref="P:SFGraphics.Cameras.Camera.DefaultPosition"/>.
+            Creates a new <see cref="T:SFGraphics.Cameras.Camera"/> located at the origin/>.
             </summary>
         </member>
         <member name="M:SFGraphics.Cameras.Camera.Pan(System.Single,System.Single,System.Boolean)">
@@ -157,9 +156,9 @@
             </summary>
             <param name="amount">The amount to zoom in scene units</param>
             <param name="scaleByDistanceToOrigin">When <c>true</c>, the <paramref name="amount"/> 
-            is multiplied by the magnitude of <see cref="P:SFGraphics.Cameras.Camera.Position"/></param>
+            is multiplied by the magnitude of <see cref="P:SFGraphics.Cameras.Camera.TransformedPosition"/></param>
         </member>
-        <member name="M:SFGraphics.Cameras.Camera.UpdateMatrices">
+        <member name="M:SFGraphics.Cameras.Camera.UpdateTransformationMatrices">
             <summary>
             Updates all matrix properties using the respective update methods.
             </summary>
@@ -189,9 +188,9 @@
             Calculates <see cref="F:SFGraphics.Cameras.Camera.mvpMatrix"/>.
             </summary>
         </member>
-        <member name="M:SFGraphics.Cameras.Camera.ResetToDefaultPosition">
+        <member name="M:SFGraphics.Cameras.Camera.ResetTransforms">
             <summary>
-            Sets <see cref="F:SFGraphics.Cameras.Camera.rotationXRadians"/> and <see cref="P:SFGraphics.Cameras.Camera.RotationYRadians"/> to 0.
+            Sets rotation and translation to <c>0</c>.
             </summary>
         </member>
         <member name="M:SFGraphics.Cameras.Camera.FrameBoundingSphere(OpenTK.Vector3,System.Single,System.Single)">

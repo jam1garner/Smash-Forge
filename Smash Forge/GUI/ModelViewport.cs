@@ -849,7 +849,7 @@ namespace SmashForge
                 if (node is ModelContainer)
                 {
                     ModelContainer modelContainer = (ModelContainer)node;
-                    modelContainer.DepthSortModels(camera.Position);
+                    modelContainer.DepthSortModels(camera.TransformedPosition);
                 }
             }
         }
@@ -948,7 +948,7 @@ namespace SmashForge
             if (hasModelContainers)
                 camera.FrameBoundingSphere(result.Xyz, result.W, 0);
             else
-                camera.ResetToDefaultPosition();
+                camera.ResetTransforms();
         }
 
         #region Moveset
@@ -1510,7 +1510,7 @@ namespace SmashForge
             {
                 Matrix4 mat = camera.RotationMatrix; mat.Transpose();
                 Vector3 pCamera = Vector3.TransformVector(
-                    new Vector3(-camera.Position.X, camera.Position.Y, -camera.Position.Z), mat);
+                    new Vector3(-camera.Translation.X, camera.Translation.Y, -camera.Translation.Z), mat);
                 Vector3 pMouse = new Ray(camera, glViewport).p1;
 
                 Vector3 direction = pMouse - pCamera;
@@ -1588,7 +1588,6 @@ namespace SmashForge
             GL.PushAttrib(AttribMask.AllAttribBits);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-
             // Return early to avoid rendering other stuff. 
             if (meshList.filesTreeView.SelectedNode != null)
             {

@@ -63,7 +63,7 @@ namespace SmashForge.Gui.Menus
             float height = Convert.ToSingle(numericPositionY.Value);
             float zoom = Convert.ToSingle(numericZoom.Value);
 
-            camera.Position = new OpenTK.Vector3(width, height, zoom);
+            camera.Translation = new OpenTK.Vector3(width, height, zoom);
             camera.RotationXRadians = xRotation;
             camera.RotationYRadians = yRotation;
 
@@ -80,9 +80,9 @@ namespace SmashForge.Gui.Menus
             numericVerticalDegrees.Value = Convert.ToDecimal(camera.RotationXDegrees);
 
             // Position
-            numericPositionX.Value = Convert.ToDecimal(camera.Position.X);
-            numericPositionY.Value = Convert.ToDecimal(camera.Position.Y);
-            numericZoom.Value = Convert.ToDecimal(camera.Position.Z);
+            numericPositionX.Value = Convert.ToDecimal(camera.Translation.X);
+            numericPositionY.Value = Convert.ToDecimal(camera.Translation.Y);
+            numericZoom.Value = Convert.ToDecimal(camera.Translation.Z);
         }
 
         private void numericHorizontalDegrees_ValueChanged(object sender, EventArgs e)
@@ -199,19 +199,19 @@ namespace SmashForge.Gui.Menus
         private void numericPositionX_ValueChanged(object sender, EventArgs e)
         {
             float positionX = Convert.ToSingle(numericPositionX.Value);
-            camera.Position = new OpenTK.Vector3(positionX, camera.Position.Y, camera.Position.Z);
+            camera.Translation = new OpenTK.Vector3(positionX, camera.Translation.Y, camera.Translation.Z);
         }
 
         private void numericPositionY_ValueChanged(object sender, EventArgs e)
         {
             float positionY = Convert.ToSingle(numericPositionY.Value);
-            camera.Position = new OpenTK.Vector3(camera.Position.X, positionY, camera.Position.Z);
+            camera.Translation = new OpenTK.Vector3(camera.Translation.X, positionY, camera.Translation.Z);
         }
 
         private void numericZoom_ValueChanged(object sender, EventArgs e)
         {
             float positionZ = Convert.ToSingle(numericZoom.Value);
-            camera.Position = new OpenTK.Vector3(camera.Position.X, camera.Position.Y, positionZ);
+            camera.Translation = new OpenTK.Vector3(camera.Translation.X, camera.Translation.Y, positionZ);
         }
     }
 }

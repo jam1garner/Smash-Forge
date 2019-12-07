@@ -258,7 +258,7 @@ namespace SmashForge
             }
 
             // Update bone matrices for the shader.
-            bonesUbo.BindBlock(shader, "BoneMatrices");
+            bonesUbo.BindBlock(shader);
             bonesUbo.SetValues("transforms", boneMatrices);
 
             shader.SetBoolToInt("useBones", true);
@@ -556,7 +556,7 @@ namespace SmashForge
             shader.SetInt("selectedBoneIndex", Runtime.selectedBoneIndex);
             shader.SetBoolToInt("drawWireFrame", Runtime.renderModelWireframe);
             shader.SetFloat("lineWidth", Runtime.wireframeLineWidth);
-            shader.SetVector3("cameraPosition", camera.Position);
+            shader.SetVector3("cameraPosition", camera.TransformedPosition);
 
             shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
         }

@@ -403,7 +403,7 @@ namespace SmashForge.Filetypes.Melee
             vertices.AddRange(ConvertVerts(decom.GetFormattedVertices(displayList, polygon)));
 
             PrimitiveType primitiveType = MeleeDatToOpenGL.GetGLPrimitiveType(displayList.PrimitiveType);
-            var vertexContainer = new IndexedVertexData<MeleeVertex>(vertices, vertexIndices, primitiveType);
+            var vertexContainer = new IndexedVertexData<MeleeVertex>(vertices.ToArray(), vertexIndices.ToArray(), primitiveType);
             vertexContainers.Add(vertexContainer);
         }
 

@@ -3,6 +3,7 @@ using OpenTK.Graphics.OpenGL;
 using SFGenericModel;
 using SFGenericModel.VertexAttributes;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SmashForge.Filetypes.Melee.Rendering
 {
@@ -36,7 +37,7 @@ namespace SmashForge.Filetypes.Melee.Rendering
     public class MeleeMesh : GenericMesh<MeleeVertex>
     {
         public MeleeMesh(IList<MeleeVertex> vertices, IList<int> vertexIndices, PrimitiveType primitiveType)
-            : base(vertices, vertexIndices, primitiveType)
+            : base(vertices.ToArray(), vertexIndices.ToArray(), primitiveType)
         {
 
         }

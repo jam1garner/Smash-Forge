@@ -2,11 +2,10 @@
 using SFGenericModel;
 using SFGenericModel.Materials;
 using SFGenericModel.RenderState;
-using SFGenericModel.VertexAttributes;
-using System.Collections.Generic;
 using SFGraphics.GLObjects.Shaders;
 using SmashForge.Filetypes.Models.Nuds;
 using SmashForge.Rendering;
+using System.Collections.Generic;
 
 namespace SmashForge
 {
@@ -16,7 +15,7 @@ namespace SmashForge
 
         private RenderSettings renderSettings = new RenderSettings();
 
-        public NudRenderMesh(List<Nud.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices, PrimitiveType.Triangles)
+        public NudRenderMesh(List<Nud.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices.ToArray(), vertexIndices.ToArray(), PrimitiveType.Triangles)
         {
 
         }
@@ -108,23 +107,6 @@ namespace SmashForge
                 renderSettings.alphaBlendSettings.blendingEquationRgb = BlendEquationMode.FuncReverseSubtract;
 
             renderSettings.alphaBlendSettings.blendingEquationAlpha = BlendEquationMode.FuncAdd;
-        }
-
-        public override List<VertexAttribute> GetVertexAttributes()
-        {
-            return new List<VertexAttribute>()
-            {                                                 
-                new VertexFloatAttribute("vPosition",  ValueCount.Three, VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vNormal",    ValueCount.Three, VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vTangent",   ValueCount.Three, VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vBiTangent", ValueCount.Three, VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vUV",        ValueCount.Two,   VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vColor",     ValueCount.Four,  VertexAttribPointerType.Float, false),
-                new VertexIntAttribute("vBone",        ValueCount.Four,  VertexAttribIntegerType.Int),
-                new VertexFloatAttribute("vWeight",    ValueCount.Four,  VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vUV2",       ValueCount.Two,   VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vUV3",       ValueCount.Two,   VertexAttribPointerType.Float, false),
-            };
         }
     }
 }

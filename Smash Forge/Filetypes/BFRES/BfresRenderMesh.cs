@@ -1,6 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using SFGenericModel;
-using SFGenericModel.VertexAttributes;
 using System.Collections.Generic;
 
 namespace SmashForge
@@ -8,28 +7,9 @@ namespace SmashForge
     public class BfresRenderMesh : GenericMesh<BFRES.DisplayVertex>
     {
         public BfresRenderMesh(List<BFRES.DisplayVertex> vertices, List<int> vertexIndices) 
-            : base(vertices, vertexIndices, PrimitiveType.Triangles)
+            : base(vertices.ToArray(), vertexIndices.ToArray(), PrimitiveType.Triangles)
         {
 
-        }
-
-        public override List<VertexAttribute> GetVertexAttributes()
-        {
-            return new List<VertexAttribute>()
-            {
-                new VertexFloatAttribute("vPosition",  ValueCount.Three, VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vNormal",    ValueCount.Three, VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vTangent",   ValueCount.Three, VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vBitangent", ValueCount.Three, VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vUV0",       ValueCount.Two,   VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vColor",     ValueCount.Four,  VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vBone",      ValueCount.Four,  VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vWeight",    ValueCount.Four,  VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vUV1",       ValueCount.Two,   VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vUV2",       ValueCount.Two,   VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vPosition2", ValueCount.Three, VertexAttribPointerType.Float, false),
-                new VertexFloatAttribute("vPosition3", ValueCount.Three, VertexAttribPointerType.Float, false)
-            };
         }
     }
 }
