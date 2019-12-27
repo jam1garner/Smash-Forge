@@ -342,8 +342,8 @@ namespace SmashForge
                 uint w = header.width, h = header.height;
                 for (int j = 0; j < header.mipmapCount; ++j)
                 {
-                    //If texture is DXT5 and isn't square, limit the mipmaps to an amount such that width and height are each always >= 4
-                    if (tex.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext && tex.Width != tex.Height && (w < 4 || h < 4))
+                    //If texture is DXT3 or DXT5 and isn't square, limit the mipmaps to an amount such that width and height are each always >= 4
+                    if ((tex.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext || tex.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext) && tex.Width != tex.Height && (w < 4 || h < 4))
                         break;
 
                     uint s = (w * h); //Total pixels
