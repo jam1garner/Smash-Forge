@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -154,84 +154,14 @@ namespace SmashForge
                     foreach (SkeletalAnim ska in targetWiiUbfres.SkeletalAnims.Values)
                     {
 
-                        if (i == 0)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "0 - 100" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 100)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "100 - 200" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 200)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "200 - 300" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 300)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "300 - 400" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 400)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "400 - 500" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 500)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "500 - 600" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 600)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "600 - 700" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 700)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "700 - 800" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 800)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "800 - 900" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 900)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "900 - 1000" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
-                        if (i == 1000)
-                        {
-                            dummy = new TreeNode() { Text = "Animation Set " + "1000+" };
-                            SkeletonAnimation.Nodes.Add(dummy);
-                        }
+                        int start = i * setSize;
+                        int end = start + setSize - 1;
+                        if (i%100 == 0)
+                            skeletonAnimationNode.Nodes.Add(new TreeNode { Text = $"Animation Set {start} - {end}" });
 
                         Animation a = new Animation(ska.Name);
 
-                        if (i >= 0 && i < 100)
-                            SkeletonAnimation.Nodes[0].Nodes.Add(a);
-                        if (i >= 100 && i < 200)
-                            SkeletonAnimation.Nodes[1].Nodes.Add(a);
-                        if (i >= 200 && i < 300)
-                            SkeletonAnimation.Nodes[2].Nodes.Add(a);
-                        if (i >= 300 && i < 400)
-                            SkeletonAnimation.Nodes[3].Nodes.Add(a);
-                        if (i >= 400 && i < 500)
-                            SkeletonAnimation.Nodes[4].Nodes.Add(a);
-                        if (i >= 500 && i < 600)
-                            SkeletonAnimation.Nodes[5].Nodes.Add(a);
-                        if (i >= 600 && i < 700)
-                            SkeletonAnimation.Nodes[6].Nodes.Add(a);
-                        if (i >= 700 && i < 800)
-                            SkeletonAnimation.Nodes[7].Nodes.Add(a);
-                        if (i >= 800 && i < 900)
-                            SkeletonAnimation.Nodes[8].Nodes.Add(a);
-                        if (i >= 900 && i < 1000)
-                            SkeletonAnimation.Nodes[9].Nodes.Add(a);
+                        SkeletonAnimation.Nodes[i/100].Nodes.Add(a);
 
 
                         a.frameCount = ska.FrameCount;
