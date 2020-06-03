@@ -267,26 +267,6 @@ vec3 ColorOffsetGain(vec3 diffuseMap, int hasBayoHair,vec4 colorOffset, vec4 col
     return resultingColor;
 }
 
-vec3 SoftLighting(vec3 diffuse, vec4 params, float darkenMultiplier, float saturationMultiplier,
-    float halfLambert) {
-    // Higher blend values make the dark region smoother and larger.
-    float edgeL = 0.5;
-    float edgeR = 0.5 + (params.z / 2);
-    float smoothLambert = smoothstep(edgeL, edgeR, halfLambert);
-
-    // Controls ambient brightness.
-    float ambientGain = max(1 - (darkenMultiplier * params.y), 0);
-
-    // Controls ambient saturation.
-    // TODO: Need to check the math.
-    // This next level math hacking may or may not be right.
-    vec3 ambientTintColor = normalize(pow(diffuse, vec3(params.x * 0.3)));
-
-    // Creates a custom diffuse gradient rather than using lighting?
-    vec3 result = diffuse * mix(ambientTintColor * ambientGain, vec3(1), smoothLambert);
-    return result;
-}
-
 vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor) {
     // hemisphere fresnel with fresnelParams exponent
     float hemiBlendSky = dot(N, fresSkyDirection) * 0.5 + 0.5;
@@ -437,6 +417,16 @@ vec3 Lighting(vec3 N, float halfLambert) {
     return vec3(1);
 }
 
+vec3 SoftLighting(vec3 diffuse, vec4 params, float lambert) {
+    float smoothLambert = clamp(lambert / params.z, 0, 1);
+    float darkenMultiplier = 0.5; // TODO: some sort of uniform is used in game.
+    // TODO: How is tint color done in the in game shaders?
+    vec3 ambientTint = mix(vec3(Luminance(diffuse)), diffuse, params.x);
+    float ambientGain = max(1 - (darkenMultiplier * params.y), 0);
+    vec3 ambientColorFinal = ambLightColor * ambientGain * ambientTint;
+    return CharacterDiffuseLighting(smoothLambert, ambientColorFinal * ambientIntensity, difLightColor * diffuseIntensity) * diffuse;
+}
+
 vec3 DiffuseAOBlend(float aoMap, vec4 aoMinGain) {
     // Calculate the effect of NU_aoMinGain on the ambient occlusion map.
     // TODO: Max should be 1 but doesn't look correct.
@@ -471,6 +461,7 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert) {
         return UniverseColor(effUniverseParam.x, vert.objectPosition, cameraPosition, modelViewMatrix, dif);
 
     // Diffuse uses a half lambert for softer lighting.
+    float lambert = max(dot(difLightDirection, N), 0.0);
     float halfLambert = dot(difLightDirection, N) * 0.5 + 0.5;
     float halfLambert2 = dot(difLight2Direction, N) * 0.5 + 0.5;
     float halfLambert3 = dot(difLight3Direction, N) * 0.5 + 0.5;
@@ -496,12 +487,10 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert) {
     diffusePass += diffuseColorFinal * 0.2 * RampColor(halfLambert, dummyRamp, hasDummyRamp);
 
     // Soft lighting.
-    vec3 softLightDif = diffuseColorFinal * difLightColor;
-    vec3 softLightAmb = diffuseColorFinal * ambLightColor;
     if (hasSoftLight == 1)
-        diffusePass = SoftLighting(softLightDif, softLightingParams, 0.3, 0.0561, halfLambert);
+        diffusePass = SoftLighting(diffuseColorFinal, softLightingParams, lambert);
     else if (hasCustomSoftLight == 1)
-        diffusePass = SoftLighting(softLightDif, customSoftLightParams, 0.3, 0.114, halfLambert);
+        diffusePass = SoftLighting(diffuseColorFinal, customSoftLightParams, lambert);
 
     // Flags used for brightening diffuse for softlightingparams.
     if (softLightBrighten == 1)
@@ -601,7 +590,7 @@ vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert) {
 
 vec4 SmashShader(VertexAttributes vert)
 {
-    vec4 resultingColor = vec4(vert.normal, 1);
+    vec4 resultingColor = vec4(0,0,0,1);
 
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
 
