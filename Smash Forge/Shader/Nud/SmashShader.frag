@@ -429,20 +429,10 @@ vec3 SoftLighting(vec3 diffuse, vec4 params, float lambert) {
 
 vec3 DiffuseAOBlend(float aoMap, vec4 aoMinGain) {
     // Calculate the effect of NU_aoMinGain on the ambient occlusion map.
-    // TODO: Max should be 1 but doesn't look correct.
-    float maxAOBlendValue = 1.25;
-    aoMap = pow(aoMap, 2.2);
-    vec3 aoBlend = vec3(aoMap);
-    return min((aoBlend + aoMinGain.rgb), vec3(maxAOBlendValue));
+    return clamp(aoMap + aoMinGain.rgb, 0, 1);
 }
 
-float AmbientOcclusionBlend(vec4 diffuseMap, vec4 aoMinGain, VertexAttributes vert) {
-    // Ambient occlusion uses sRGB gamma.
-    // Not all materials have an ambient occlusion map.
-    float aoMap = pow(texture(normalMap, vert.texCoord).a, 2.2);
-    if (hasNrm != 1)
-        aoMap = 1;
-
+float AmbientOcclusionBlend(vec4 diffuseMap, float aoMap, vec4 aoMinGain, VertexAttributes vert) {
     // The diffuse map for colorGain/Offset materials does a lot of things.
     if (hasColorGainOffset == 1 || useDiffuseBlend == 1)
         aoMap = Luminance(pow(diffuseMap.rgb, vec3(1 / 2.2)));
@@ -451,10 +441,10 @@ float AmbientOcclusionBlend(vec4 diffuseMap, vec4 aoMinGain, VertexAttributes ve
     if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
         aoMixIntensity = 0;
 
-    return mix(aoMap, 1, aoMixIntensity);
+    return clamp(aoMap + aoMixIntensity, 0, 1);
 }
 
-vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert) {
+vec3 DiffusePass(vec3 N, vec4 diffuseMap, float aoMap, VertexAttributes vert) {
     vec3 diffusePass = vec3(0);
 
     if (hasUniverseParam == 1)
@@ -472,7 +462,7 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert) {
     } else {
         vec3 aoBlend = vec3(1);
         if (hasNrm == 1)
-            aoBlend = DiffuseAOBlend(texture(normalMap, vert.texCoord).a, aoMinGain);
+            aoBlend = DiffuseAOBlend(aoMap, aoMinGain);
         else
             aoBlend = DiffuseAOBlend(1.0, aoMinGain);
         diffuseColorFinal = diffuseMap.rgb * aoBlend * diffuseColor.rgb;
@@ -553,8 +543,13 @@ vec4 DiffuseMapTotal(VertexAttributes vert) {
 }
 
 vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert) {
+    float aoMap = pow(texture(normalMap, vert.texCoord).a, 2.2);
+    // Not all materials have an ambient occlusion map.
+    if (hasNrm != 1)
+        aoMap = 1;
+
     // Separate render pass calculations.
-    vec3 diffusePass = DiffusePass(N, diffuseMap, vert);
+    vec3 diffusePass = DiffusePass(N, diffuseMap, aoMap, vert);
 
     // Use total diffuse pass instead of just diffuse map color for tint.
     vec3 specTintColor = TintColor(diffusePass, specularColor.a);
@@ -562,7 +557,7 @@ vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert) {
     vec3 reflTintColor = TintColor(diffusePass, reflectionColor.a);
 
     // The ambient occlusion calculations for diffuse are done separately.
-    float ambientOcclusionBlend = AmbientOcclusionBlend(diffuseMap, aoMinGain, vert);
+    float ambientOcclusionBlend = AmbientOcclusionBlend(diffuseMap, aoMap, aoMinGain, vert);
     vec3 specularPass = SpecularPass(N, I, diffuseMap, ambientOcclusionBlend, specTintColor, diffusePass, vert);
     vec3 fresnelPass = FresnelPass(N, I, diffuseMap, ambientOcclusionBlend, fresTintColor);
 	vec3 reflectionPass = ReflectionPass(N, I, diffuseMap, ambientOcclusionBlend, reflTintColor, vert);
@@ -592,6 +587,7 @@ vec4 SmashShader(VertexAttributes vert)
 {
     vec4 resultingColor = vec4(0,0,0,1);
 
+    // Transform view vector to world space.
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
 
     vec3 N = vert.normal;
