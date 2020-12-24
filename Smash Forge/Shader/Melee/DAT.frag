@@ -115,18 +115,24 @@ void main()
 
 	vec3 V = vec3(0, 0, -1) * mat3(mvpMatrix);
     vec3 N = normal;
-    if (renderNormalMap == 1)
-    {
-        // This seems to only affect diffuse.
-        N = CalculateBumpMapNormal(normal, tangent, bitangent, hasBumpMap,
-            bumpMapTex, bumpMapWidth, bumpMapHeight, UV0  * bumpMapTexScale);
-    }
 
 	// Render passes
 	fragColor.rgb += DiffusePass(N, V) * renderDiffuse;
 	fragColor.rgb += SpecularPass(N, V) * renderSpecular;
 
 	fragColor.rgb *= color.rgb;
+
+    if (renderNormalMap == 1 && hasBumpMap == 1)
+    {
+        // TODO: Bump mapping?
+        vec2 tex0 = UV0 * bumpMapTexScale;
+        vec2 tex1 = tex0 + vec2(dot(vec3(0,0,1), tangent.xyz), dot(vec3(0,0,1), bitangent.xyz));
+        vec3 bump0 = texture(bumpMapTex, tex0).rgb;
+        vec3 bump1 = texture(bumpMapTex, tex1).rgb;
+
+        vec3 difference = bump0 - bump1;
+        fragColor.rgb *= difference + 1.0;
+    }
 
 	// Set alpha
     if (renderAlpha == 1)
