@@ -28,6 +28,9 @@ namespace SmashForge
                 Directory.Delete(Path.Combine(MainForm.executableDir, "updater/"), true);
                 Directory.Move(Path.Combine(MainForm.executableDir, "new_updater/"), Path.Combine(MainForm.executableDir, "updater/"));
             }
+
+            OpenTK.Toolkit.Init(new OpenTK.ToolkitOptions() { Backend = OpenTK.PlatformBackend.PreferNative });
+
             SingleInstanceController controller = new SingleInstanceController();
             controller.Run(args);
             /*MainForm.Instance.filesToOpen = args;
