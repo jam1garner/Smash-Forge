@@ -190,14 +190,18 @@ void main()
     geomObjectPosition = vPosition.xyz;
     geomTangent.xyz = vTangent.xyz;
     geomBitangent.xyz = vBiTangent.xyz;
+    geomNormal = vNormal;
     geomViewPosition = vec3(vPosition * mat3(mvpMatrix));
 
     float totalWeight = TotalSelectedBoneWeight();
     geomBoneWeightsColored = BoneWeightColor(totalWeight);
 
-    geomNormal = vNormal;
     if (useBones == 1 && vBone.x != -1)
+    {
 		geomNormal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
+		geomTangent = normalize((skinNRM(vTangent.xyz, ivec4(vBone))).xyz);
+		geomBitangent = normalize((skinNRM(vBiTangent.xyz, ivec4(vBone))).xyz);
+    }
 
     geomViewNormal = mat3(sphereMapMatrix) * geomNormal.xyz;
     geomViewNormal = geomViewNormal * 0.5 + 0.5;

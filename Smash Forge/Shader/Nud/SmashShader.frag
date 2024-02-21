@@ -220,7 +220,7 @@ vec3 TintColor(vec3 diffuseColor, float tintAmount) {
 vec3 RampColor(float rampCoord, sampler2D ramp, int hasRamp) {
     // TODO: Vertical component is always 0?
 	rampCoord = clamp(rampCoord, 0.01, 0.99);
-	return pow(texture(ramp, vec2(1 - rampCoord, 0.0)).rgb, vec3(2.2)) * hasRamp;
+	return pow(texture(ramp, vec2(1 - rampCoord)).rgb, vec3(2.2)) * hasRamp;
 }
 
 vec3 SphereMapColor(vec3 viewNormal, sampler2D spheremap) {
@@ -265,26 +265,6 @@ vec3 ColorOffsetGain(vec3 diffuseMap, int hasBayoHair,vec4 colorOffset, vec4 col
     resultingColor += colorOffset.rgb;
     resultingColor *= colorGain.rgb;
     return resultingColor;
-}
-
-vec3 SoftLighting(vec3 diffuse, vec4 params, float darkenMultiplier, float saturationMultiplier,
-    float halfLambert) {
-    // Higher blend values make the dark region smoother and larger.
-    float edgeL = 0.5;
-    float edgeR = 0.5 + (params.z / 2);
-    float smoothLambert = smoothstep(edgeL, edgeR, halfLambert);
-
-    // Controls ambient brightness.
-    float ambientGain = max(1 - (darkenMultiplier * params.y), 0);
-
-    // Controls ambient saturation.
-    // TODO: Need to check the math.
-    // This next level math hacking may or may not be right.
-    vec3 ambientTintColor = normalize(pow(diffuse, vec3(params.x * 0.3)));
-
-    // Creates a custom diffuse gradient rather than using lighting?
-    vec3 result = diffuse * mix(ambientTintColor * ambientGain, vec3(1), smoothLambert);
-    return result;
 }
 
 vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor) {
@@ -410,7 +390,10 @@ vec3 UniverseColor(float universeParam, vec3 objectPosition, vec3 cameraPosition
 }
 
 vec3 CharacterDiffuseLighting(float halfLambert, vec3 ambLightColor, vec3 difLightColor) {
-    return mix(ambLightColor, difLightColor, halfLambert);
+    vec3 rampContribution = difLightColor * RampColor(halfLambert, ramp, hasRamp);
+    vec3 dummyRampContribution = difLightColor * RampColor(halfLambert, dummyRamp, hasDummyRamp);
+    // TODO: How do ramps work?
+    return mix(ambLightColor, difLightColor * (rampContribution + dummyRampContribution), halfLambert);
 }
 
 // Defined in StageLighting.frag.
@@ -437,22 +420,26 @@ vec3 Lighting(vec3 N, float halfLambert) {
     return vec3(1);
 }
 
-vec3 DiffuseAOBlend(float aoMap, vec4 aoMinGain) {
-    // Calculate the effect of NU_aoMinGain on the ambient occlusion map.
-    // TODO: Max should be 1 but doesn't look correct.
-    float maxAOBlendValue = 1.25;
-    aoMap = pow(aoMap, 2.2);
-    vec3 aoBlend = vec3(aoMap);
-    return min((aoBlend + aoMinGain.rgb), vec3(maxAOBlendValue));
+vec3 SoftLighting(vec3 diffuse, vec4 params, float lambert) {
+    float smoothLambert = clamp(lambert / params.z, 0, 1);
+    float darkenMultiplier = 0.5; // TODO: some sort of uniform is used in game.
+    // TODO: How is tint color done in the in game shaders?
+    vec3 ambientTint = mix(vec3(Luminance(diffuse)), diffuse, params.x);
+    float ambientGain = max(1 - (darkenMultiplier * params.y), 0);
+    vec3 ambientColorFinal = ambLightColor * ambientGain * ambientTint;
+    return CharacterDiffuseLighting(smoothLambert, ambientColorFinal * ambientIntensity, difLightColor * diffuseIntensity) * diffuse;
 }
 
-float AmbientOcclusionBlend(vec4 diffuseMap, vec4 aoMinGain, VertexAttributes vert) {
-    // Ambient occlusion uses sRGB gamma.
-    // Not all materials have an ambient occlusion map.
-    float aoMap = pow(texture(normalMap, vert.texCoord).a, 2.2);
-    if (hasNrm != 1)
-        aoMap = 1;
+vec3 DiffuseAOBlend(float aoMap, vec4 aoMinGain) {
+    // TODO: AO with no normal map?
+    // Calculate the effect of NU_aoMinGain on the ambient occlusion map.
+    if (hasNrm == 1)
+        return clamp(aoMap + aoMinGain.rgb, 0, 1);
+    else
+        return clamp(1.0 + aoMinGain.rgb, 0, 1);
+}
 
+float AmbientOcclusionBlend(vec4 diffuseMap, float aoMap, vec4 aoMinGain, VertexAttributes vert) {
     // The diffuse map for colorGain/Offset materials does a lot of things.
     if (hasColorGainOffset == 1 || useDiffuseBlend == 1)
         aoMap = Luminance(pow(diffuseMap.rgb, vec3(1 / 2.2)));
@@ -461,47 +448,32 @@ float AmbientOcclusionBlend(vec4 diffuseMap, vec4 aoMinGain, VertexAttributes ve
     if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
         aoMixIntensity = 0;
 
-    return mix(aoMap, 1, aoMixIntensity);
+    return clamp(aoMap + aoMixIntensity, 0, 1);
 }
 
-vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert) {
-    vec3 diffusePass = vec3(0);
-
+vec3 DiffusePass(vec3 N, vec4 diffuseMap, float aoMap, VertexAttributes vert) {
     if (hasUniverseParam == 1)
         return UniverseColor(effUniverseParam.x, vert.objectPosition, cameraPosition, modelViewMatrix, dif);
 
-    // Diffuse uses a half lambert for softer lighting.
-    float halfLambert = dot(difLightDirection, N) * 0.5 + 0.5;
-    float halfLambert2 = dot(difLight2Direction, N) * 0.5 + 0.5;
-    float halfLambert3 = dot(difLight3Direction, N) * 0.5 + 0.5;
+    vec3 diffusePass = vec3(0);
+    
     vec3 diffuseColorFinal = vec3(0); // result of diffuse map, aoBlend, and some NU_values
-
     if (hasColorGainOffset == 1) {
         diffuseColorFinal = ColorOffsetGain(diffuseMap.rgb, hasBayoHair, colorOffset, colorGain, alphaBlendParams);
     } else {
-        vec3 aoBlend = vec3(1);
-        if (hasNrm == 1)
-            aoBlend = DiffuseAOBlend(texture(normalMap, vert.texCoord).a, aoMinGain);
-        else
-            aoBlend = DiffuseAOBlend(1.0, aoMinGain);
+        vec3 aoBlend = DiffuseAOBlend(aoMap, aoMinGain);
         diffuseColorFinal = diffuseMap.rgb * aoBlend * diffuseColor.rgb;
     }
 
-    // Stage lighting
-    vec3 lighting = Lighting(N, halfLambert);
-
-    diffusePass = diffuseColorFinal * lighting;
-    // TODO: Improve ramp shading. This should use two char diffuse lights for intensities.
-    diffusePass += diffuseColorFinal * 0.5 * RampColor(halfLambert, ramp, hasRamp);
-    diffusePass += diffuseColorFinal * 0.2 * RampColor(halfLambert, dummyRamp, hasDummyRamp);
-
-    // Soft lighting.
-    vec3 softLightDif = diffuseColorFinal * difLightColor;
-    vec3 softLightAmb = diffuseColorFinal * ambLightColor;
+    // Diffuse uses a half lambert for softer lighting.
+    float lambert = max(dot(difLightDirection, N), 0.0);
+    float halfLambert = dot(difLightDirection, N) * 0.5 + 0.5;
     if (hasSoftLight == 1)
-        diffusePass = SoftLighting(softLightDif, softLightingParams, 0.3, 0.0561, halfLambert);
+        diffusePass = SoftLighting(diffuseColorFinal, softLightingParams, lambert);
     else if (hasCustomSoftLight == 1)
-        diffusePass = SoftLighting(softLightDif, customSoftLightParams, 0.3, 0.114, halfLambert);
+        diffusePass = SoftLighting(diffuseColorFinal, customSoftLightParams, lambert);
+    else
+        diffusePass = diffuseColorFinal * Lighting(N, halfLambert);
 
     // Flags used for brightening diffuse for softlightingparams.
     if (softLightBrighten == 1)
@@ -564,8 +536,13 @@ vec4 DiffuseMapTotal(VertexAttributes vert) {
 }
 
 vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert) {
+    float aoMap = pow(texture(normalMap, vert.texCoord).a, 2.2);
+    // Not all materials have an ambient occlusion map.
+    if (hasNrm != 1)
+        aoMap = 1;
+
     // Separate render pass calculations.
-    vec3 diffusePass = DiffusePass(N, diffuseMap, vert);
+    vec3 diffusePass = DiffusePass(N, diffuseMap, aoMap, vert);
 
     // Use total diffuse pass instead of just diffuse map color for tint.
     vec3 specTintColor = TintColor(diffusePass, specularColor.a);
@@ -573,7 +550,7 @@ vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert) {
     vec3 reflTintColor = TintColor(diffusePass, reflectionColor.a);
 
     // The ambient occlusion calculations for diffuse are done separately.
-    float ambientOcclusionBlend = AmbientOcclusionBlend(diffuseMap, aoMinGain, vert);
+    float ambientOcclusionBlend = AmbientOcclusionBlend(diffuseMap, aoMap, aoMinGain, vert);
     vec3 specularPass = SpecularPass(N, I, diffuseMap, ambientOcclusionBlend, specTintColor, diffusePass, vert);
     vec3 fresnelPass = FresnelPass(N, I, diffuseMap, ambientOcclusionBlend, fresTintColor);
 	vec3 reflectionPass = ReflectionPass(N, I, diffuseMap, ambientOcclusionBlend, reflTintColor, vert);
@@ -601,8 +578,9 @@ vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert) {
 
 vec4 SmashShader(VertexAttributes vert)
 {
-    vec4 resultingColor = vec4(vert.normal, 1);
+    vec4 resultingColor = vec4(0,0,0,1);
 
+    // Transform view vector to world space.
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
 
     vec3 N = vert.normal;
