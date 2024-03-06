@@ -32,10 +32,9 @@ namespace SmashForge
         public override Endianness Endian { get; set; }
         public ushort version = 0x0200;
 
-        //If the ModelContainer of the NUD has no bones, we will write the type as 0 regardless of this value
-        //If it does have bones, this value will be written as normal. 2 is common but it can also validly be 0 and other values
-        public ushort type = 2;
-        public int boneCount = 0;
+        //The lowest and highest bone indexes referenced by the objects and vertices in this NUD
+        public ushort boneIndexStart = 0;
+        public ushort boneIndexEnd = 0;
         public bool hasBones = false;
         public float[] boundingSphere = new float[4];
 
@@ -817,9 +816,8 @@ namespace SmashForge
             public int vertCount;
             public int vertSize;
             public int UVSize;
-            public int polyCount;
-            public int polySize;
-            public int polyFlag;
+            public ushort faceCount;
+            public ushort polyFlag;
             public int texprop1;
             public int texprop2;
             public int texprop3;
@@ -849,8 +847,8 @@ namespace SmashForge
             fileData.endian = Endian;
 
             int polysets = fileData.ReadUShort();
-            type = fileData.ReadUShort();
-            boneCount = fileData.ReadUShort();
+            boneIndexStart = fileData.ReadUShort();
+            boneIndexEnd = fileData.ReadUShort();
 
             int polyClumpStart = fileData.ReadInt() + 0x30;
             int polyClumpSize = fileData.ReadInt();
@@ -918,9 +916,8 @@ namespace SmashForge
                     polyData.texprop2 = fileData.ReadInt();
                     polyData.texprop3 = fileData.ReadInt();
                     polyData.texprop4 = fileData.ReadInt();
-                    polyData.polyCount = fileData.ReadUShort();
-                    polyData.polySize = fileData.ReadByte();
-                    polyData.polyFlag = fileData.ReadByte();
+                    polyData.faceCount = fileData.ReadUShort();
+                    polyData.polyFlag = fileData.ReadUShort();
                     fileData.Skip(0xC);
 
                     int temp = fileData.Pos();
@@ -955,7 +952,6 @@ namespace SmashForge
                 m.DstFactor = d.ReadUShort();
                 m.AlphaTest = d.ReadByte();
                 m.AlphaFunction = d.ReadByte();
-
                 m.RefAlpha = d.ReadUShort();
                 m.CullMode = d.ReadUShort();
                 d.Skip(4); // unknown
@@ -1033,15 +1029,37 @@ namespace SmashForge
             Polygon m = new Polygon();
             m.vertSize = p.vertSize;
             m.UVSize = p.UVSize;
-            m.polflag = p.polyFlag;
-            m.strip = p.polySize;
+            m.strip = (byte)(p.polyFlag >> 8);
+            m.polflag = (byte)(p.polyFlag & 0xFF);
 
-            ReadVertex(d, p, o, m);
+            Vertex[] vertices = new Vertex[p.vertCount];
+            for (int x = 0; x < p.vertCount; x++)
+                vertices[x] = new Vertex();
+
+            d.Seek(p.vertStart);
+            if (m.boneType > 0)
+            {
+                foreach (Vertex v in vertices)
+                    ReadUV(d, p, o, m, v);
+                d.Seek(p.verAddStart);
+                foreach (Vertex v in vertices)
+                    ReadVertex(d, p, o, m, v);
+            }
+            else
+            {
+                foreach (Vertex v in vertices)
+                {
+                    ReadVertex(d, p, o, m, v);
+                    ReadUV(d, p, o, m, v);
+                }
+            }
+
+            foreach (Vertex v in vertices)
+                m.vertices.Add(v);
 
             // faces
             d.Seek(p.polyStart);
-
-            for (int x = 0; x < p.polyCount; x++)
+            for (int x = 0; x < p.faceCount; x++)
             {
                 m.vertexIndices.Add(d.ReadUShort());
             }
@@ -1049,190 +1067,146 @@ namespace SmashForge
             return m;
         }
 
-        private static void ReadUV(FileData d, PolyData p, ObjectData o, Polygon m, Vertex[] v)
+        private static void ReadUV(FileData d, PolyData p, ObjectData o, Polygon m, Vertex v)
         {
             int uvCount = (p.UVSize >> 4);
-            int uvType = (p.UVSize) & 0xF;
+            int colorType = (p.UVSize) & 0xF;
 
-            for (int i = 0; i < p.vertCount; i++)
-            {
-                v[i] = new Vertex();
-                if (uvType == 0x0)
-                {
-                    for (int j = 0; j < uvCount; j++)
-                        v[i].uv.Add(new Vector2(d.ReadHalfFloat(), d.ReadHalfFloat()));
-                }
-                else if (uvType == 0x2)
-                {
-                        v[i].color = new Vector4(d.ReadByte(), d.ReadByte(), d.ReadByte(), d.ReadByte());
-                        for (int j = 0; j < uvCount; j++)
-                            v[i].uv.Add(new Vector2(d.ReadHalfFloat(), d.ReadHalfFloat()));
-                }
-                else if (uvType == 0x4)
-                {
-                    v[i].color = new Vector4(d.ReadHalfFloat() * 0xFF, d.ReadHalfFloat() * 0xFF, d.ReadHalfFloat() * 0xFF, d.ReadHalfFloat() * 0xFF);
-                    for (int j = 0; j < uvCount; j++)
-                        v[i].uv.Add(new Vector2(d.ReadHalfFloat(), d.ReadHalfFloat()));
-                }
-                else
-                    throw new NotImplementedException("UV type not supported " + uvType);
-            }
+            if (colorType == 0x0)
+                {}
+            else if (colorType == 0x2)
+                v.color = new Vector4(d.ReadByte(), d.ReadByte(), d.ReadByte(), d.ReadByte());
+            else if (colorType == 0x4)
+                v.color = new Vector4(d.ReadHalfFloat() * 0xFF, d.ReadHalfFloat() * 0xFF, d.ReadHalfFloat() * 0xFF, d.ReadHalfFloat() * 0xFF);
+            else
+                throw new NotImplementedException("UV type not supported " + colorType);
+
+            for (int j = 0; j < uvCount; j++)
+                v.uv.Add(new Vector2(d.ReadHalfFloat(), d.ReadHalfFloat()));
         }
 
-        private static void ReadVertex(FileData d, PolyData p, ObjectData o, Polygon m)
+        private static void ReadVertex(FileData d, PolyData p, ObjectData o, Polygon m, Vertex v)
         {
             int boneType = p.vertSize & 0xF0;
             int vertexType = p.vertSize & 0xF;
 
-            Vertex[] vertices = new Vertex[p.vertCount];
+            v.pos.X = d.ReadFloat();
+            v.pos.Y = d.ReadFloat();
+            v.pos.Z = d.ReadFloat();
 
-            d.Seek(p.vertStart);
-
-            if (boneType > 0)
+            if (vertexType == (int)Polygon.VertexTypes.NoNormals)
             {
-                ReadUV(d, p, o, m, vertices);
-                d.Seek(p.verAddStart);
+                d.ReadFloat();
+            }
+            else if (vertexType == (int)Polygon.VertexTypes.NormalsFloat)
+            {
+                d.ReadFloat(); // Always set to 100.0 in a Tekken model?
+                v.nrm.X = d.ReadFloat();
+                v.nrm.Y = d.ReadFloat();
+                v.nrm.Z = d.ReadFloat();
+                d.ReadFloat(); // n1?
+            }
+            else if (vertexType == 2) // This one needs verification
+            {
+                d.ReadFloat(); // What is this?
+                v.nrm.X = d.ReadFloat();
+                v.nrm.Y = d.ReadFloat();
+                v.nrm.Z = d.ReadFloat();
+                d.ReadFloat(); // n1?
+                v.bitan.X = d.ReadFloat();
+                v.bitan.Y = d.ReadFloat();
+                v.bitan.Z = d.ReadFloat();
+                v.bitan.W = d.ReadFloat();
+                v.tan.X = d.ReadFloat();
+                v.tan.Y = d.ReadFloat();
+                v.tan.Z = d.ReadFloat();
+                v.tan.W = d.ReadFloat();
+            }
+            else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanFloat)
+            {
+                d.ReadFloat(); // What is this?
+                v.nrm.X = d.ReadFloat();
+                v.nrm.Y = d.ReadFloat();
+                v.nrm.Z = d.ReadFloat();
+                d.ReadFloat(); // n1?
+                v.bitan.X = d.ReadFloat();
+                v.bitan.Y = d.ReadFloat();
+                v.bitan.Z = d.ReadFloat();
+                v.bitan.W = d.ReadFloat();
+                v.tan.X = d.ReadFloat();
+                v.tan.Y = d.ReadFloat();
+                v.tan.Z = d.ReadFloat();
+                v.tan.W = d.ReadFloat();
+            }
+            else if (vertexType == (int)Polygon.VertexTypes.NormalsHalfFloat)
+            {
+                v.nrm.X = d.ReadHalfFloat();
+                v.nrm.Y = d.ReadHalfFloat();
+                v.nrm.Z = d.ReadHalfFloat();
+                d.ReadHalfFloat(); // n1?
+            }
+            else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanHalfFloat)
+            {
+                v.nrm.X = d.ReadHalfFloat();
+                v.nrm.Y = d.ReadHalfFloat();
+                v.nrm.Z = d.ReadHalfFloat();
+                d.ReadHalfFloat(); // n1?
+                v.bitan.X = d.ReadHalfFloat();
+                v.bitan.Y = d.ReadHalfFloat();
+                v.bitan.Z = d.ReadHalfFloat();
+                v.bitan.W = d.ReadHalfFloat();
+                v.tan.X = d.ReadHalfFloat();
+                v.tan.Y = d.ReadHalfFloat();
+                v.tan.Z = d.ReadHalfFloat();
+                v.tan.W = d.ReadHalfFloat();
             }
             else
             {
-                for (int i = 0; i < p.vertCount; i++)
-                {
-                    vertices[i] = new Vertex();
-                }
+                throw new Exception($"Unsupported vertex type: {vertexType}");
             }
 
-            foreach (Vertex v in vertices)
+            if (boneType == (int)Polygon.BoneTypes.NoBones)
             {
-                v.pos.X = d.ReadFloat();
-                v.pos.Y = d.ReadFloat();
-                v.pos.Z = d.ReadFloat();
-
-                if (vertexType == (int)Polygon.VertexTypes.NoNormals)
-                {
-                    d.ReadFloat();
-                }
-                else if (vertexType == (int)Polygon.VertexTypes.NormalsFloat)
-                {
-                    v.nrm.X = d.ReadFloat();
-                    v.nrm.Y = d.ReadFloat();
-                    v.nrm.Z = d.ReadFloat();
-                    d.Skip(4); // n1?
-                    d.Skip(4); // r1?
-                }
-                else if (vertexType == 2)
-                {
-                    v.nrm.X = d.ReadFloat();
-                    v.nrm.Y = d.ReadFloat();
-                    v.nrm.Z = d.ReadFloat();
-                    d.Skip(4); // n1?
-                    d.Skip(12); // r1?
-                    d.Skip(12); // r1?
-                    d.Skip(12); // r1?
-                }
-                else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanFloat)
-                {
-                    d.Skip(4); //Don't know what this is but it's not nothing
-                    v.nrm.X = d.ReadFloat();
-                    v.nrm.Y = d.ReadFloat();
-                    v.nrm.Z = d.ReadFloat();
-                    d.Skip(4);
-                    v.bitan.X = d.ReadFloat();
-                    v.bitan.Y = d.ReadFloat();
-                    v.bitan.Z = d.ReadFloat();
-                    v.bitan.W = d.ReadFloat();
-                    v.tan.X = d.ReadFloat();
-                    v.tan.Y = d.ReadFloat();
-                    v.tan.Z = d.ReadFloat();
-                    v.tan.W = d.ReadFloat();
-                }
-                else if (vertexType == (int)Polygon.VertexTypes.NormalsHalfFloat)
-                {
-                    v.nrm.X = d.ReadHalfFloat();
-                    v.nrm.Y = d.ReadHalfFloat();
-                    v.nrm.Z = d.ReadHalfFloat();
-                    d.Skip(2); // n1?
-                }
-                else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanHalfFloat)
-                {
-                    v.nrm.X = d.ReadHalfFloat();
-                    v.nrm.Y = d.ReadHalfFloat();
-                    v.nrm.Z = d.ReadHalfFloat();
-                    d.Skip(2); // n1?
-                    v.bitan.X = d.ReadHalfFloat();
-                    v.bitan.Y = d.ReadHalfFloat();
-                    v.bitan.Z = d.ReadHalfFloat();
-                    v.bitan.W = d.ReadHalfFloat();
-                    v.tan.X = d.ReadHalfFloat();
-                    v.tan.Y = d.ReadHalfFloat();
-                    v.tan.Z = d.ReadHalfFloat();
-                    v.tan.W = d.ReadHalfFloat();
-                }
-                else
-                {
-                    throw new Exception($"Unsupported vertex type: {vertexType}");
-                }
-
-                if (boneType == (int)Polygon.BoneTypes.NoBones)
-                {
-                    if (p.UVSize >= 18)
-                    {
-                        v.color.X = d.ReadByte();
-                        v.color.Y = d.ReadByte();
-                        v.color.Z = d.ReadByte();
-                        v.color.W = d.ReadByte();
-                    }
-
-                    int uvChannelCount = p.UVSize >> 4;
-                    for (int i = 0; i < uvChannelCount; i++)
-                        v.uv.Add(new Vector2(d.ReadHalfFloat(), d.ReadHalfFloat()));
-                }
-
-                if (boneType == (int)Polygon.BoneTypes.Float)
-                {
-                    v.boneIds.Add(d.ReadInt());
-                    v.boneIds.Add(d.ReadInt());
-                    v.boneIds.Add(d.ReadInt());
-                    v.boneIds.Add(d.ReadInt());
-                    v.boneWeights.Add(d.ReadFloat());
-                    v.boneWeights.Add(d.ReadFloat());
-                    v.boneWeights.Add(d.ReadFloat());
-                    v.boneWeights.Add(d.ReadFloat());
-                }
-                else if (boneType == (int)Polygon.BoneTypes.HalfFloat)
-                {
-                    v.boneIds.Add(d.ReadUShort());
-                    v.boneIds.Add(d.ReadUShort());
-                    v.boneIds.Add(d.ReadUShort());
-                    v.boneIds.Add(d.ReadUShort());
-                    v.boneWeights.Add(d.ReadHalfFloat());
-                    v.boneWeights.Add(d.ReadHalfFloat());
-                    v.boneWeights.Add(d.ReadHalfFloat());
-                    v.boneWeights.Add(d.ReadHalfFloat());
-                }
-                else if (boneType == (int)Polygon.BoneTypes.Byte)
-                {
-                    v.boneIds.Add(d.ReadByte());
-                    v.boneIds.Add(d.ReadByte());
-                    v.boneIds.Add(d.ReadByte());
-                    v.boneIds.Add(d.ReadByte());
-                    v.boneWeights.Add((float)d.ReadByte() / 255);
-                    v.boneWeights.Add((float)d.ReadByte() / 255);
-                    v.boneWeights.Add((float)d.ReadByte() / 255);
-                    v.boneWeights.Add((float)d.ReadByte() / 255);
-                }
-                else if (boneType == (int)Polygon.BoneTypes.NoBones)
-                {
-                    v.boneIds.Add((short)o.singlebind);
-                    v.boneWeights.Add(1);
-                }
-                else
-                {
-                    throw new Exception($"Unsupported bone type: {boneType}");
-                }
+                v.boneIds.Add((short)o.singlebind);
+                v.boneWeights.Add(1);
             }
-
-            foreach (Vertex vi in vertices)
-                m.vertices.Add(vi);
+            else if (boneType == (int)Polygon.BoneTypes.Float)
+            {
+                v.boneIds.Add(d.ReadInt());
+                v.boneIds.Add(d.ReadInt());
+                v.boneIds.Add(d.ReadInt());
+                v.boneIds.Add(d.ReadInt());
+                v.boneWeights.Add(d.ReadFloat());
+                v.boneWeights.Add(d.ReadFloat());
+                v.boneWeights.Add(d.ReadFloat());
+                v.boneWeights.Add(d.ReadFloat());
+            }
+            else if (boneType == (int)Polygon.BoneTypes.HalfFloat)
+            {
+                v.boneIds.Add(d.ReadUShort());
+                v.boneIds.Add(d.ReadUShort());
+                v.boneIds.Add(d.ReadUShort());
+                v.boneIds.Add(d.ReadUShort());
+                v.boneWeights.Add(d.ReadHalfFloat());
+                v.boneWeights.Add(d.ReadHalfFloat());
+                v.boneWeights.Add(d.ReadHalfFloat());
+                v.boneWeights.Add(d.ReadHalfFloat());
+            }
+            else if (boneType == (int)Polygon.BoneTypes.Byte)
+            {
+                v.boneIds.Add(d.ReadByte());
+                v.boneIds.Add(d.ReadByte());
+                v.boneIds.Add(d.ReadByte());
+                v.boneIds.Add(d.ReadByte());
+                v.boneWeights.Add((float)d.ReadByte() / 255);
+                v.boneWeights.Add((float)d.ReadByte() / 255);
+                v.boneWeights.Add((float)d.ReadByte() / 255);
+                v.boneWeights.Add((float)d.ReadByte() / 255);
+            }
+            else
+            {
+                throw new Exception($"Unsupported bone type: {boneType}");
+            }
         }
 
         public override byte[] Rebuild()
@@ -1254,14 +1228,22 @@ namespace SmashForge
 
             d.WriteShort(Nodes.Count); // polysets
 
-            boneCount = ((ModelContainer)Parent).VBN == null ? 0 : ((ModelContainer)Parent).VBN.bones.Count;
-
-            d.WriteShort(boneCount == 0 ? 0 : type); // type
-            d.WriteShort(boneCount == 0 ? boneCount : boneCount - 1); // Number of bones
+            //TODO: Calculate these values properly
+            int boneCount = ((ModelContainer)Parent).VBN == null ? 0 : ((ModelContainer)Parent).VBN.bones.Count;
+            if (boneCount > 0) {
+                boneIndexEnd = (ushort)(boneCount - 1);
+                boneIndexStart = Math.Min(boneIndexEnd, boneIndexStart);
+            }
+            else {
+                boneIndexStart = 0;
+                boneIndexEnd = 0;
+            }
+            d.WriteUShort(boneIndexStart);
+            d.WriteUShort(boneIndexEnd);
 
             d.WriteInt(0); // polyClump start
             d.WriteInt(0); // polyClump size
-            d.WriteInt(0); // vertexClumpsize
+            d.WriteInt(0); // vertexClump size
             d.WriteInt(0); // vertexaddclump size
 
             d.WriteFloat(boundingSphere[0]);
@@ -1320,13 +1302,17 @@ namespace SmashForge
                 {
                     obj.WriteInt(poly.Size());
                     obj.WriteInt(vert.Size());
-                    obj.WriteInt(p.vertSize >> 4 > 0 ? vertadd.Size() : 0);
+                    obj.WriteInt(p.boneType > 0 ? vertadd.Size() : 0);
                     obj.WriteShort(p.vertices.Count);
                     obj.WriteByte(p.vertSize);
 
-                    int maxUV = p.vertices[0].uv.Count;
-
-                    obj.WriteByte((maxUV << 4) | (p.UVSize & 0xF));
+                    int maxUV = p.uvCount;
+                    foreach (Vertex v in p.vertices) {
+                        maxUV = v.uv.Count;
+                        break;
+                    }
+                    p.uvCount = maxUV;
+                    obj.WriteByte(p.UVSize);
 
                     // MATERIAL SECTION 
                     int[] texoff = WriteMaterial(tex, p.materials, str);
@@ -1336,10 +1322,8 @@ namespace SmashForge
                     obj.WriteInt(texoff[2] > 0 ? texoff[2] + 0x30 + Nodes.Count * 0x30 + polyCount * 0x30 : 0);
                     obj.WriteInt(texoff[3] > 0 ? texoff[3] + 0x30 + Nodes.Count * 0x30 + polyCount * 0x30 : 0);
 
-                    obj.WriteShort(p.vertexIndices.Count); // polyamt
-                    obj.WriteByte(p.strip); // polysize 0x04 is strips and 0x40 is easy
-                    // :D
-                    obj.WriteByte(p.polflag); // polyflag
+                    obj.WriteUShort((ushort)p.vertexIndices.Count); // polyamt
+                    obj.WriteUShort((ushort)(p.strip << 8 | p.polflag));
 
                     obj.WriteInt(0); // idk, nothing padding??
                     obj.WriteInt(0);
@@ -1350,8 +1334,23 @@ namespace SmashForge
                         poly.WriteShort(face);
 
                     // Write the vertex....
-                    WriteVertex(vert, vertadd, p);
-                    vertadd.Align(4, 0x0);
+                    if (p.boneType > 0)
+                    {
+                        foreach (Vertex v in p.vertices)
+                        {
+                            WriteUV(vert, p, v);
+                            WriteVertex(vertadd, p, v);
+                        }
+                        vertadd.Align(4, 0x0);
+                    }
+                    else
+                    {
+                        foreach (Vertex v in p.vertices)
+                        {
+                            WriteVertex(vert, p, v);
+                            WriteUV(vert, p, v);
+                        }
+                    }
                 }
             }
 
@@ -1392,195 +1391,159 @@ namespace SmashForge
             return d.GetBytes();
         }
 
-        private static void WriteUV(FileOutput d, Polygon poly)
+        private static void WriteUV(FileOutput d, Polygon poly, Vertex v)
         {
-            int uvType = (poly.UVSize) & 0xF;
+            int uvCount = (poly.UVSize >> 4);
+            int colorType = (poly.UVSize) & 0xF;
 
-            for (int i = 0; i < poly.vertices.Count; i++)
+            if (colorType == 0x0)
             {
+            }
+            else if (colorType == 0x2)
+            {
+                d.WriteByte((int)v.color.X);
+                d.WriteByte((int)v.color.Y);
+                d.WriteByte((int)v.color.Z);
+                d.WriteByte((int)v.color.W);
+            }
+            else if (colorType == 0x4)
+            {
+                d.WriteHalfFloat(v.color.X / 0xFF);
+                d.WriteHalfFloat(v.color.Y / 0xFF);
+                d.WriteHalfFloat(v.color.Z / 0xFF);
+                d.WriteHalfFloat(v.color.W / 0xFF);
+            }
+            else
+            {
+                throw new NotImplementedException("UV type not supported " + colorType);
+            }
 
-                if (uvType == 0x0)
-                {
-                    for (int j = 0; j < poly.vertices[i].uv.Count; j++)
-                    {
-                        d.WriteHalfFloat(poly.vertices[i].uv[j].X);
-                        d.WriteHalfFloat(poly.vertices[i].uv[j].Y);
-                    }
-                }
-                else if (uvType == 0x2)
-                {
-                    d.WriteByte((int)poly.vertices[i].color.X);
-                    d.WriteByte((int)poly.vertices[i].color.Y);
-                    d.WriteByte((int)poly.vertices[i].color.Z);
-                    d.WriteByte((int)poly.vertices[i].color.W);
-                    for (int j = 0; j < poly.vertices[i].uv.Count; j++)
-                    {
-                        d.WriteHalfFloat(poly.vertices[i].uv[j].X);
-                        d.WriteHalfFloat(poly.vertices[i].uv[j].Y);
-                    }
-                }
-                else if (uvType == 0x4)
-                {
-                    d.WriteHalfFloat(poly.vertices[i].color.X / 0xFF);
-                    d.WriteHalfFloat(poly.vertices[i].color.Y / 0xFF);
-                    d.WriteHalfFloat(poly.vertices[i].color.Z / 0xFF);
-                    d.WriteHalfFloat(poly.vertices[i].color.W / 0xFF);
-                    for (int j = 0; j < poly.vertices[i].uv.Count; j++)
-                    {
-                        d.WriteHalfFloat(poly.vertices[i].uv[j].X);
-                        d.WriteHalfFloat(poly.vertices[i].uv[j].Y);
-                    }
-                }
-                else
-                    throw new NotImplementedException("Unsupported UV format");
+            for (int j = 0; j < uvCount; j++)
+            {
+                d.WriteHalfFloat(v.uv[j].X);
+                d.WriteHalfFloat(v.uv[j].Y);
             }
         }
 
-        private static void WriteVertex(FileOutput d, FileOutput add, Polygon poly)
+        private static void WriteVertex(FileOutput d, Polygon poly, Vertex v)
         {
             int boneType = poly.vertSize & 0xF0;
             int vertexType = poly.vertSize & 0xF;
 
-            if (boneType > 0)
+            d.WriteFloat(v.pos.X);
+            d.WriteFloat(v.pos.Y);
+            d.WriteFloat(v.pos.Z);
+
+            if (vertexType == (int)Polygon.VertexTypes.NoNormals)
             {
-                WriteUV(d, poly);
-                d = add;
+                d.WriteFloat(1);
+            }
+            else if (vertexType == (int)Polygon.VertexTypes.NormalsFloat)
+            {
+                d.WriteFloat(100);
+                d.WriteFloat(v.nrm.X);
+                d.WriteFloat(v.nrm.Y);
+                d.WriteFloat(v.nrm.Z);
+                d.WriteFloat(1);
+            }
+            else if (vertexType == 2)
+            {
+                d.WriteFloat(1);
+                d.WriteFloat(v.nrm.X);
+                d.WriteFloat(v.nrm.Y);
+                d.WriteFloat(v.nrm.Z);
+                d.WriteFloat(1);
+                d.WriteFloat(v.bitan.X);
+                d.WriteFloat(v.bitan.Y);
+                d.WriteFloat(v.bitan.Z);
+                d.WriteFloat(1);
+                d.WriteFloat(v.tan.X);
+                d.WriteFloat(v.tan.Y);
+                d.WriteFloat(v.tan.Z);
+                d.WriteFloat(1);
+            }
+            else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanFloat)
+            {
+                d.WriteFloat(1);
+                d.WriteFloat(v.nrm.X);
+                d.WriteFloat(v.nrm.Y);
+                d.WriteFloat(v.nrm.Z);
+                d.WriteFloat(1);
+                d.WriteFloat(v.bitan.X);
+                d.WriteFloat(v.bitan.Y);
+                d.WriteFloat(v.bitan.Z);
+                d.WriteFloat(v.bitan.W);
+                d.WriteFloat(v.tan.X);
+                d.WriteFloat(v.tan.Y);
+                d.WriteFloat(v.tan.Z);
+                d.WriteFloat(v.tan.W);
+            }
+            else if (vertexType == (int)Polygon.VertexTypes.NormalsHalfFloat)
+            {
+                d.WriteHalfFloat(v.nrm.X);
+                d.WriteHalfFloat(v.nrm.Y);
+                d.WriteHalfFloat(v.nrm.Z);
+                d.WriteHalfFloat(1);
+            }
+            else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanHalfFloat)
+            {
+                d.WriteHalfFloat(v.nrm.X);
+                d.WriteHalfFloat(v.nrm.Y);
+                d.WriteHalfFloat(v.nrm.Z);
+                d.WriteHalfFloat(1);
+                d.WriteHalfFloat(v.bitan.X);
+                d.WriteHalfFloat(v.bitan.Y);
+                d.WriteHalfFloat(v.bitan.Z);
+                d.WriteHalfFloat(v.bitan.W);
+                d.WriteHalfFloat(v.tan.X);
+                d.WriteHalfFloat(v.tan.Y);
+                d.WriteHalfFloat(v.tan.Z);
+                d.WriteHalfFloat(v.tan.W);
+            }
+            else
+            {
+                throw new Exception($"Unsupported vertex type: {vertexType}");
             }
 
-            foreach (Vertex v in poly.vertices)
+            if (boneType == (int)Polygon.BoneTypes.NoBones)
             {
-                d.WriteFloat(v.pos.X);
-                d.WriteFloat(v.pos.Y);
-                d.WriteFloat(v.pos.Z);
-
-                if (vertexType == (int)Polygon.VertexTypes.NoNormals)
-                {
-                    d.WriteFloat(1);
-                }
-                else if (vertexType == (int)Polygon.VertexTypes.NormalsFloat)
-                {
-                    d.WriteFloat(v.nrm.X);
-                    d.WriteFloat(v.nrm.Y);
-                    d.WriteFloat(v.nrm.Z);
-                    d.WriteFloat(1);
-                    d.WriteFloat(1);
-                }
-                else if (vertexType == 2)
-                {
-                    d.WriteFloat(v.nrm.X);
-                    d.WriteFloat(v.nrm.Y);
-                    d.WriteFloat(v.nrm.Z);
-                    d.WriteFloat(1);
-                    d.WriteFloat(v.bitan.X);
-                    d.WriteFloat(v.bitan.Y);
-                    d.WriteFloat(v.bitan.Z);
-                    d.WriteFloat(1);
-                    d.WriteFloat(v.tan.X);
-                    d.WriteFloat(v.tan.Y);
-                    d.WriteFloat(v.tan.Z);
-                    d.WriteFloat(1);
-                    d.WriteFloat(1);
-                }
-                else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanFloat)
-                {
-                    d.WriteFloat(1);
-                    d.WriteFloat(v.nrm.X);
-                    d.WriteFloat(v.nrm.Y);
-                    d.WriteFloat(v.nrm.Z);
-                    d.WriteFloat(1);
-                    d.WriteFloat(v.bitan.X);
-                    d.WriteFloat(v.bitan.Y);
-                    d.WriteFloat(v.bitan.Z);
-                    d.WriteFloat(v.bitan.W);
-                    d.WriteFloat(v.tan.X);
-                    d.WriteFloat(v.tan.Y);
-                    d.WriteFloat(v.tan.Z);
-                    d.WriteFloat(v.tan.W);
-                }
-                else if (vertexType == (int)Polygon.VertexTypes.NormalsHalfFloat)
-                {
-                    d.WriteHalfFloat(v.nrm.X);
-                    d.WriteHalfFloat(v.nrm.Y);
-                    d.WriteHalfFloat(v.nrm.Z);
-                    d.WriteHalfFloat(1);
-                }
-                else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanHalfFloat)
-                {
-                    d.WriteHalfFloat(v.nrm.X);
-                    d.WriteHalfFloat(v.nrm.Y);
-                    d.WriteHalfFloat(v.nrm.Z);
-                    d.WriteHalfFloat(1);
-                    d.WriteHalfFloat(v.bitan.X);
-                    d.WriteHalfFloat(v.bitan.Y);
-                    d.WriteHalfFloat(v.bitan.Z);
-                    d.WriteHalfFloat(v.bitan.W);
-                    d.WriteHalfFloat(v.tan.X);
-                    d.WriteHalfFloat(v.tan.Y);
-                    d.WriteHalfFloat(v.tan.Z);
-                    d.WriteHalfFloat(v.tan.W);
-                }
-                else
-                {
-                    throw new Exception($"Unsupported vertex type: {vertexType}");
-                }
-
-                if (boneType == (int)Polygon.BoneTypes.NoBones)
-                {
-                    if (poly.UVSize >= 18)
-                    {
-                        d.WriteByte((int)v.color.X);
-                        d.WriteByte((int)v.color.Y);
-                        d.WriteByte((int)v.color.Z);
-                        d.WriteByte((int)v.color.W);
-                    }
-
-                    for (int j = 0; j < v.uv.Count; j++)
-                    {
-                        d.WriteHalfFloat(v.uv[j].X);
-                        d.WriteHalfFloat(v.uv[j].Y);
-                    }
-                }
-
-                if (boneType == (int)Polygon.BoneTypes.Float)
-                {
-                    d.WriteInt(v.boneIds.Count > 0 ? v.boneIds[0] : 0);
-                    d.WriteInt(v.boneIds.Count > 1 ? v.boneIds[1] : 0);
-                    d.WriteInt(v.boneIds.Count > 2 ? v.boneIds[2] : 0);
-                    d.WriteInt(v.boneIds.Count > 3 ? v.boneIds[3] : 0);
-                    d.WriteFloat(v.boneWeights.Count > 0 ? v.boneWeights[0] : 0);
-                    d.WriteFloat(v.boneWeights.Count > 1 ? v.boneWeights[1] : 0);
-                    d.WriteFloat(v.boneWeights.Count > 2 ? v.boneWeights[2] : 0);
-                    d.WriteFloat(v.boneWeights.Count > 3 ? v.boneWeights[3] : 0);
-                }
-                else if (boneType == (int)Polygon.BoneTypes.HalfFloat)
-                {
-                    d.WriteShort(v.boneIds.Count > 0 ? v.boneIds[0] : 0);
-                    d.WriteShort(v.boneIds.Count > 1 ? v.boneIds[1] : 0);
-                    d.WriteShort(v.boneIds.Count > 2 ? v.boneIds[2] : 0);
-                    d.WriteShort(v.boneIds.Count > 3 ? v.boneIds[3] : 0);
-                    d.WriteHalfFloat(v.boneWeights.Count > 0 ? v.boneWeights[0] : 0);
-                    d.WriteHalfFloat(v.boneWeights.Count > 1 ? v.boneWeights[1] : 0);
-                    d.WriteHalfFloat(v.boneWeights.Count > 2 ? v.boneWeights[2] : 0);
-                    d.WriteHalfFloat(v.boneWeights.Count > 3 ? v.boneWeights[3] : 0);
-                }
-                else if (boneType == (int)Polygon.BoneTypes.Byte)
-                {
-                    d.WriteByte(v.boneIds.Count > 0 ? v.boneIds[0] : 0);
-                    d.WriteByte(v.boneIds.Count > 1 ? v.boneIds[1] : 0);
-                    d.WriteByte(v.boneIds.Count > 2 ? v.boneIds[2] : 0);
-                    d.WriteByte(v.boneIds.Count > 3 ? v.boneIds[3] : 0);
-                    d.WriteByte((int)(v.boneWeights.Count > 0 ? Math.Round(v.boneWeights[0] * 0xFF) : 0));
-                    d.WriteByte((int)(v.boneWeights.Count > 1 ? Math.Round(v.boneWeights[1] * 0xFF) : 0));
-                    d.WriteByte((int)(v.boneWeights.Count > 2 ? Math.Round(v.boneWeights[2] * 0xFF) : 0));
-                    d.WriteByte((int)(v.boneWeights.Count > 3 ? Math.Round(v.boneWeights[3] * 0xFF) : 0));
-                }
-                else if (boneType == (int)Polygon.BoneTypes.NoBones)
-                {
-                }
-                else
-                {
-                    throw new Exception($"Unsupported bone type: {boneType}");
-                }
+            }
+            else if (boneType == (int)Polygon.BoneTypes.Float)
+            {
+                d.WriteInt(v.boneIds.Count > 0 ? v.boneIds[0] : 0);
+                d.WriteInt(v.boneIds.Count > 1 ? v.boneIds[1] : 0);
+                d.WriteInt(v.boneIds.Count > 2 ? v.boneIds[2] : 0);
+                d.WriteInt(v.boneIds.Count > 3 ? v.boneIds[3] : 0);
+                d.WriteFloat(v.boneWeights.Count > 0 ? v.boneWeights[0] : 0);
+                d.WriteFloat(v.boneWeights.Count > 1 ? v.boneWeights[1] : 0);
+                d.WriteFloat(v.boneWeights.Count > 2 ? v.boneWeights[2] : 0);
+                d.WriteFloat(v.boneWeights.Count > 3 ? v.boneWeights[3] : 0);
+            }
+            else if (boneType == (int)Polygon.BoneTypes.HalfFloat)
+            {
+                d.WriteShort(v.boneIds.Count > 0 ? v.boneIds[0] : 0);
+                d.WriteShort(v.boneIds.Count > 1 ? v.boneIds[1] : 0);
+                d.WriteShort(v.boneIds.Count > 2 ? v.boneIds[2] : 0);
+                d.WriteShort(v.boneIds.Count > 3 ? v.boneIds[3] : 0);
+                d.WriteHalfFloat(v.boneWeights.Count > 0 ? v.boneWeights[0] : 0);
+                d.WriteHalfFloat(v.boneWeights.Count > 1 ? v.boneWeights[1] : 0);
+                d.WriteHalfFloat(v.boneWeights.Count > 2 ? v.boneWeights[2] : 0);
+                d.WriteHalfFloat(v.boneWeights.Count > 3 ? v.boneWeights[3] : 0);
+            }
+            else if (boneType == (int)Polygon.BoneTypes.Byte)
+            {
+                d.WriteByte(v.boneIds.Count > 0 ? v.boneIds[0] : 0);
+                d.WriteByte(v.boneIds.Count > 1 ? v.boneIds[1] : 0);
+                d.WriteByte(v.boneIds.Count > 2 ? v.boneIds[2] : 0);
+                d.WriteByte(v.boneIds.Count > 3 ? v.boneIds[3] : 0);
+                d.WriteByte((int)(v.boneWeights.Count > 0 ? Math.Round(v.boneWeights[0] * 0xFF) : 0));
+                d.WriteByte((int)(v.boneWeights.Count > 1 ? Math.Round(v.boneWeights[1] * 0xFF) : 0));
+                d.WriteByte((int)(v.boneWeights.Count > 2 ? Math.Round(v.boneWeights[2] * 0xFF) : 0));
+                d.WriteByte((int)(v.boneWeights.Count > 3 ? Math.Round(v.boneWeights[3] * 0xFF) : 0));
+            }
+            else
+            {
+                throw new Exception($"Unsupported bone type: {boneType}");
             }
         }
 

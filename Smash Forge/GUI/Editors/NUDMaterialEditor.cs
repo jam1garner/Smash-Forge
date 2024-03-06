@@ -20,17 +20,23 @@ namespace SmashForge
         public static Dictionary<int, string> cullModeByMatValue = new Dictionary<int, string>()
         {
             { 0x000, "Cull None"},
-            { 0x002, "Cull Inside (Pokkén)"}, //In Smash, works like any other "invalid" value, but in Pokkén it's probably this.
             { 0x404, "Cull Outside"},
-            { 0x405, "Cull Inside"}
+            { 0x405, "Cull Inside"},
+
+            { 0x001, "Cull None (Pokkén)"},
+            { 0x003, "Cull Outside (Pokkén)"},
+            { 0x002, "Cull Inside (Pokkén)"}
         };
 
         public static Dictionary<string, int> matValueByCullModeName = new Dictionary<string, int>()
         {
             { "Cull None", 0x000 },
-            { "Cull Inside (Pokkén)", 0x002 },
             { "Cull Outside", 0x404 },
-            { "Cull Inside", 0x405 }
+            { "Cull Inside", 0x405 },
+
+            { "Cull None (Pokkén)", 0x001 },
+            { "Cull Outside (Pokkén)", 0x003 },
+            { "Cull Inside (Pokkén)", 0x002 }
         };
 
         public static Dictionary<int, string> alphaFuncByMatValue = new Dictionary<int, string>()

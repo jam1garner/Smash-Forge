@@ -57,12 +57,15 @@ namespace SmashForge
             switch (material.CullMode)
             {
                 case 0x0000:
+                case 0x0001:
                     enabled = false;
                     break;
                 case 0x0404:
+                case 0x0003:
                     cullFaceMode = CullFaceMode.Front;
                     break;
                 case 0x0405:
+                case 0x0002:
                     cullFaceMode = CullFaceMode.Back;
                     break;
                 default:

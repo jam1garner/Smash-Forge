@@ -11,7 +11,6 @@ namespace SmashForge
     {
         public class Polygon : TreeNode, IBoundableModel
         {
-            // Bone types and vertex types control two bytes of the vertsize.
             public enum BoneTypes
             {
                 NoBones =  0x00,
@@ -29,6 +28,20 @@ namespace SmashForge
                 NormalsTanBiTanHalfFloat = 0x7
             }
 
+            public enum VertexColorTypes
+            {
+                None = 0,
+                Byte = 2,
+                HalfFloat = 4
+            }
+
+            // Smash uses both of these, but primarily Triangles. Other NU3G games only use Tristrips
+            public enum PrimitiveTypes
+            {
+                TriangleStrip = 0x0,
+                Triangles = 0x40
+            }
+
             // Used to generate a unique color for viewport selection.
             private static List<int> previousDisplayIds = new List<int>();
             public int DisplayId { get; private set; } = 0;
@@ -42,12 +55,34 @@ namespace SmashForge
 
             public List<Material> materials = new List<Material>();
 
-            // defaults to a basic bone weighted vertex format
-            public int vertSize = (int)BoneTypes.Byte | (int)VertexTypes.NormalsHalfFloat;
 
-            public int UVSize = 0x12;
-            public int strip = 0x40;
-            public int polflag = 0x04;
+            // defaults to a basic bone weighted vertex format
+            public int boneType = (int)BoneTypes.Byte;
+            public int normalType = (int)VertexTypes.NormalsHalfFloat;
+            // boneType is upper nybble, normalType is lower nybble
+            public int vertSize {
+                get { return (boneType & 0xF0) | (normalType & 0xF); }
+                set { boneType = value & 0xF0; normalType = value & 0xF; }
+            }
+
+            public int uvCount = 1;
+            public int colorType = (int)VertexColorTypes.Byte;
+            // uvCount is upper nybble, normalType is lower nybble
+            public int UVSize {
+                get { return (uvCount << 4) | (colorType & 0xF); }
+                set { uvCount = value >> 4; colorType = value & 0xF; }
+            }
+
+            public int strip = (int)PrimitiveTypes.Triangles;
+            public int polflag {
+                get { return boneType > 0 ? 4 : 0; }
+                set {
+                    if (value == 0 && boneType == 0) {}
+                    else if (value == 4 && boneType != 0) {}
+                    else throw new NotImplementedException("Poly flag not supported " + value);
+                }
+            }
+
 
             // for drawing
             public bool IsTransparent => (materials[0].SrcFactor > 0) || (materials[0].DstFactor > 0);
@@ -296,12 +331,12 @@ namespace SmashForge
 
             public List<int> GetRenderingVertexIndices()
             {
-                if ((strip >> 4) == 4)
+                if (strip == (int)PrimitiveTypes.Triangles)
                 {
                     displayFaceSize = vertexIndices.Count;
                     return vertexIndices;
                 }
-                else
+                else if (strip == (int)PrimitiveTypes.TriangleStrip)
                 {
                     List<int> vertexIndices = new List<int>();
 
@@ -345,6 +380,10 @@ namespace SmashForge
 
                     displayFaceSize = vertexIndices.Count;
                     return vertexIndices;
+                }
+                else
+                {
+                    throw new NotImplementedException("Face type not supported: " + strip);
                 }
             }
         }
