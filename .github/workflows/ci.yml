@@ -34,7 +34,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       if: github.ref == 'refs/heads/master'
       with:
-        files: "Smash Forge/bin/Release/Smash-Forge-Latest_Commit.zip"
+        files: Smash-Forge-Latest_Commit.zip
         name: "Smash Forge [Latest Commit]"
         tag_name: "LatestCommit"
       env:
