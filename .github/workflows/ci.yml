@@ -31,9 +31,11 @@ jobs:
         Compress-Archive -path * -destinationPath Smash-Forge-Latest_Commit.zip
 
     - name: Upload Zip
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       if: github.ref == 'refs/heads/master'
       with:
         files: "Smash Forge/bin/Release/Smash-Forge-Latest_Commit.zip"
+        name: "Smash Forge [Latest Commit]"
+        tag_name: "LatestCommit"
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
