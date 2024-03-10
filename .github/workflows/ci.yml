@@ -1,4 +1,4 @@
-name: .NET Core Desktop
+name: Compile Release
 
 on:
   push:
@@ -19,10 +19,10 @@ jobs:
       uses: NuGet/setup-nuget@v2
 
     - name: Restore Packages
-      run: nuget restore MySolution.sln
+      run: nuget restore "Smash Forge.sln"
     
     - name: Build solution
-      run: msbuild MySolution.sln -t:rebuild -property:Configuration=Release
+      run: msbuild "Smash Forge.sln" -t:rebuild -property:Configuration=Release
 
     - name: Create Zip
       if: github.ref == 'refs/heads/master'
