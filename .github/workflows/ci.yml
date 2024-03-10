@@ -26,9 +26,9 @@ jobs:
 
     - name: Create Zip
       if: github.ref == 'refs/heads/master'
-      working-directory: "Smash Forge/bin/Release"
       run: |
-        Compress-Archive -path * -destinationPath Smash-Forge-Latest_Commit.zip
+        Compress-Archive -path "Smash Forge/bin/Release/*" -destinationPath Smash-Forge-Latest_Commit.zip
+        Compress-Archive -update -path "Forge Updater/bin/Release/*" -destinationPath Smash-Forge-Latest_Commit.zip
 
     - name: Upload Zip
       uses: softprops/action-gh-release@v2
