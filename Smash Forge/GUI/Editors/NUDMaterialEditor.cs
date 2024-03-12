@@ -41,9 +41,24 @@ namespace SmashForge
 
         public static Dictionary<int, string> alphaFuncByMatValue = new Dictionary<int, string>()
         {
-            { 0x00, "Never"},
-            { 0x04, "Gequal Ref Alpha"},
-            { 0x06, "Gequal Ref Alpha + ???"}
+            { 0x000, "None (Always)" },
+            { 0x200, "Never" },
+            { 0x201, "Less (<)" },
+            { 0x202, "Equal (==)" },
+            { 0x203, "Less or equal (<=)" },
+            { 0x204, "Greater (>)" },
+            { 0x205, "Not equal (!=)" },
+            { 0x206, "Greater or equal (>=)" },
+            { 0x207, "Always" },
+            // Direct3D
+            { 1, "(Pokkén) Never" },
+            { 2, "(Pokkén) Less (<)" },
+            { 3, "(Pokkén) Equal (==)" },
+            { 4, "(Pokkén) Less or equal (<=)" },
+            { 5, "(Pokkén) Greater (>)" },
+            { 6, "(Pokkén) Not equal (!=)" },
+            { 7, "(Pokkén) Greater or equal (>=)" },
+            { 8, "(Pokkén) Always" }
         };
 
         public static Dictionary<int, string> mapModeByMatValue = new Dictionary<int, string>()
@@ -263,7 +278,7 @@ namespace SmashForge
 
         private void InitializeComboBoxes(Nud.Material mat)
         {
-            alphaFuncComboBox.SelectedItem = alphaFuncByMatValue[mat.AlphaFunction];
+            alphaFuncComboBox.SelectedItem = alphaFuncByMatValue[mat.AlphaFunc];
             cullModeComboBox.SelectedItem = cullModeByMatValue[mat.CullMode];
         }
 
@@ -271,10 +286,6 @@ namespace SmashForge
         {
             shadowCB.Checked = mat.HasShadow;
             GlowCB.Checked = mat.Glow;
-
-            alphaTestCB.Checked = mat.AlphaTest == (int)NudEnums.AlphaTest.Enabled;
-            // Enable/disable extra controls.
-            alphaTestCB_CheckedChanged(null, null);
         }
 
         private void InitializeTextBoxes(Nud.Material mat)
@@ -377,7 +388,7 @@ namespace SmashForge
             {
                 if (alphaFuncByMatValue[i].Equals(alphaFuncComboBox.SelectedItem))
                 {
-                    currentMaterialList[currentMatIndex].AlphaFunction = i;
+                    currentMaterialList[currentMatIndex].AlphaFunc = i;
                     break;
                 }
             }
@@ -1022,20 +1033,6 @@ namespace SmashForge
         private void param4TrackBar_Leave(object sender, EventArgs e)
         {
             enableParam4SliderUpdates = true;
-        }
-
-        private void alphaTestCB_CheckedChanged(object sender, EventArgs e)
-        {
-            if (alphaTestCB.Checked)
-                currentMaterialList[currentMatIndex].AlphaTest = (int)NudEnums.AlphaTest.Enabled;
-            else
-                currentMaterialList[currentMatIndex].AlphaTest = (int)NudEnums.AlphaTest.Disabled;
-
-            // Only enable extra settings when alpha testing is enabled.
-            alphaFuncRefPanel.Visible = alphaTestCB.Checked;
-
-            // Force all flow layouts to rescale children.
-            GuiTools.ScaleControlsHorizontallyToLayoutWidth(generalFlowLayout);
         }
 
         private void flagsButton_Click(object sender, EventArgs e)

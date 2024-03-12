@@ -950,8 +950,7 @@ namespace SmashForge
                 m.SrcFactor = d.ReadUShort();
                 ushort texCount = d.ReadUShort();
                 m.DstFactor = d.ReadUShort();
-                m.AlphaTest = d.ReadByte();
-                m.AlphaFunction = d.ReadByte();
+                m.AlphaFunc = d.ReadUShort();
                 m.RefAlpha = d.ReadUShort();
                 m.CullMode = d.ReadUShort();
                 d.Skip(4); // unknown
@@ -1559,9 +1558,7 @@ namespace SmashForge
                 d.WriteShort(mat.SrcFactor);
                 d.WriteShort(mat.textures.Count);
                 d.WriteShort(mat.DstFactor);
-                d.WriteByte(mat.AlphaTest);
-                d.WriteByte(mat.AlphaFunction);
-
+                d.WriteShort(mat.AlphaFunc);
                 d.WriteShort(mat.RefAlpha);
                 d.WriteShort(mat.CullMode);
                 d.WriteInt(0); // unknown
