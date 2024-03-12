@@ -78,14 +78,12 @@ namespace SmashForge
 
         private void SetAlphaTesting(Nud.Material material)
         {
-
-            bool enabled = (material.AlphaTest == (int)NudEnums.AlphaTest.Enabled);
-
             AlphaFunction alphaFunc = AlphaFunction.Always;
-            if (NudEnums.alphaFunctionByMatValue.ContainsKey(material.AlphaFunction))
-                alphaFunc = NudEnums.alphaFunctionByMatValue[material.AlphaFunction];
-
             float refAlpha = material.RefAlpha / 255.0f;
+
+            bool enabled = NudEnums.alphaFunctionByMatValue.ContainsKey(material.AlphaFunc);
+            if (enabled)
+                alphaFunc = NudEnums.alphaFunctionByMatValue[material.AlphaFunc];
 
             renderSettings.alphaTestSettings = new AlphaTestSettings(enabled, alphaFunc, refAlpha);
         }

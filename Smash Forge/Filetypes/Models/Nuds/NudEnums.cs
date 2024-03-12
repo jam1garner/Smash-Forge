@@ -5,12 +5,6 @@ namespace SmashForge.Filetypes.Models.Nuds
 {
     public static class NudEnums
     {
-        public enum AlphaTest
-        {
-            Enabled = 0x02,
-            Disabled = 0x00
-        }
-
         public static readonly Dictionary<int, BlendingFactor> srcFactorByMatValue = new Dictionary<int, BlendingFactor>()
         {
             { 0x00, BlendingFactor.One },
@@ -59,9 +53,25 @@ namespace SmashForge.Filetypes.Models.Nuds
 
         public static readonly Dictionary<int, AlphaFunction> alphaFunctionByMatValue = new Dictionary<int, AlphaFunction>()
         {
-            { 0x0, AlphaFunction.Never },
-            { 0x4, AlphaFunction.Gequal },
-            { 0x6, AlphaFunction.Gequal },
+            // OpenGL (used in NDP3 games like Smash)
+            { 0x200, AlphaFunction.Never },
+            { 0x201, AlphaFunction.Less },
+            { 0x202, AlphaFunction.Equal },
+            { 0x203, AlphaFunction.Lequal },
+            { 0x204, AlphaFunction.Greater },
+            { 0x205, AlphaFunction.Notequal },
+            { 0x206, AlphaFunction.Gequal },
+            { 0x207, AlphaFunction.Always },
+
+            // Direct3D (used in NDWD games like Pokken)
+            { 1, AlphaFunction.Never },
+            { 2, AlphaFunction.Less },
+            { 3, AlphaFunction.Equal },
+            { 4, AlphaFunction.Lequal },
+            { 5, AlphaFunction.Greater },
+            { 6, AlphaFunction.Notequal },
+            { 7, AlphaFunction.Gequal },
+            { 8, AlphaFunction.Always }
         };
 
         public static readonly Dictionary<int, TextureWrapMode> wrapModeByMatValue = new Dictionary<int, TextureWrapMode>()
