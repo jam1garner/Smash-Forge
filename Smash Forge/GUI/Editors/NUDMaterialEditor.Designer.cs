@@ -99,7 +99,6 @@
             this.alphaTestButton = new System.Windows.Forms.Button();
             this.alphaTestPanel = new System.Windows.Forms.Panel();
             this.alphaTestFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
-            this.alphaTestCB = new System.Windows.Forms.CheckBox();
             this.alphaFuncRefPanel = new System.Windows.Forms.Panel();
             this.alphaTestTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.refAlphaTB = new System.Windows.Forms.TextBox();
@@ -922,7 +921,6 @@
             // alphaTestFlowLayout
             // 
             this.alphaTestFlowLayout.AutoSize = true;
-            this.alphaTestFlowLayout.Controls.Add(this.alphaTestCB);
             this.alphaTestFlowLayout.Controls.Add(this.alphaFuncRefPanel);
             this.alphaTestFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.alphaTestFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
@@ -932,17 +930,6 @@
             this.alphaTestFlowLayout.TabIndex = 24;
             this.alphaTestFlowLayout.WrapContents = false;
             this.alphaTestFlowLayout.Resize += new System.EventHandler(this.flowLayout_Resize);
-            // 
-            // alphaTestCB
-            // 
-            this.alphaTestCB.AutoSize = true;
-            this.alphaTestCB.Location = new System.Drawing.Point(3, 3);
-            this.alphaTestCB.Name = "alphaTestCB";
-            this.alphaTestCB.Size = new System.Drawing.Size(91, 17);
-            this.alphaTestCB.TabIndex = 25;
-            this.alphaTestCB.Text = "Alpha Testing";
-            this.alphaTestCB.UseVisualStyleBackColor = true;
-            this.alphaTestCB.CheckedChanged += new System.EventHandler(this.alphaTestCB_CheckedChanged);
             // 
             // alphaFuncRefPanel
             // 
@@ -1428,7 +1415,6 @@
         private System.Windows.Forms.Label propertyNameLabel;
         private System.Windows.Forms.Button deleteMatPropertyButton;
         private System.Windows.Forms.FlowLayoutPanel alphaTestFlowLayout;
-        private System.Windows.Forms.CheckBox alphaTestCB;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox refAlphaTB;
         private System.Windows.Forms.FlowLayoutPanel generalFlowLayout;

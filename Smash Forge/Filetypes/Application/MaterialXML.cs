@@ -274,11 +274,13 @@ namespace SmashForge
                         int.TryParse(attribute.Value, NumberStyles.HexNumber, null, out value);
                         material.AlphaFunc = value;
                         break;
+                    // "RefAlpha" was the old name, still supported for historical compatibility with old XMLs.
                     case "alphaRef":
                     case "RefAlpha":
                         int.TryParse(attribute.Value, out value);
                         material.RefAlpha = value;
                         break;
+                    // "cullmode" was the old name, still supported
                     case "cullMode":
                     case "cullmode":
                         int.TryParse(attribute.Value, NumberStyles.HexNumber, null, out value);
@@ -289,7 +291,7 @@ namespace SmashForge
                         material.ZBufferOffset = value;
                         break;
 
-                    // We no longer use these, but still support for historical compatibility
+                    // No longer used, but still supported.
                     case "AlphaFunc":
                         int.TryParse(attribute.Value, out value);
                         material.AlphaFunction = value;

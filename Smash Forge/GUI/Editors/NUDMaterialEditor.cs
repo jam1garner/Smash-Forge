@@ -286,12 +286,6 @@ namespace SmashForge
         {
             shadowCB.Checked = mat.HasShadow;
             GlowCB.Checked = mat.Glow;
-
-            // TODO: Remove alphaTestCB as it's useless. Making it invisible for now.
-            alphaTestCB.Checked = true;
-            alphaTestCB.Visible = false;
-            // Enable/disable extra controls.
-            alphaTestCB_CheckedChanged(null, null);
         }
 
         private void InitializeTextBoxes(Nud.Material mat)
@@ -1039,21 +1033,6 @@ namespace SmashForge
         private void param4TrackBar_Leave(object sender, EventArgs e)
         {
             enableParam4SliderUpdates = true;
-        }
-
-        private void alphaTestCB_CheckedChanged(object sender, EventArgs e)
-        {
-            /*if (alphaTestCB.Checked)
-                currentMaterialList[currentMatIndex].AlphaTest = (int)NudEnums.AlphaTest.Enabled;
-            else
-                currentMaterialList[currentMatIndex].AlphaTest = (int)NudEnums.AlphaTest.Disabled;
-
-            // Only enable extra settings when alpha testing is enabled.
-            alphaFuncRefPanel.Visible = alphaTestCB.Checked;
-            */
-
-            // Force all flow layouts to rescale children.
-            GuiTools.ScaleControlsHorizontallyToLayoutWidth(generalFlowLayout);
         }
 
         private void flagsButton_Click(object sender, EventArgs e)
