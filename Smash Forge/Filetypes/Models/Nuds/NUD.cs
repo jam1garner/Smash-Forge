@@ -802,7 +802,7 @@ namespace SmashForge
         // Helpers for reading
         private struct ObjectData
         {
-            public int singlebind;
+            public short singlebind;
             public int polyCount;
             public int positionb;
             public string name;
@@ -899,7 +899,7 @@ namespace SmashForge
                 m.Text = o.name;
                 Nodes.Add(m);
                 m.boneflag = boneflags[meshIndex];
-                m.singlebind = (short)o.singlebind;
+                m.singlebind = o.singlebind;
                 m.boundingSphere = boundingSpheres[meshIndex++];
 
                 for (int i = 0; i < o.polyCount; i++)
@@ -1039,17 +1039,20 @@ namespace SmashForge
             if (m.boneType > 0)
             {
                 foreach (Vertex v in vertices)
-                    ReadUV(d, p, o, m, v);
+                    ReadUV(d, m, v);
                 d.Seek(p.verAddStart);
                 foreach (Vertex v in vertices)
-                    ReadVertex(d, p, o, m, v);
+                    ReadVertex(d, m, v);
             }
             else
             {
                 foreach (Vertex v in vertices)
                 {
-                    ReadVertex(d, p, o, m, v);
-                    ReadUV(d, p, o, m, v);
+                    ReadVertex(d, m, v);
+                    ReadUV(d, m, v);
+
+                    v.boneIds.Add(o.singlebind);
+                    v.boneWeights.Add(1);
                 }
             }
 
@@ -1066,28 +1069,36 @@ namespace SmashForge
             return m;
         }
 
-        private static void ReadUV(FileData d, PolyData p, ObjectData o, Polygon m, Vertex v)
+        private static void ReadUV(FileData d, Polygon poly, Vertex v)
         {
-            int uvCount = (p.UVSize >> 4);
-            int colorType = (p.UVSize) & 0xF;
+            int uvCount = poly.uvCount;
+            int colorType = poly.colorType;
+            int uvType = poly.uvType;
 
-            if (colorType == 0x0)
+            if (colorType == (int)Polygon.VertexColorTypes.None)
                 {}
-            else if (colorType == 0x2)
+            else if (colorType == (int)Polygon.VertexColorTypes.Byte)
                 v.color = new Vector4(d.ReadByte(), d.ReadByte(), d.ReadByte(), d.ReadByte());
-            else if (colorType == 0x4)
+            else if (colorType == (int)Polygon.VertexColorTypes.HalfFloat)
                 v.color = new Vector4(d.ReadHalfFloat() * 0xFF, d.ReadHalfFloat() * 0xFF, d.ReadHalfFloat() * 0xFF, d.ReadHalfFloat() * 0xFF);
             else
-                throw new NotImplementedException("UV type not supported " + colorType);
+                throw new NotImplementedException($"Unsupported vertex color type: {colorType}");
 
-            for (int j = 0; j < uvCount; j++)
-                v.uv.Add(new Vector2(d.ReadHalfFloat(), d.ReadHalfFloat()));
+            for (int i = 0; i < uvCount; i++)
+            {
+                if (uvType == (int)Polygon.UVTypes.HalfFloat)
+                    v.uv.Add(new Vector2(d.ReadHalfFloat(), d.ReadHalfFloat()));
+                else if (uvType == (int)Polygon.UVTypes.Float)
+                    v.uv.Add(new Vector2(d.ReadFloat(), d.ReadFloat()));
+                else
+                    throw new NotImplementedException($"Unsupported UV type: {uvType}");
+            }
         }
 
-        private static void ReadVertex(FileData d, PolyData p, ObjectData o, Polygon m, Vertex v)
+        private static void ReadVertex(FileData d, Polygon poly, Vertex v)
         {
-            int boneType = p.vertSize & 0xF0;
-            int vertexType = p.vertSize & 0xF;
+            int boneType = poly.boneType;
+            int vertexType = poly.normalType;
 
             v.pos.X = d.ReadFloat();
             v.pos.Y = d.ReadFloat();
@@ -1166,8 +1177,6 @@ namespace SmashForge
 
             if (boneType == (int)Polygon.BoneTypes.NoBones)
             {
-                v.boneIds.Add((short)o.singlebind);
-                v.boneWeights.Add(1);
             }
             else if (boneType == (int)Polygon.BoneTypes.Float)
             {
@@ -1392,20 +1401,21 @@ namespace SmashForge
 
         private static void WriteUV(FileOutput d, Polygon poly, Vertex v)
         {
-            int uvCount = (poly.UVSize >> 4);
-            int colorType = (poly.UVSize) & 0xF;
+            int uvCount = poly.uvCount;
+            int colorType = poly.colorType;
+            int uvType = poly.uvType;
 
-            if (colorType == 0x0)
+            if (colorType == (int)Polygon.VertexColorTypes.None)
             {
             }
-            else if (colorType == 0x2)
+            else if (colorType == (int)Polygon.VertexColorTypes.Byte)
             {
                 d.WriteByte((int)v.color.X);
                 d.WriteByte((int)v.color.Y);
                 d.WriteByte((int)v.color.Z);
                 d.WriteByte((int)v.color.W);
             }
-            else if (colorType == 0x4)
+            else if (colorType == (int)Polygon.VertexColorTypes.HalfFloat)
             {
                 d.WriteHalfFloat(v.color.X / 0xFF);
                 d.WriteHalfFloat(v.color.Y / 0xFF);
@@ -1414,20 +1424,32 @@ namespace SmashForge
             }
             else
             {
-                throw new NotImplementedException("UV type not supported " + colorType);
+                throw new NotImplementedException($"Unsupported vertex color type: {colorType}");
             }
 
-            for (int j = 0; j < uvCount; j++)
+            for (int i = 0; i < uvCount; i++)
             {
-                d.WriteHalfFloat(v.uv[j].X);
-                d.WriteHalfFloat(v.uv[j].Y);
+                if (uvType == (int)Polygon.UVTypes.HalfFloat)
+                {
+                    d.WriteHalfFloat(v.uv[i].X);
+                    d.WriteHalfFloat(v.uv[i].Y);
+                }
+                else if (uvType == (int)Polygon.UVTypes.Float)
+                {
+                    d.WriteFloat(v.uv[i].X);
+                    d.WriteFloat(v.uv[i].Y);
+                }
+                else
+                {
+                    throw new NotImplementedException($"Unsupported UV type: {uvType}");
+                }
             }
         }
 
         private static void WriteVertex(FileOutput d, Polygon poly, Vertex v)
         {
-            int boneType = poly.vertSize & 0xF0;
-            int vertexType = poly.vertSize & 0xF;
+            int boneType = poly.boneType;
+            int vertexType = poly.normalType;
 
             d.WriteFloat(v.pos.X);
             d.WriteFloat(v.pos.Y);
@@ -1820,8 +1842,8 @@ namespace SmashForge
             m.singlebind = (short)singleBindBone;
             foreach (Polygon p in m.Nodes)
             {
+                p.boneType = 0;
                 p.polflag = 0;
-                p.vertSize = p.vertSize & 0x0F;
             }
         }
 

@@ -44,11 +44,11 @@ namespace SmashForge
             public int AlphaFunc = 0;
             public int AlphaTest {
                 get { return AlphaFunc >> 8; }
-                set { AlphaFunc = value << 8; }
+                set { AlphaFunc = (value << 8) | (AlphaFunc & 0xFF); }
             }
             public int AlphaFunction {
                 get { return AlphaFunc & 0xFF; }
-                set { AlphaFunc = value & 0xFF; }
+                set { AlphaFunc = (AlphaFunc & 0xFF00) | (value & 0xFF); }
             }
             public int RefAlpha { get; set; }
 
