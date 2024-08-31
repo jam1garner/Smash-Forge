@@ -486,8 +486,7 @@ namespace SmashForge
                 mesh.singlebind = brs.boneIndex;
                 foreach (Nud.Polygon poly in mesh.Nodes)
                 {
-                    poly.polflag = 0;
-                    poly.vertSize = poly.vertSize & 0x0F;
+                    poly.boneType = (int)Nud.Polygon.BoneTypes.NoBones;
                     foreach (Nud.Vertex vi in poly.vertices)
                     {
                         vi.boneIds.Clear();
@@ -1034,15 +1033,12 @@ namespace SmashForge
 
         private static void GenerateTanBitanAndFixVertType(Nud.Polygon poly)
         {
-            int vertType = poly.vertSize & 0xF;
-            if (!(vertType == 3 || vertType == 7))
-            {
-                // Change the vert type to normals, tan, bitan (float)
-                poly.vertSize = (poly.vertSize & 0xF0);
-                poly.vertSize |= 7;
-            }
+            if (poly.normalType == (int)Nud.Polygon.VertexTypes.NormalsFloat)
+                poly.normalType = (int)Nud.Polygon.VertexTypes.NormalsTanBiTanFloat;
+            else if (poly.normalType == (int)Nud.Polygon.VertexTypes.NormalsHalfFloat)
+                poly.normalType = (int)Nud.Polygon.VertexTypes.NormalsTanBiTanHalfFloat;
 
-            // This already checks for the appropriate vertex type.
+            // This does nothing if the vertex type doesn't support it.
             poly.CalculateTangentBitangent();
         }
 

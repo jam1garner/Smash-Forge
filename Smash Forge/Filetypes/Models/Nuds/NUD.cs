@@ -1843,7 +1843,6 @@ namespace SmashForge
             foreach (Polygon p in m.Nodes)
             {
                 p.boneType = 0;
-                p.polflag = 0;
             }
         }
 

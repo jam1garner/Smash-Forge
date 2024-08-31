@@ -43,7 +43,7 @@ namespace SmashForge
 
             transUvVerticalCB.Checked = true;
         }
-        
+
         public void Populate()
         {
             vertTypeComboBox.BeginUpdate();
@@ -90,22 +90,17 @@ namespace SmashForge
 
                 foreach (Nud.Polygon poly in mesh.Nodes)
                 {
-                    if (BoneTypes[(string)boneTypeComboBox.SelectedItem] == BoneTypes["None"])
-                        poly.polflag = 0;
-
                     if (smoothNrmCB.Checked)
                         poly.SmoothNormals();
 
-                    // Set the vertex size before tangent/bitangent calculations.
-                    if (poly.vertSize == (int)Nud.Polygon.VertexTypes.NormalsHalfFloat) // what is this supposed to mean?
-                        poly.vertSize = 0;
-                    else
-                        poly.vertSize = BoneTypes[(string)boneTypeComboBox.SelectedItem] | VertexTypes[(string)vertTypeComboBox.SelectedItem];
+                    poly.normalType = VertexTypes[(string)vertTypeComboBox.SelectedItem];
+                    poly.boneType = BoneTypes[(string)boneTypeComboBox.SelectedItem];
 
-                    poly.CalculateTangentBitangent();          
+                    poly.CalculateTangentBitangent();
 
-                    int vertSizeShadowWarning = (int)Nud.Polygon.BoneTypes.HalfFloat | (int)Nud.Polygon.VertexTypes.NormalsTanBiTanHalfFloat;
-                    if (!hasShownShadowWarning && poly.vertSize == vertSizeShadowWarning)
+                    if (!hasShownShadowWarning &&
+                        poly.boneType == (int)Nud.Polygon.BoneTypes.HalfFloat &&
+                        poly.normalType == (int)Nud.Polygon.VertexTypes.NormalsTanBiTanHalfFloat)
                     {
                         MessageBox.Show("Using \"" + (string)boneTypeComboBox.SelectedItem + "\" and \"" + (string)vertTypeComboBox.SelectedItem + "\" can make shadows not appear in-game.",
                             "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
