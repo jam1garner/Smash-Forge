@@ -196,9 +196,8 @@ namespace SmashForge
 
             public void CalculateTangentBitangent()
             {
-                // Don't generate tangents and bitangents if the vertex format doesn't support them. 
-                int vertType = vertSize & 0xF;
-                if (!(vertType == 3 || vertType == 7))
+                // Don't generate tangents and bitangents if the vertex format doesn't support them.
+                if (!(normalType == (int)VertexTypes.NormalsTanBiTanFloat || normalType == (int)VertexTypes.NormalsTanBiTanHalfFloat))
                     return;
 
                 List<int> vertexIndices = GetRenderingVertexIndices();
@@ -246,7 +245,7 @@ namespace SmashForge
                     normals[f[i + 1]] += nrm;
                     normals[f[i + 2]] += nrm;
                 }
-                
+
                 for (int i = 0; i < normals.Length; i++)
                     vertices[i].nrm = normals[i].Normalized();
 
