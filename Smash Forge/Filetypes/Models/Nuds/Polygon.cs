@@ -404,15 +404,13 @@ namespace SmashForge
                     // the triangles directly into the strip format.
                     List<int> vertexIndices = new List<int>();
 
-                    for (int p = 0;;)
+                    for (int p = 0; p < this.vertexIndices.Count; p += 3)
                     {
-                        vertexIndices.Add(this.vertexIndices[p++]);
-                        vertexIndices.Add(this.vertexIndices[p++]);
-                        vertexIndices.Add(this.vertexIndices[p++]);
-                        if (p < this.vertexIndices.Count)
+                        if (p > 0)
                             vertexIndices.Add(0xFFFF);
-                        else
-                            break;
+                        vertexIndices.Add(this.vertexIndices[p]);
+                        vertexIndices.Add(this.vertexIndices[p+1]);
+                        vertexIndices.Add(this.vertexIndices[p+2]);
                     }
                     return vertexIndices;
                 }
