@@ -335,11 +335,10 @@ namespace SmashForge
                 mat.textures.Add(MatTexture.GetDefault());
             }
 
-            public List<int> GetRenderingVertexIndices()
+            public List<int> GetTriangles()
             {
                 if (strip == (int)PrimitiveTypes.Triangles)
                 {
-                    displayFaceSize = vertexIndices.Count;
                     return vertexIndices;
                 }
                 else if (strip == (int)PrimitiveTypes.TriangleStrip)
@@ -384,13 +383,50 @@ namespace SmashForge
                         }
                     } while (p < this.vertexIndices.Count);
 
-                    displayFaceSize = vertexIndices.Count;
                     return vertexIndices;
                 }
                 else
                 {
                     throw new NotImplementedException("Face type not supported: " + strip);
                 }
+            }
+
+            public List<int> GetTriangleStrip()
+            {
+                if (strip == (int)PrimitiveTypes.TriangleStrip)
+                {
+                    return vertexIndices;
+                }
+                else if (strip == (int)PrimitiveTypes.Triangles)
+                {
+                    // TODO: Come up with a proper algorithm.
+                    // This is the simplest possible form, as it merely puts
+                    // the triangles directly into the strip format.
+                    List<int> vertexIndices = new List<int>();
+
+                    for (int p = 0;;)
+                    {
+                        vertexIndices.Add(this.vertexIndices[p++]);
+                        vertexIndices.Add(this.vertexIndices[p++]);
+                        vertexIndices.Add(this.vertexIndices[p++]);
+                        if (p < this.vertexIndices.Count)
+                            vertexIndices.Add(0xFFFF);
+                        else
+                            break;
+                    }
+                    return vertexIndices;
+                }
+                else
+                {
+                    throw new NotImplementedException("Face type not supported: " + strip);
+                }
+            }
+
+            public List<int> GetRenderingVertexIndices()
+            {
+                List<int> vertexIndices = GetTriangles();
+                displayFaceSize = vertexIndices.Count;
+                return vertexIndices;
             }
         }
     }
