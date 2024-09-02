@@ -115,12 +115,11 @@ namespace SmashForge
                 {
                     float[] values = mat.GetPropertyValues(materialProperty);
                     // Only print 4 values, to avoid lots of trailing zeroes.
-                    for (int count = 0, max = Math.Min(4, values.Length);;)
+                    for (int i = 0; i < 4 && i < values.Length; i++)
                     {
-                        paramnode.InnerText += values[count++].ToString("G9");
-                        if (count >= max)
-                            break;
-                        paramnode.InnerText += " ";
+                        if (i > 0)
+                            paramnode.InnerText += " ";
+                        paramnode.InnerText += values[i].ToString("G9");
                     }
 
                 }
@@ -152,7 +151,7 @@ namespace SmashForge
 
         public static void ImportMaterialAsXml(Nud n, string filename)
         {
-            // Creates a list of materials and then trys to apply the materials to the polygons. 
+            // Creates a list of materials and then tries to apply the materials to the polygons.
             int polyCount = CalculatePolygonCount(n);
 
             XmlDocument doc = new XmlDocument();
@@ -172,7 +171,7 @@ namespace SmashForge
                 {
                     if (!(polynode.Name.Equals("polygon")))
                         continue;
-                  
+
                     matCountForPolyId.Add(polynode.ChildNodes.Count);
 
                     if (matCountForPolyId.Count > polyCount)
@@ -222,7 +221,7 @@ namespace SmashForge
                         }
                         matIndex += 1;
                     }
-                
+
                     polyIndex += 1;
                 }
             }
@@ -308,7 +307,7 @@ namespace SmashForge
         {
             if (!(textureNode.Name.Equals("texture")))
                 return;
-            
+
             Nud.MatTexture matTexture = new Nud.MatTexture();
             material.textures.Add(matTexture);
 
@@ -346,7 +345,7 @@ namespace SmashForge
             string name = GetNodeName(materialNode);
             List<float> valueList = ParamValuesFromMaterialPropertyText(materialNode, name);
 
-            // Parameters should always have 4 values.                                           
+            // Parameters should always have 4 values.
             if (valueList.Count != 4)
                 throw new ParamArrayLengthException(polyNode.ChildNodes.Count, name);
 
@@ -359,7 +358,7 @@ namespace SmashForge
             {
                 MessageBox.Show(String.Format("Polygon{0} contains more than 1 instance of {1}. \n"
                     + "Only the first instance of {1} will be added.", polyNode.ChildNodes.Count.ToString(), name));
-            }        
+            }
         }
 
         private static List<float> ParamValuesFromMaterialPropertyText(XmlNode materialPropertyNode, string propertyName)
@@ -387,7 +386,7 @@ namespace SmashForge
                 else if (float.TryParse(stringValue, out newValue))
                     valueList.Add(newValue);
                 else
-                    valueList.Add(0.0f);            
+                    valueList.Add(0.0f);
             }
 
             return valueList;

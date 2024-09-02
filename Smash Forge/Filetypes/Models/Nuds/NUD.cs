@@ -300,95 +300,48 @@ namespace SmashForge
             foreach (Mesh m in Nodes)
                 m.GenerateBoundingSphere();
 
-            Vector3 cen1 = new Vector3(0,0,0), cen2 = new Vector3(0,0,0);
-            double rad1 = 0, rad2 = 0;
-
-            //Get first vert
-            int vertCount = 0;
-            Vector3 vert0 = new Vector3();
+            bool initial = false;
+            Vector3 min = new Vector3();
+            Vector3 max = new Vector3();
             foreach (Mesh m in Nodes)
             {
                 foreach (Polygon p in m.Nodes)
                 {
                     foreach (Vertex v in p.vertices)
                     {
-                        vert0 = v.pos;
-                        vertCount++;
-                        break;
-                    }
-                    break;
-                }
-                break;
-            }
-
-            if (vertCount == 0) //No vertices
-                return;
-
-            //Calculate average and min/max
-            Vector3 min = new Vector3(vert0);
-            Vector3 max = new Vector3(vert0);
-
-            vertCount = 0;
-            foreach (Mesh m in Nodes)
-            {
-                foreach (Polygon p in m.Nodes)
-                {
-                    foreach (Vertex v in p.vertices)
-                    {
-                        for (int i = 0; i < 3; i++)
+                        if (!initial)
                         {
-                            min[i] = Math.Min(min[i], v.pos[i]);
-                            max[i] = Math.Max(max[i], v.pos[i]);
+                            min = new Vector3(v.pos);
+                            max = new Vector3(v.pos);
+                            initial = true;
                         }
-
-                        cen1 += v.pos;
-                        vertCount++;
+                        else
+                        {
+                            for (int i = 0; i < 3; i++)
+                            {
+                                min[i] = Math.Min(min[i], v.pos[i]);
+                                max[i] = Math.Max(max[i], v.pos[i]);
+                            }
+                        }
                     }
                 }
             }
 
-            cen1 /= vertCount;
-            for (int i = 0; i < 3; i++)
-                cen2[i] = (min[i]+max[i])/2;
-
-            //Calculate the radius of each
-            double dist1, dist2;
+            Vector3 center = ((Vector3)(min + max)) / 2;
+            double radius = 0.0;
             foreach (Mesh m in Nodes)
             {
                 foreach (Polygon p in m.Nodes)
                 {
                     foreach (Vertex v in p.vertices)
                     {
-                        dist1 = ((Vector3)(v.pos - cen1)).Length;
-                        if (dist1 > rad1)
-                            rad1 = dist1;
-
-                        dist2 = ((Vector3)(v.pos - cen2)).Length;
-                        if (dist2 > rad2)
-                            rad2 = dist2;
+                        radius = Math.Max(radius, ((Vector3)(v.pos - center)).Length);
                     }
                 }
             }
 
-            //Use the one with the lowest radius
-            Vector3 temp;
-            double radius;
-            if (rad1 < rad2)
-            {
-                temp = cen1;
-                radius = rad1;
-            }
-            else
-            {
-                temp = cen2;
-                radius = rad2;
-            }
-
-            //Set
             for (int i = 0; i < 3; i++)
-            {
-                boundingSphere[i] = temp[i];
-            }
+                boundingSphere[i] = center[i];
             boundingSphere[3] = (float)radius;
         }
 
@@ -802,10 +755,12 @@ namespace SmashForge
         // Helpers for reading
         private struct ObjectData
         {
+            public float sortBias;
+            public string name;
+            public ushort boneflag;
             public short singlebind;
             public int polyCount;
             public int positionb;
-            public string name;
         }
 
         public struct PolyData
@@ -866,26 +821,30 @@ namespace SmashForge
 
             ObjectData[] obj = new ObjectData[polysets];
             List<float[]> boundingSpheres = new List<float[]>();
-            int[] boneflags = new int[polysets];
             for (int i = 0; i < polysets; i++)
             {
-                float[] boundingSphere = new float[8];
+                float[] boundingSphere = new float[4];
                 boundingSphere[0] = fileData.ReadFloat();
                 boundingSphere[1] = fileData.ReadFloat();
                 boundingSphere[2] = fileData.ReadFloat();
                 boundingSphere[3] = fileData.ReadFloat();
-                boundingSphere[4] = fileData.ReadFloat();
-                boundingSphere[5] = fileData.ReadFloat();
-                boundingSphere[6] = fileData.ReadFloat();
-                boundingSphere[7] = fileData.ReadFloat();
                 boundingSpheres.Add(boundingSphere);
+
+                // For some reason, the XYZ values of the sphere are repeated.
+                fileData.ReadFloat();
+                fileData.ReadFloat();
+                fileData.ReadFloat();
+
+                obj[i].sortBias = fileData.ReadFloat();
+
                 int temp = fileData.Pos() + 4;
                 fileData.Seek(nameStart + fileData.ReadInt());
                 obj[i].name = (fileData.ReadString());
                 // read name string
                 fileData.Seek(temp);
+
                 fileData.ReadUShort(); //Seems to be always 0
-                boneflags[i] = fileData.ReadUShort(); //Controls whether it's single-bound, weighted, or unbound
+                obj[i].boneflag = fileData.ReadUShort(); //Controls whether it's single-bound, weighted, or unbound
                 obj[i].singlebind = fileData.ReadShort(); //Bone index if it is single-bound, otherwise -1
                 obj[i].polyCount = fileData.ReadUShort();
                 obj[i].positionb = fileData.ReadInt();
@@ -898,9 +857,10 @@ namespace SmashForge
                 Mesh m = new Mesh();
                 m.Text = o.name;
                 Nodes.Add(m);
-                m.boneflag = boneflags[meshIndex];
-                m.singlebind = o.singlebind;
                 m.boundingSphere = boundingSpheres[meshIndex++];
+                m.sortBias = o.sortBias;
+                m.boneflag = o.boneflag;
+                m.singlebind = o.singlebind;
 
                 for (int i = 0; i < o.polyCount; i++)
                 {
@@ -1290,8 +1250,11 @@ namespace SmashForge
 
             foreach (Mesh m in Nodes)
             {
-                foreach (float f in m.boundingSphere)
-                    d.WriteFloat(f);
+                for (int i = 0; i < 4; i++)
+                    d.WriteFloat(m.boundingSphere[i]);
+                for (int i = 0; i < 3; i++)
+                    d.WriteFloat(m.boundingSphere[i]);
+                d.WriteFloat(m.sortBias);
 
                 d.WriteInt(tempstring.Size());
 
