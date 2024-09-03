@@ -134,7 +134,7 @@ namespace SmashForge
                         {
                             bool validTextureId = false;
 
-                            // Checks to see if the texture is in the nut. 
+                            // Checks to see if the texture is in the nut.
                             foreach (NutTexture nutTex in nut.Nodes)
                             {
                                 if (matTex.hash == nutTex.HashId)
@@ -173,7 +173,7 @@ namespace SmashForge
 
         public void DepthSortMeshes(Vector3 cameraPosition)
         {
-            // Meshes can be rendered in the order they appear in the NUD, by bounding spheres, and offsets. 
+            // Meshes can be rendered in the order they appear in the NUD, by bounding spheres, and offsets.
             List<Mesh> unsortedMeshes = new List<Mesh>();
             foreach (Mesh m in Nodes)
             {
@@ -182,7 +182,7 @@ namespace SmashForge
                 unsortedMeshes.Add(m);
             }
 
-            // Order by the distance from the camera to the closest point on the bounding sphere. 
+            // Order by the distance from the camera to the closest point on the bounding sphere.
             // More distance objects will be rendered first.
             depthSortedMeshes = unsortedMeshes.OrderBy(m => -m.sortingDistance).ToList();
         }
@@ -267,7 +267,7 @@ namespace SmashForge
         {
             GL.UseProgram(0);
 
-            // Draw NUD bounding box. 
+            // Draw NUD bounding box.
             GL.Color4(Color.GhostWhite);
             ShapeDrawing.DrawCube(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], true);
 
@@ -283,7 +283,7 @@ namespace SmashForge
                 {
                     if (mesh.useNsc && mesh.singlebind != -1)
                     {
-                        // Use the center of the bone as the bounding box center for NSC meshes. 
+                        // Use the center of the bone as the bounding box center for NSC meshes.
                         Vector3 center = ((ModelContainer)Parent).VBN.bones[mesh.singlebind].pos;
                         ShapeDrawing.DrawCube(center, mesh.boundingSphere[3], true);
                     }
@@ -327,22 +327,24 @@ namespace SmashForge
                 }
             }
 
-            Vector3 center = ((Vector3)(min + max)) / 2;
-            double radius = 0.0;
+            Vector3 center = (min + max) / 2;
+            float radius = 0.0f;
             foreach (Mesh m in Nodes)
             {
                 foreach (Polygon p in m.Nodes)
                 {
                     foreach (Vertex v in p.vertices)
                     {
-                        radius = Math.Max(radius, ((Vector3)(v.pos - center)).Length);
+                        radius = Math.Max(radius, (v.pos - center).LengthSquared);
                     }
                 }
             }
+            // Use LengthSquared since it's faster than Length, then Sqrt afterwards.
+            radius = (float)Math.Sqrt(radius);
 
             for (int i = 0; i < 3; i++)
                 boundingSphere[i] = center[i];
-            boundingSphere[3] = (float)radius;
+            boundingSphere[3] = radius;
         }
 
         public void SetPropertiesFromXMB(XMBFile xmb)
@@ -410,7 +412,7 @@ namespace SmashForge
 
         private void DrawShadedPolygons(Shader shader, Camera camera, bool drawPolyIds = false)
         {
-            // For proper alpha blending, draw in reverse order and draw opaque objects first. 
+            // For proper alpha blending, draw in reverse order and draw opaque objects first.
             List<Polygon> opaque = new List<Polygon>();
             List<Polygon> transparent = new List<Polygon>();
 
@@ -558,7 +560,7 @@ namespace SmashForge
 
             shader.SetMatrix4x4("nscMatrix", ref nscMatrix);
         }
-        
+
         private void SetXMBUniforms(Shader shader, Polygon p)
         {
             shader.SetBoolToInt("isStage", modelType.Equals("stage"));
@@ -669,7 +671,7 @@ namespace SmashForge
 
                     //vertexIndexEbo.Bind();
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                    
+
                     GL.PointSize(6f);
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
                     GL.DrawElements(type, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
@@ -722,7 +724,7 @@ namespace SmashForge
                                         if (md.frames.Count > 0 && md.frames.Count > frm)
                                         {
                                             material.UpdatePropertyAnim(md.name, md.frames[frm].values);
-                                        }                                          
+                                        }
                                     }
                                 }
                             }
@@ -1285,7 +1287,7 @@ namespace SmashForge
                     p.uvCount = maxUV;
                     obj.WriteByte(p.UVSize);
 
-                    // MATERIAL SECTION 
+                    // MATERIAL SECTION
                     int[] texoff = WriteMaterial(tex, p.materials, str);
 
                     obj.WriteInt(texoff[0] + 0x30 + Nodes.Count * 0x30 + polyCount * 0x30);
@@ -1689,7 +1691,7 @@ namespace SmashForge
             foreach (Mesh mesh in Nodes)
             {
                 MBN.Mesh nmesh = new MBN.Mesh();
-                
+
                 int pi = 0;
                 int fadd = vertBank.Count;
                 nmesh.nodeList = new List<List<int>>();
@@ -1717,7 +1719,7 @@ namespace SmashForge
                         mv.weight.Add(v.boneWeights.Count > 1 ? v.boneWeights[1] : 0);
                         vertBank.Add(mv);
                     }
-                    // Node list 
+                    // Node list
                     nmesh.nodeList.Add(nodeList);
                     // polygons
                     List<int> fac = new List<int>();
@@ -1759,7 +1761,7 @@ namespace SmashForge
                     List<Vertex> vbank = new List<Vertex>(); // only check last 50 verts - may miss far apart ones but is faster
                     foreach (int f in p.vertexIndices)
                     {
-                        int newFaceIndex = -1; 
+                        int newFaceIndex = -1;
                         int i = 0;
 
                         // Has to loop through all the new vertices each time, which is very slow.

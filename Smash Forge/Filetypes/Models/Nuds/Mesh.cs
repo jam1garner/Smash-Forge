@@ -76,7 +76,7 @@ namespace SmashForge
                 Vector3 max = new Vector3();
                 foreach (Polygon p in Nodes)
                 {
-                    foreach(Vertex v in p.vertices)
+                    foreach (Vertex v in p.vertices)
                     {
                         if (!initial)
                         {
@@ -95,19 +95,21 @@ namespace SmashForge
                     }
                 }
 
-                Vector3 center = ((Vector3)(min + max)) / 2;
-                double radius = 0.0;
+                Vector3 center = (min + max) / 2;
+                float radius = 0.0f;
                 foreach (Polygon p in Nodes)
                 {
                     foreach (Vertex v in p.vertices)
                     {
-                        radius = Math.Max(radius, ((Vector3)(v.pos - center)).Length);
+                        radius = Math.Max(radius, (v.pos - center).LengthSquared);
                     }
                 }
+                // Use LengthSquared since it's faster than Length, then Sqrt afterwards.
+                radius = (float)Math.Sqrt(radius);
 
                 for (int i = 0; i < 3; i++)
                     boundingSphere[i] = center[i];
-                boundingSphere[3] = (float)radius;
+                boundingSphere[3] = radius;
             }
 
             public float CalculateSortingDistance(Vector3 cameraPosition)
@@ -123,7 +125,7 @@ namespace SmashForge
                 }
 
                 Vector3 distanceVector = new Vector3(cameraPosition - meshCenter);
-                return distanceVector.Length + boundingSphere[3] + sortBias;
+                return distanceVector.Length + boundingSphere[3] - sortBias;
             }
 
             public void SetMeshAttributesFromName()
