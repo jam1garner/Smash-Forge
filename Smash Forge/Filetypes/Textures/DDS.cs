@@ -76,7 +76,7 @@ namespace SmashForge
         }
 
         //Bytes per block (4x4 pixels) for block formats, bytes per pixel for non-block formats
-        public static uint GetFormatSize(uint fourCc)
+        public static uint GetFormatSize(uint fourCc,uint dxgiFormat)
         {
             switch (fourCc)
             {
@@ -94,6 +94,40 @@ namespace SmashForge
                 case 0x32495441: //ATI2
                 case 0x55354342: //BC5U
                     return 0x10;
+                case 0x30315844: //DX10
+                    switch (dxgiFormat)
+                    {
+                        case 27:
+                        case 28:
+                        case 29:
+                        case 30:
+                        case 31:
+                        case 32:
+                            return 0x4;
+                        case 70:
+                        case 71:
+                        case 72:
+                            return 0x8;
+                        case 73:
+                        case 74:
+                        case 75:
+                            return 0x10;
+                        case 76:
+                        case 77:
+                        case 78:
+                            return 0x10;
+                        case 79:
+                        case 80:
+                        case 81:
+                            return 0x8;
+                        case 82:
+                        case 83:
+                        case 84:
+                            return 0x10;
+                        default:
+                            return 0;
+                    }
+                    break;
                 default:
                     return 0;
             }
@@ -129,11 +163,21 @@ namespace SmashForge
             public uint caps4 = 0;
             public uint reserved2 = 0;
         }
+        public Header10 header10;
+        public class Header10
+        {
+            public uint dxgiFormat = 0;
+            public uint resourceDimension = 3;
+            public uint miscFlag = 0;
+            public uint arraySize = 0;
+            public uint miscFlags2 = 0;
+        }
         public byte[] bdata;
 
         public Dds()
         {
             header = new Header();
+            header10 = new Header10();
         }
 
         public Dds(FileData d)
@@ -172,8 +216,17 @@ namespace SmashForge
             header.caps3 = d.ReadUInt();
             header.caps4 = d.ReadUInt();
             header.reserved2 = d.ReadUInt();
-
-            d.Seek((int)(4 + header.size));
+            if(header.ddspf.fourCc == 0x30315844){
+                header10 = new Header10();
+                header10.dxgiFormat = d.ReadUInt();
+                header10.resourceDimension = d.ReadUInt();
+                header10.miscFlag = d.ReadUInt();
+                header10.arraySize = d.ReadUInt();
+                header10.miscFlags2 = d.ReadUInt();
+                d.Seek((int)(4 + header.size + 0x14));
+            }else{
+                d.Seek((int)(4 + header.size));
+            }
             bdata = d.Read(d.Size() - d.Pos());
         }
 
@@ -324,12 +377,55 @@ namespace SmashForge
                 case 0x55354342: //BC5U
                     tex.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
                     break;
+                case 0x30315844: //DX10
+                    switch (header10.dxgiFormat)
+                    {
+                        case 27:
+                        case 28:
+                        case 29:
+                        case 30:
+                        case 31:
+                        case 32:
+                            isBlock = false;
+                            tex.pixelInternalFormat = PixelInternalFormat.Rgba;
+                            tex.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                            break;
+                        case 70:
+                        case 71:
+                        case 72:
+                            tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                            break;
+                        case 73:
+                        case 74:
+                        case 75:
+                            tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                            break;
+                        case 76:
+                        case 77:
+                        case 78:
+                            tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                            break;
+                        case 79:
+                        case 80:
+                        case 81:
+                            tex.pixelInternalFormat = PixelInternalFormat.CompressedRedRgtc1;
+                            break;
+                        case 82:
+                        case 83:
+                        case 84:
+                            tex.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
+                            break;
+                        default:
+                        MessageBox.Show("Unsupported DDS DX10 format - " + header10.dxgiFormat.ToString("x"));
+                        break;
+                    }
+                    break;
                 default:
                     MessageBox.Show("Unsupported DDS format - 0x" + header.ddspf.fourCc.ToString("x"));
                     break;
             }
 
-            uint formatSize = GetFormatSize(header.ddspf.fourCc);
+            uint formatSize = GetFormatSize(header.ddspf.fourCc, header.ddspf.fourCc == 0x30315844 ? header10.dxgiFormat : 0);
 
             FileData d = new FileData(bdata);
             if (header.mipmapCount == 0)
