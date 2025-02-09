@@ -208,13 +208,10 @@ vec3 SrgbToLinear(vec3 color);
 vec3 BayoHairDiffuse(vec3 diffuseMap, vec4 colorOffset, vec4 colorGain, vec4 alphaBlendParams);
 vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, vec3 specLightDirection, vec4 reflectionParams, VertexAttributes vert);
 
+// Translated from Rosalina's dress fragment shader in RenderDoc with Cemu.
 vec3 TintColor(vec3 diffuseColor, float tintAmount) {
-    // Approximates an overlay blend mode. Cheaper than converting to HSV/HSL.
-    // Normalize the color to avoid color tint making the model darker.
-    if (Luminance(diffuseColor) < 0.01)
-        return vec3(1);
-    vec3 colorTint = mix(vec3(1), (normalize(diffuseColor) * 2), min(tintAmount * 0.5, 1));
-    return colorTint;
+    float maxComponent = max(diffuseColor.r, max(diffuseColor.g, diffuseColor.b));
+    return (diffuseColor - maxComponent) * tintAmount + 1.0;
 }
 
 vec3 RampColor(float rampCoord, sampler2D ramp, int hasRamp) {
@@ -333,6 +330,7 @@ float AnisotropicSpecExponent(vec3 halfAngle, float width, float height, vec3 ta
     return xComponent + yComponent;
 }
 
+// TODO: Check this in RenderDoc.
 vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, vec3 diffusePass, VertexAttributes vert) {
     vec3 specularPass = vec3(0);
 
@@ -430,13 +428,14 @@ vec3 SoftLighting(vec3 diffuse, vec4 params, float lambert) {
     return CharacterDiffuseLighting(smoothLambert, ambientColorFinal * ambientIntensity, difLightColor * diffuseIntensity) * diffuse;
 }
 
+// Translated from Link's face fragment shader in RenderDoc with Cemu.
 vec3 DiffuseAOBlend(float aoMap, vec4 aoMinGain) {
     // TODO: AO with no normal map?
     // Calculate the effect of NU_aoMinGain on the ambient occlusion map.
     if (hasNrm == 1)
-        return clamp(aoMap + aoMinGain.rgb, 0, 1);
+        return clamp((1.0 - aoMinGain.rgb) * aoMap + aoMinGain.rgb, 0, 1);
     else
-        return clamp(1.0 + aoMinGain.rgb, 0, 1);
+        return clamp((1.0 - aoMinGain.rgb) * 1.0 + aoMinGain.rgb, 0, 1);
 }
 
 float AmbientOcclusionBlend(vec4 diffuseMap, float aoMap, vec4 aoMinGain, VertexAttributes vert) {
@@ -545,6 +544,7 @@ vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert) {
     vec3 diffusePass = DiffusePass(N, diffuseMap, aoMap, vert);
 
     // Use total diffuse pass instead of just diffuse map color for tint.
+    // TODO: Is this just tinted with diffuse color?
     vec3 specTintColor = TintColor(diffusePass, specularColor.a);
     vec3 fresTintColor = TintColor(diffusePass, fresnelColor.a);
     vec3 reflTintColor = TintColor(diffusePass, reflectionColor.a);
