@@ -1045,8 +1045,7 @@ namespace SmashForge
                             while (Strings.Count < numSymbols)
                             {
                                 int len = f.ReadInt();
-
-                                Strings.Add(f.ReadString());
+                                Strings.Add(Encoding.UTF8.GetString(f.Read(len)));
                                 f.Skip(4 - (f.Pos() % 4));
                             }
 
