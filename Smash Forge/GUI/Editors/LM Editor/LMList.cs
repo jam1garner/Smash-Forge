@@ -1,7 +1,7 @@
-﻿using System.Data;
+﻿using SmashForge.Gui.Menus;
+using System.Data;
 using System.IO;
 using System.Windows.Forms;
-using SmashForge.Gui.Menus;
 
 namespace SmashForge
 {
@@ -53,7 +53,7 @@ namespace SmashForge
             shapesNode.Nodes.Clear();
             spritesNode.Nodes.Clear();
             textsNode.Nodes.Clear();
-            
+
 
             if (lumen != null)
             {
@@ -63,7 +63,10 @@ namespace SmashForge
                 }
                 foreach (var x in lumen.Colors)
                 {
-                    colorNode.Nodes.Add(new TreeNode((x * 255).ToString()));
+                    TreeNode ColorText = new TreeNode((x * 255).ToString());
+                    ColorText.BackColor = System.Drawing.Color.FromArgb((int)(x.W * 255), (int)(x.X * 255), (int)(x.Y * 255), (int)(x.Z * 255));
+                    ColorText.ForeColor = System.Drawing.Color.FromArgb(ColorText.BackColor.ToArgb() ^ 0xffffff);
+                    colorNode.Nodes.Add(ColorText);
                 }
                 for (int i = 0; i < lumen.Transforms.Count; i++)
                 {
