@@ -33,8 +33,8 @@ namespace SmashForge
         public ushort version = 0x0200;
 
         //The lowest and highest bone indexes referenced by the objects and vertices in this NUD
-        public ushort boneIndexStart = 0;
-        public ushort boneIndexEnd = 0;
+        public short boneIndexStart = 0;
+        public short boneIndexEnd = 0;
         public bool hasBones = false;
         public float[] boundingSphere = new float[4];
 
@@ -804,8 +804,8 @@ namespace SmashForge
             fileData.endian = Endian;
 
             int polysets = fileData.ReadUShort();
-            boneIndexStart = fileData.ReadUShort();
-            boneIndexEnd = fileData.ReadUShort();
+            boneIndexStart = fileData.ReadShort();
+            boneIndexEnd = fileData.ReadShort();
 
             int polyClumpStart = fileData.ReadInt() + 0x30;
             int polyClumpSize = fileData.ReadInt();
@@ -936,51 +936,61 @@ namespace SmashForge
                     m.textures.Add(tex);
                 }
 
-                int matAttSize;
-                do
-                {
-                    int pos = d.Pos();
+                int matAttSize = d.ReadInt();
+                if(matAttSize > 0) 
+                    { 
+                    d.Seek(d.Pos() - 4);
+                    do
+                        {
+                        
+                            int pos = d.Pos();
 
-                    matAttSize = d.ReadInt();
-                    int nameStart = d.ReadInt();
-                    //valueCount has the same position regardless of endianness
-                    //This could either mean that it's one byte long, or that it's always BE
-                    //We assume the former, for now
-                    d.Skip(3);
-                    byte valueCount = d.ReadByte();
-                    d.Skip(4); //Unknown, always 0, probably padding
+                            matAttSize = d.ReadInt();
+                            int nameStart = d.ReadInt();
+                            //valueCount has the same position regardless of endianness
+                            //This could either mean that it's one byte long, or that it's always BE
+                            //We assume the former, for now
+                            d.Skip(3);
+                            byte valueCount = d.ReadByte();
+                            d.Skip(4); //Unknown, always 0, probably padding
 
-                    //If it doesn't have any values, we want to skip over it
-                    if (valueCount == 0)
-                        goto Continue;
+                            //If it doesn't have any values, we want to skip over it
+                            if (valueCount == 0)
+                                goto Continue;
 
-                    string name = d.ReadString(nameOffset + nameStart, -1);
+                            string name = d.ReadString(nameOffset + nameStart, -1);
 
-                    // Material properties should always have 4 values. Use 0 for remaining values.
-                    float[] values = new float[4];
-                    for (int i = 0; i < values.Length; i++)
-                    {
-                        if (i < valueCount)
-                            values[i] = d.ReadFloat();
+                            // Material properties should always have 4 values. Use 0 for remaining values.
+                            float[] values = new float[4];
+                            for (int i = 0; i < values.Length; i++)
+                            {
+                                if (i < valueCount)
+                                    values[i] = d.ReadFloat();
+                                else
+                                    values[i] = 0;
+                            }
+                            m.UpdateProperty(name, values);
+
+                        Continue:
+                            if (matAttSize == 0)
+                                d.Seek(pos + 0x10 + (valueCount * 4));
+                            else
+                                d.Seek(pos + matAttSize);
+                        } while (matAttSize != 0);
+
+                        if (propoff == p.texprop1)
+                            propoff = p.texprop2;
+                        else if (propoff == p.texprop2)
+                            propoff = p.texprop3;
+                        else if (propoff == p.texprop3)
+                            propoff = p.texprop4;
                         else
-                            values[i] = 0;
+                            propoff = 0;
                     }
-                    m.UpdateProperty(name, values);
-
-                Continue:
-                    if (matAttSize == 0)
-                        d.Seek(pos + 0x10 + (valueCount * 4));
-                    else
-                        d.Seek(pos + matAttSize);
-                } while (matAttSize != 0);
-
-                if (propoff == p.texprop1)
-                    propoff = p.texprop2;
-                else if (propoff == p.texprop2)
-                        propoff = p.texprop3;
-                else if (propoff == p.texprop3)
-                    propoff = p.texprop4;
+                else
+                    propoff = 0;
             }
+            
 
             return mats;
         }
@@ -1201,15 +1211,15 @@ namespace SmashForge
             //TODO: Calculate these values properly
             int boneCount = ((ModelContainer)Parent).VBN == null ? 0 : ((ModelContainer)Parent).VBN.bones.Count;
             if (boneCount > 0) {
-                boneIndexEnd = (ushort)(boneCount - 1);
+                boneIndexEnd = (short)(boneCount - 1);
                 boneIndexStart = Math.Min(boneIndexEnd, boneIndexStart);
             }
             else {
                 boneIndexStart = 0;
                 boneIndexEnd = 0;
             }
-            d.WriteUShort(boneIndexStart);
-            d.WriteUShort(boneIndexEnd);
+            d.WriteShort(boneIndexStart);
+            d.WriteShort(boneIndexEnd);
 
             d.WriteInt(0); // polyClump start
             d.WriteInt(0); // polyClump size
