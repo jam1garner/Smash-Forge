@@ -87,6 +87,7 @@ namespace SmashForge.Filetypes.Models.Nuds
             { 0x01, TextureMinFilter.Nearest},
             { 0x02, TextureMinFilter.Linear},
             { 0x03, TextureMinFilter.NearestMipmapLinear},
+            { 0x04, TextureMinFilter.NearestMipmapLinear},
         };
 
         public static readonly Dictionary<int, TextureMagFilter> magFilterByMatValue = new Dictionary<int, TextureMagFilter>()

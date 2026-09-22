@@ -75,7 +75,8 @@ namespace SmashForge
             { 0x00, "Linear_Mipmap_Linear"},
             { 0x01, "Nearest"},
             { 0x02, "Linear"},
-            { 0x03, "Nearest_Mipmap_Linear"}
+            { 0x03, "Nearest_Mipmap_Linear"},
+            { 0x04, "???"}
         };
 
         public static Dictionary<int, string> magFilterByMatValue = new Dictionary<int, string>()
